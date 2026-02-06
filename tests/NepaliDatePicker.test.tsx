@@ -13,6 +13,15 @@ function openPicker() {
   fireEvent.click(input);
 }
 
+function getDayButton(day: number | string): HTMLButtonElement {
+  const candidates = screen
+    .getAllByText(String(day))
+    .map((el) => el.closest('button') as HTMLButtonElement | null)
+    .filter(Boolean) as HTMLButtonElement[];
+  const current = candidates.find((btn) => !btn.className.includes('np-cal-cell--muted'));
+  return current ?? candidates[0];
+}
+
 function typeIntoInput(val: string) {
   const input = screen.getByPlaceholderText('YYYY-MM-DD (BS)') as HTMLInputElement;
   fireEvent.change(input, { target: { value: val } });
@@ -24,7 +33,7 @@ describe('disable rules', () => {
     const today = adapter.today();
     render(<NepaliDatePicker value={null} onChange={() => {}} adapter={adapter} disableToday />);
     openPicker();
-    const todayBtn = screen.getAllByText(String(today.day))[0];
+    const todayBtn = getDayButton(today.day);
     expect(todayBtn).toBeDisabled();
   });
 
@@ -39,7 +48,7 @@ describe('disable rules', () => {
       />
     );
     openPicker();
-    const btn = screen.getByText('1');
+    const btn = getDayButton(1);
     expect(btn).toBeDisabled();
   });
 
@@ -57,9 +66,9 @@ describe('disable rules', () => {
       />
     );
     openPicker();
-    expect(screen.getByText('2')).toBeDisabled();
-    expect(screen.getByText('3')).toBeDisabled();
-    expect(screen.getByText('5')).not.toBeDisabled();
+    expect(getDayButton(2)).toBeDisabled();
+    expect(getDayButton(3)).toBeDisabled();
+    expect(getDayButton(5)).not.toBeDisabled();
   });
 
   it('disables before/after bounds', () => {
@@ -73,9 +82,9 @@ describe('disable rules', () => {
       />
     );
     openPicker();
-    expect(screen.getByText('3')).toBeDisabled(); // before bound
-    expect(screen.getByText('22')).toBeDisabled(); // after bound
-    expect(screen.getByText('10')).not.toBeDisabled();
+    expect(getDayButton(3)).toBeDisabled(); // before bound
+    expect(getDayButton(22)).toBeDisabled(); // after bound
+    expect(getDayButton(10)).not.toBeDisabled();
   });
 });
 
@@ -140,7 +149,7 @@ describe('onChange not called for disabled date', () => {
       />
     );
     openPicker();
-    const btn = screen.getByText('1');
+    const btn = getDayButton(1);
     fireEvent.click(btn);
     expect(spy).not.toHaveBeenCalled();
   });

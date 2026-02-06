@@ -38,18 +38,34 @@ function toNepaliDigits(input: number | string): string {
 }
 
 function normalizeDigitsToAscii(value: string): string {
-  // convert any Unicode digit (e.g., Devanagari) to ASCII 0-9
-  return value.replace(/[\d]/gu, (ch) => {
-    // generic Unicode digit to number then to ascii
-    const code = ch.charCodeAt(0);
-    // Devanagari ०-९ range
-    if (code >= 0x0966 && code <= 0x096f) return String(code - 0x0966);
-    // Arabic-Indic ٠-٩
-    if (code >= 0x0660 && code <= 0x0669) return String(code - 0x0660);
-    // fallback using Number
-    const n = Number(ch);
-    return Number.isNaN(n) ? '' : String(n);
-  });
+  const nepaliMap: Record<string, string> = {
+    '०': '0',
+    '१': '1',
+    '२': '2',
+    '३': '3',
+    '४': '4',
+    '५': '5',
+    '६': '6',
+    '७': '7',
+    '८': '8',
+    '९': '9',
+  };
+  const arabicMap: Record<string, string> = {
+    '٠': '0',
+    '١': '1',
+    '٢': '2',
+    '٣': '3',
+    '٤': '4',
+    '٥': '5',
+    '٦': '6',
+    '٧': '7',
+    '٨': '8',
+    '٩': '9',
+  };
+  return value
+    .replace(/[०१२३४५६७८९]/g, (ch) => nepaliMap[ch] ?? '')
+    .replace(/[٠١٢٣٤٥٦٧٨٩]/g, (ch) => arabicMap[ch] ?? '')
+    .replace(/\D/g, (ch) => (/[0-9]/.test(ch) ? ch : ''));
 }
 
 function parseBs(input: string): BsDate | null {
@@ -91,13 +107,13 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
 
   const disabled = useMemo(() => {
     return (date: BsDate) => {
-      const clampMin = minDate ? adapter.diffDays(minDate, date) > 0 : true;
-      const clampMax = maxDate ? adapter.diffDays(date, maxDate) > 0 : true;
+      const clampMin = minDate ? adapter.diffDays(minDate, date) >= 0 : true;
+      const clampMax = maxDate ? adapter.diffDays(date, maxDate) >= 0 : true;
       const isToday = disableToday && adapter.diffDays(adapter.today(), date) === 0;
-      const isSingle = disableDate ? adapter.diffDays(disableDate, date) === 0 && adapter.diffDays(date, disableDate) === 0 : false;
-      const isList = disableDates.some((d) => adapter.diffDays(d, date) === 0 && adapter.diffDays(date, d) === 0);
-      const isBefore = disableBefore ? adapter.diffDays(date, disableBefore) < 0 : false;
-      const isAfter = disableAfter ? adapter.diffDays(disableAfter, date) < 0 : false;
+      const isSingle = disableDate ? adapter.diffDays(disableDate, date) === 0 : false;
+      const isList = disableDates.some((d) => adapter.diffDays(d, date) === 0);
+      const isBefore = disableBefore ? adapter.diffDays(date, disableBefore) > 0 : false; // date earlier than threshold
+      const isAfter = disableAfter ? adapter.diffDays(disableAfter, date) > 0 : false; // date later than threshold
       return !clampMin || !clampMax || isToday || isSingle || isList || isBefore || isAfter;
     };
   }, [adapter, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter]);
@@ -291,7 +307,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                   </button>
                 ) : (
                   <div className="np-popover__selector np-popover__selector--static">
-                    <span>{isNepali ? monthNameNe : monthName}</span>
+                    <span>{monthName}</span>
                   </div>
                 )}
                 {showYear ? (
