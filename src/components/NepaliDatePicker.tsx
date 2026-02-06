@@ -253,7 +253,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
       </div>
 
       {open && (
-        <div className="np-popover" role="dialog" aria-label="Nepali date picker">
+        <div className="np-popover" role="dialog" aria-label="Nepali date picker" ref={popoverRef}>
           <div className="np-popover__header">
             <button type="button" className="np-popover__nav-btn" onClick={() => moveMonth(-1)} aria-label="Previous month">
               ‹
@@ -261,7 +261,14 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
             {showMonth || showYear ? (
               <div className="np-popover__selectors">
                 {showMonth ? (
-                  <div className="np-popover__selector" onClick={() => { setMonthOpen((v) => !v); setYearOpen(false); }}>
+                  <button
+                    type="button"
+                    className="np-popover__selector"
+                    aria-haspopup="listbox"
+                    aria-expanded={monthOpen}
+                    aria-pressed={monthOpen}
+                    onClick={() => { setMonthOpen((v) => !v); setYearOpen(false); }}
+                  >
                     <span>{monthName}</span>
                     {monthOpen && (
                       <div className="np-popover__menu" ref={monthMenuRef}>
@@ -281,14 +288,21 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                         ))}
                       </div>
                     )}
-                  </div>
+                  </button>
                 ) : (
                   <div className="np-popover__selector np-popover__selector--static">
                     <span>{isNepali ? monthNameNe : monthName}</span>
                   </div>
                 )}
                 {showYear ? (
-                <div className="np-popover__selector" onClick={() => { setYearOpen((v) => !v); setMonthOpen(false); }}>
+                <button
+                  type="button"
+                  className="np-popover__selector"
+                  aria-haspopup="listbox"
+                  aria-expanded={yearOpen}
+                  aria-pressed={yearOpen}
+                  onClick={() => { setYearOpen((v) => !v); setMonthOpen(false); }}
+                >
                   <span>{isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}</span>
                   {yearOpen && (
                     <div className="np-popover__menu np-popover__menu--years" ref={yearMenuRef}>
@@ -308,7 +322,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                       ))}
                     </div>
                   )}
-                </div>
+                </button>
                 ) : (
                   <div className="np-popover__selector np-popover__selector--static">
                     <span>{isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}</span>
