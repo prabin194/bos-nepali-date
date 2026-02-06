@@ -42,6 +42,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   inRange,
   disabled,
 }) => {
+  const today = adapter.today();
   const firstOfMonth: BsDate = { ...month, day: 1 };
   const totalDays = daysInMonth(firstOfMonth, adapter);
   const leadingEmpty = (weekday(firstOfMonth, adapter) - firstDayOfWeek + 7) % 7;
@@ -77,6 +78,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         const isSelected = sameDay(date, selected);
         const isDisabled = disabled?.(date) ?? false;
         const isRange = inRange?.(date) ?? false;
+        const isToday = sameDay(date, today);
         return (
           <button
             key={`${date.year}-${date.month}-${date.day}`}
@@ -85,7 +87,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
               'np-cal-cell',
               !inCurrentMonth && 'np-cal-cell--muted',
               isSelected && 'np-cal-cell--selected',
-              isRange && 'np-cal-cell--range'
+              isRange && !isSelected && 'np-cal-cell--range',
+              isToday && !isSelected && 'np-cal-cell--today'
             )}
             onClick={() => !isDisabled && onSelect?.(date)}
             disabled={isDisabled}

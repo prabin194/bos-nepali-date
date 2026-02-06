@@ -3,8 +3,11 @@ import clsx from 'clsx';
 import { BsAdapter, BsDate } from '../types';
 import { CalendarGrid } from './CalendarGrid';
 import { defaultAdapter } from '../adapter/memoryAdapter';
+import { bsMonthNames } from '../adapter/bsTable';
+import { useEffect, useRef } from 'react';
 
 export type NepaliDatePickerProps = {
+  label?: string;
   value?: BsDate | null;
   onChange?: (date: BsDate | null) => void;
   adapter?: BsAdapter;
@@ -12,6 +15,7 @@ export type NepaliDatePickerProps = {
   maxDate?: BsDate;
   placeholder?: string;
   firstDayOfWeek?: 0 | 1;
+  className?: string;
 };
 
 function formatBs(date?: BsDate | null) {
@@ -28,6 +32,7 @@ function parseBs(input: string): BsDate | null {
 }
 
 export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
+  label = 'Select date',
   value = null,
   onChange,
   adapter = defaultAdapter,
@@ -35,11 +40,13 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   maxDate,
   placeholder = 'YYYY-MM-DD (BS)',
   firstDayOfWeek = 0,
+  className,
 }) => {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState(formatBs(value));
   const initialMonth = value ?? adapter.today();
   const [viewMonth, setViewMonth] = useState<BsDate>({ ...initialMonth, day: 1 });
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const disabled = useMemo(() => {
     return (date: BsDate) => {
@@ -99,9 +106,24 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     setOpen(false);
   }
 
+  const monthName = bsMonthNames[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (!wrapperRef.current) return;
+      if (wrapperRef.current.contains(e.target as Node)) return;
+      setOpen(false);
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
   return (
-    <div className="np-picker">
-      <div className="np-input-wrapper">
+    <div className={clsx('np-picker', className)} ref={wrapperRef}>
+      <label className="np-popover__title" style={{ marginBottom: 4, fontSize: 13, fontWeight: 600 }}>
+        {label}
+      </label>
+      <div className="np-input-wrapper" onClick={() => setOpen(true)}>
         <input
           className="np-input"
           placeholder={placeholder}
@@ -110,21 +132,21 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
           onFocus={() => setOpen(true)}
         />
         <button type="button" className="np-toggle" onClick={() => setOpen((v) => !v)}>
-          📅
+          ▾
         </button>
       </div>
 
       {open && (
         <div className="np-popover" role="dialog" aria-label="Nepali date picker">
           <div className="np-popover__header">
-            <button type="button" onClick={() => moveMonth(-1)} aria-label="Previous month">
-              ←
+            <button type="button" className="np-popover__nav-btn" onClick={() => moveMonth(-1)} aria-label="Previous month">
+              ‹
             </button>
             <div className="np-popover__title">
-              BS {viewMonth.year}-{viewMonth.month.toString().padStart(2, '0')}
+              {monthName} <span className="np-popover__year">{viewMonth.year}</span>
             </div>
-            <button type="button" onClick={() => moveMonth(1)} aria-label="Next month">
-              →
+            <button type="button" className="np-popover__nav-btn" onClick={() => moveMonth(1)} aria-label="Next month">
+              ›
             </button>
           </div>
           <CalendarGrid

@@ -105,3 +105,19 @@ export const bsMonthData: Record<number, [number, number, number, number, number
 };
 
 export const bsRange = { minYear: 2000, maxYear: 2099 };
+
+export const bsMonthNames = [
+  '',
+  'Baishak',
+  'Jestha',
+  'Ashar',
+  'Shrawan',
+  'Bhadra',
+  'Ashoj',
+  'Kartik',
+  'Mangshir',
+  'Poush',
+  'Magh',
+  'Falgun',
+  'Chaitra',
+];
