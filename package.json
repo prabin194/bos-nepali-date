@@ -1,6 +1,6 @@
 {
   "name": "bos-nepali-date",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "type": "module",
   "description": "Reusable React Bikram Sambat (Nepali) date picker with pluggable conversion engine.",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "url": "https://github.com/prabinpaudel/bos-nepali-date/issues"
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -26,7 +26,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
   },
