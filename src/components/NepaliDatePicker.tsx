@@ -78,6 +78,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   const initialMonth = value ?? adapter.today();
   const [viewMonth, setViewMonth] = useState<BsDate>({ ...initialMonth, day: 1 });
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const popoverRef = useRef<HTMLDivElement | null>(null);
   const [monthOpen, setMonthOpen] = useState(false);
   const [yearOpen, setYearOpen] = useState(false);
   const monthMenuRef = useRef<HTMLDivElement | null>(null);
@@ -179,6 +180,37 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (!open) return;
+      if (e.key === 'Escape') {
+        setOpen(false);
+        setMonthOpen(false);
+        setYearOpen(false);
+        return;
+      }
+      if (e.key === 'Tab' && popoverRef.current) {
+        const focusables = Array.from(
+          popoverRef.current.querySelectorAll<HTMLElement>('button,input')
+        ).filter((el) => !el.hasAttribute('disabled'));
+        if (focusables.length === 0) return;
+        const currentIndex = focusables.indexOf(document.activeElement as HTMLElement);
+        let nextIndex = currentIndex;
+        if (e.shiftKey) {
+          nextIndex = currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1;
+        } else {
+          nextIndex = currentIndex === -1 || currentIndex === focusables.length - 1 ? 0 : currentIndex + 1;
+        }
+        if (nextIndex !== currentIndex) {
+          e.preventDefault();
+          focusables[nextIndex].focus();
+        }
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
 
   useEffect(() => {
     if (monthOpen) {
