@@ -76,16 +76,17 @@
   align-items: center;
   gap: 8px;
   font-size: 15px;
+  font-weight: 400;
 }
 
 .np-popover__year {
   color: var(--np-text);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .np-popover__nav-btn {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -94,7 +95,8 @@
   background: transparent;
   color: var(--np-text);
   cursor: pointer;
-  transition: background 120ms ease;
+  transition: background 120ms ease, transform 80ms ease;
+  font-size: 18px;
 }
 
 .np-popover__nav-btn:hover {
@@ -108,7 +110,7 @@
   background: #f8fafc;
   border: 1px solid transparent;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 400;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -116,6 +118,14 @@
 
 .np-popover__selector:hover {
   border-color: var(--np-border);
+}
+
+.np-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
 }
 
 .np-popover__menu {
@@ -131,6 +141,7 @@
   overflow-y: auto;
   min-width: 140px;
   z-index: 30;
+  scrollbar-width: thin;
 }
 
 .np-popover__menu--years {
@@ -150,6 +161,17 @@
   color: var(--np-text);
 }
 
+.np-popover__menu::-webkit-scrollbar {
+  width: 8px;
+}
+.np-popover__menu::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 8px;
+}
+.np-popover__menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .np-popover__menu-item:hover {
   background: #f3f4f6;
 }
@@ -157,7 +179,7 @@
 .np-popover__menu-item--active {
   background: var(--np-primary-soft);
   color: var(--np-primary);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .np-cal-grid {
@@ -216,4 +238,32 @@
 
 .np-cal-day {
   font-size: 13px;
+}
+
+.np-footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.np-footer__btn {
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 400;
+  color: var(--np-text);
+  padding: 8px 12px;
+  border-radius: 10px;
+  transition: background 120ms ease, border 120ms ease;
+}
+
+.np-footer__btn:hover {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+.np-footer__btn--primary {
+  font-weight: 500;
 }

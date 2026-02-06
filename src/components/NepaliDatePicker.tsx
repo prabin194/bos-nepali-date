@@ -109,6 +109,16 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     setViewMonth({ ...date, day: 1 });
     setOpen(false);
   }
+  function handleClear() {
+    onChange?.(null);
+    setInput('');
+    setOpen(false);
+  }
+  function handleToday() {
+    const t = adapter.today();
+    setViewMonth({ year: t.year, month: t.month, day: 1 });
+    handleSelect(t);
+  }
 
   const monthName = bsMonthNames[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
 
@@ -164,7 +174,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
             </button>
             <div className="np-popover__title">
               <div className="np-popover__selector" onClick={() => { setMonthOpen((v) => !v); setYearOpen(false); }}>
-                {monthName} ▾
+                <span>{monthName}</span>
                 {monthOpen && (
                   <div className="np-popover__menu" ref={monthMenuRef}>
                     {bsMonthNames.slice(1).map((m, idx) => (
@@ -185,7 +195,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                 )}
               </div>
               <div className="np-popover__selector" onClick={() => { setYearOpen((v) => !v); setMonthOpen(false); }}>
-                {viewMonth.year} ▾
+                <span>{viewMonth.year}</span>
                 {yearOpen && (
                   <div className="np-popover__menu np-popover__menu--years" ref={yearMenuRef}>
                     {Array.from({ length: bsRange.maxYear - bsRange.minYear + 1 }, (_, i) => bsRange.minYear + i).map((y) => (
@@ -218,6 +228,14 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
             firstDayOfWeek={firstDayOfWeek}
             disabled={disabled}
           />
+          <div className="np-footer">
+            <button type="button" className="np-footer__btn" onClick={handleClear}>
+              Clear
+            </button>
+            <button type="button" className="np-footer__btn np-footer__btn--primary" onClick={handleToday}>
+              Today
+            </button>
+          </div>
         </div>
       )}
     </div>
