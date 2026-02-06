@@ -10,6 +10,8 @@ export type CalendarGridProps = {
   selected?: BsDate | null;
   inRange?: (date: BsDate) => boolean;
   disabled?: (date: BsDate) => boolean;
+  dowLabels?: string[];
+  formatDay?: (day: number) => string;
 };
 
 function sameDay(a?: BsDate | null, b?: BsDate | null) {
@@ -41,6 +43,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   selected,
   inRange,
   disabled,
+  dowLabels = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+  formatDay = (d) => String(d),
 }) => {
   const today = adapter.today();
   const firstOfMonth: BsDate = { ...month, day: 1 };
@@ -68,9 +72,9 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
 
   return (
     <div className="np-cal-grid">
-      {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+      {dowLabels
         .slice(firstDayOfWeek)
-        .concat(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].slice(0, firstDayOfWeek))
+        .concat(dowLabels.slice(0, firstDayOfWeek))
         .map((label) => (
           <div key={label} className="np-cal-dow">{label}</div>
         ))}
@@ -93,7 +97,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
             onClick={() => !isDisabled && onSelect?.(date)}
             disabled={isDisabled}
           >
-            <span className="np-cal-day">{date.day}</span>
+            <span className="np-cal-day">{formatDay(date.day)}</span>
           </button>
         );
       })}

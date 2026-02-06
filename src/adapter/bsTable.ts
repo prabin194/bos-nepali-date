@@ -121,3 +121,19 @@ export const bsMonthNames = [
   'Falgun',
   'Chaitra',
 ];
+
+export const bsMonthNamesNe = [
+  '',
+  'बैशाख',
+  'जेठ',
+  'आषाढ़',
+  'साउन',
+  'भदौ',
+  'असोज',
+  'कार्तिक',
+  'मंसिर',
+  'पुष',
+  'माघ',
+  'फाल्गुण',
+  'चैत्र',
+];

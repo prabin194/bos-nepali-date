@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { BsAdapter, BsDate } from '../types';
 import { CalendarGrid } from './CalendarGrid';
 import { defaultAdapter } from '../adapter/memoryAdapter';
-import { bsMonthNames, bsRange } from '../adapter/bsTable';
+import { bsMonthNames, bsMonthNamesNe, bsRange } from '../adapter/bsTable';
 import { useEffect, useRef } from 'react';
 
 export type NepaliDatePickerProps = {
@@ -18,12 +18,18 @@ export type NepaliDatePickerProps = {
   className?: string;
   showMonth?: boolean;
   showYear?: boolean;
+  lang?: 'en' | 'ne';
 };
 
 function formatBs(date?: BsDate | null) {
   if (!date) return '';
   const { year, month, day } = date;
   return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+}
+
+function toNepaliDigits(input: number | string): string {
+  const map = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+  return String(input).replace(/[0-9]/g, (d) => map[Number(d)]);
 }
 
 function parseBs(input: string): BsDate | null {
@@ -40,11 +46,12 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   adapter = defaultAdapter,
   minDate,
   maxDate,
-  placeholder = 'YYYY-MM-DD (BS)',
+  placeholder,
   firstDayOfWeek = 0,
   className,
   showMonth = true,
   showYear = true,
+  lang = 'en',
 }) => {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState(formatBs(value));
@@ -124,7 +131,10 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     handleSelect(t);
   }
 
-  const monthName = bsMonthNames[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
+  const isNepali = lang === 'ne';
+  const monthList = isNepali ? bsMonthNamesNe : bsMonthNames;
+  const monthName = monthList[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
+  const placeholderText = placeholder ?? (isNepali ? 'YYYY-MM-DD (BS)' : 'YYYY-MM-DD (BS)');
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -160,7 +170,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
       <div className="np-input-wrapper" onClick={() => setOpen(true)}>
         <input
           className="np-input"
-          placeholder={placeholder}
+          placeholder={placeholderText}
           value={input}
           onChange={handleInputChange}
           onFocus={() => setOpen(true)}
@@ -183,7 +193,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                     <span>{monthName}</span>
                     {monthOpen && (
                       <div className="np-popover__menu" ref={monthMenuRef}>
-                        {bsMonthNames.slice(1).map((m, idx) => (
+                        {monthList.slice(1).map((m, idx) => (
                           <button
                             key={m}
                             type="button"
@@ -202,39 +212,41 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                   </div>
                 ) : (
                   <div className="np-popover__selector np-popover__selector--static">
-                    <span>{monthName}</span>
+                    <span>{isNepali ? monthNameNe : monthName}</span>
                   </div>
                 )}
                 {showYear ? (
-                  <div className="np-popover__selector" onClick={() => { setYearOpen((v) => !v); setMonthOpen(false); }}>
-                    <span>{viewMonth.year}</span>
-                    {yearOpen && (
-                      <div className="np-popover__menu np-popover__menu--years" ref={yearMenuRef}>
-                        {Array.from({ length: bsRange.maxYear - bsRange.minYear + 1 }, (_, i) => bsRange.minYear + i).map((y) => (
-                          <button
-                            key={y}
-                            type="button"
-                            className={clsx('np-popover__menu-item', y === viewMonth.year && 'np-popover__menu-item--active')}
-                            data-active={y === viewMonth.year}
-                            onClick={() => {
-                              setViewMonth({ ...viewMonth, year: y, day: 1 });
-                              setYearOpen(false);
-                            }}
-                          >
-                            {y}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                <div className="np-popover__selector" onClick={() => { setYearOpen((v) => !v); setMonthOpen(false); }}>
+                  <span>{isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}</span>
+                  {yearOpen && (
+                    <div className="np-popover__menu np-popover__menu--years" ref={yearMenuRef}>
+                      {Array.from({ length: bsRange.maxYear - bsRange.minYear + 1 }, (_, i) => bsRange.minYear + i).map((y) => (
+                        <button
+                          key={y}
+                          type="button"
+                          className={clsx('np-popover__menu-item', y === viewMonth.year && 'np-popover__menu-item--active')}
+                          data-active={y === viewMonth.year}
+                          onClick={() => {
+                            setViewMonth({ ...viewMonth, year: y, day: 1 });
+                            setYearOpen(false);
+                          }}
+                        >
+                          {isNepali ? toNepaliDigits(y) : y}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 ) : (
                   <div className="np-popover__selector np-popover__selector--static">
-                    <span>{viewMonth.year}</span>
+                    <span>{isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}</span>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="np-popover__title">{monthName} {viewMonth.year}</div>
+              <div className="np-popover__title">
+                {monthName} {isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}
+              </div>
             )}
             <button type="button" className="np-popover__nav-btn" onClick={() => moveMonth(1)} aria-label="Next month">
               ›
@@ -247,13 +259,15 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
             onSelect={handleSelect}
             firstDayOfWeek={firstDayOfWeek}
             disabled={disabled}
+            dowLabels={isNepali ? ['आ','सो','मं','बु','बि','शु','श'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']}
+            formatDay={(d) => (isNepali ? toNepaliDigits(d) : String(d))}
           />
           <div className="np-footer">
             <button type="button" className="np-footer__btn" onClick={handleClear}>
-              Clear
+              {isNepali ? 'सफा' : 'Clear'}
             </button>
             <button type="button" className="np-footer__btn np-footer__btn--primary" onClick={handleToday}>
-              Today
+              {isNepali ? 'आज' : 'Today'}
             </button>
           </div>
         </div>
