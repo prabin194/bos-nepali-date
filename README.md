@@ -69,6 +69,7 @@ const adapter = new MemoryBsAdapter({
 | `lang` | `'en' \| 'ne'` | `'en'` | Localize month/day labels and digits (emitted value stays ASCII `YYYY-MM-DD`). |
 | `firstDayOfWeek` | `0 \| 1` | `0` | Sunday or Monday start. |
 | `placeholder` | `string` | `YYYY-MM-DD (BS)` | Input placeholder; mask enforces numeric `YYYY-MM-DD`. |
+| `showLabel` | `boolean` | `false` | Whether to render the built-in label text. |
 | `className` | `string` | — | Extra class for the root wrapper. |
 
 ### Locale behavior

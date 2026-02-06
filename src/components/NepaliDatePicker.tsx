@@ -8,6 +8,7 @@ import { useEffect, useRef } from 'react';
 
 export type NepaliDatePickerProps = {
   label?: string;
+  showLabel?: boolean;
   value?: BsDate | null;
   onChange?: (date: BsDate | null) => void;
   adapter?: BsAdapter;
@@ -77,6 +78,7 @@ function parseBs(input: string): BsDate | null {
 
 export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   label = 'Select date',
+  showLabel = false,
   value = null,
   onChange,
   adapter = defaultAdapter,
@@ -249,9 +251,11 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
 
   return (
     <div className={clsx('np-picker', className)} ref={wrapperRef}>
-      <label className="np-popover__title" style={{ marginBottom: 4, fontSize: 13, fontWeight: 600 }}>
-        {label}
-      </label>
+      {showLabel && (
+        <label className="np-popover__title" style={{ marginBottom: 4, fontSize: 13, fontWeight: 600 }}>
+          {label}
+        </label>
+      )}
       <div className="np-input-wrapper" onClick={() => setOpen(true)}>
         <input
           className="np-input"
@@ -262,6 +266,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
           inputMode="numeric"
           pattern="\\d{4}-\\d{2}-\\d{2}"
           maxLength={10}
+          aria-label={label}
         />
         <button type="button" className="np-toggle" onClick={() => setOpen((v) => !v)}>
           ▾
