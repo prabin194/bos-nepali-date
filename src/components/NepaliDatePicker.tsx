@@ -72,7 +72,13 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   }, [adapter, minDate, maxDate]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const next = e.target.value;
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 8); // YYYYMMDD max
+    const next =
+      digits.length <= 4
+        ? digits
+        : digits.length <= 6
+        ? `${digits.slice(0, 4)}-${digits.slice(4)}`
+        : `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
     setInput(next);
     const parsed = parseBs(next);
     if (!parsed) return;
@@ -174,6 +180,9 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
           value={input}
           onChange={handleInputChange}
           onFocus={() => setOpen(true)}
+          inputMode="numeric"
+          pattern="\\d{4}-\\d{2}-\\d{2}"
+          maxLength={10}
         />
         <button type="button" className="np-toggle" onClick={() => setOpen((v) => !v)}>
           ▾
