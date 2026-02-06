@@ -40,12 +40,32 @@ const adapter = new MemoryBsAdapter({
 });
 ```
 
-## Props
+## Props (NepaliDatePicker)
 
-- `value` / `onChange`: controlled usage (`BsDate | null`).
-- `adapter`: any object that implements `BsAdapter` (defaults to `defaultAdapter`).
-- `minDate`, `maxDate`: optional clamps.
-- `firstDayOfWeek`: `0` Sunday (default) or `1` Monday.
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `BsDate \| null` | `null` | Controlled BS date value. |
+| `onChange` | `(date: BsDate \| null) => void` | — | Fired on selection or clear. |
+| `adapter` | `BsAdapter` | `defaultAdapter` | Conversion engine (BS↔AD). |
+| `minDate` / `maxDate` | `BsDate` | — | Clamp selectable range. |
+| `disableToday` | `boolean` | `false` | Prevent selecting today. |
+| `disableDate` | `BsDate` | — | Disable a single date. |
+| `disableDates` | `BsDate[]` | `[]` | Disable a list of dates. |
+| `disableBefore` | `BsDate` | — | Disable all dates before this. |
+| `disableAfter` | `BsDate` | — | Disable all dates after this. |
+| `showMonth` | `boolean` | `true` | Show/hide month selector; hidden still shows current month text. |
+| `showYear` | `boolean` | `true` | Show/hide year selector; hidden still shows current year text. |
+| `lang` | `'en' \| 'ne'` | `'en'` | Localize month/day labels and digits (emitted value stays ASCII `YYYY-MM-DD`). |
+| `firstDayOfWeek` | `0 \| 1` | `0` | Sunday or Monday start. |
+| `placeholder` | `string` | `YYYY-MM-DD (BS)` | Input placeholder; mask enforces numeric `YYYY-MM-DD`. |
+| `className` | `string` | — | Extra class for the root wrapper. |
+
+### Locale behavior
+- `lang="ne"` renders Nepali month names, weekday abbreviations, and Nepali digits in the grid/header. `onChange` still returns ASCII BS `YYYY-MM-DD`.
+- `lang="en"` uses English labels/digits.
+
+### Disable rules
+Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date is not selectable.
 
 ## Styling
 
