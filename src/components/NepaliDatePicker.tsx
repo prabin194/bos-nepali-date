@@ -61,6 +61,11 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   adapter = defaultAdapter,
   minDate,
   maxDate,
+  disableToday = false,
+  disableDate,
+  disableDates = [],
+  disableBefore,
+  disableAfter,
   placeholder,
   firstDayOfWeek = 0,
   className,
@@ -82,9 +87,14 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     return (date: BsDate) => {
       const clampMin = minDate ? adapter.diffDays(minDate, date) > 0 : true;
       const clampMax = maxDate ? adapter.diffDays(date, maxDate) > 0 : true;
-      return !clampMin || !clampMax;
+      const isToday = disableToday && adapter.diffDays(adapter.today(), date) === 0;
+      const isSingle = disableDate ? adapter.diffDays(disableDate, date) === 0 && adapter.diffDays(date, disableDate) === 0 : false;
+      const isList = disableDates.some((d) => adapter.diffDays(d, date) === 0 && adapter.diffDays(date, d) === 0);
+      const isBefore = disableBefore ? adapter.diffDays(date, disableBefore) < 0 : false;
+      const isAfter = disableAfter ? adapter.diffDays(disableAfter, date) < 0 : false;
+      return !clampMin || !clampMax || isToday || isSingle || isList || isBefore || isAfter;
     };
-  }, [adapter, minDate, maxDate]);
+  }, [adapter, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const normalized = normalizeDigitsToAscii(e.target.value);
