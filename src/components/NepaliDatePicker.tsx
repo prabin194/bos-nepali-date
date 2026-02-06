@@ -13,6 +13,11 @@ export type NepaliDatePickerProps = {
   adapter?: BsAdapter;
   minDate?: BsDate;
   maxDate?: BsDate;
+  disableToday?: boolean;
+  disableDate?: BsDate;
+  disableDates?: BsDate[];
+  disableBefore?: BsDate;
+  disableAfter?: BsDate;
   placeholder?: string;
   firstDayOfWeek?: 0 | 1;
   className?: string;
