@@ -49,6 +49,8 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [monthOpen, setMonthOpen] = useState(false);
   const [yearOpen, setYearOpen] = useState(false);
+  const monthMenuRef = useRef<HTMLDivElement | null>(null);
+  const yearMenuRef = useRef<HTMLDivElement | null>(null);
 
   const disabled = useMemo(() => {
     return (date: BsDate) => {
@@ -122,6 +124,20 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (monthOpen) {
+      const active = monthMenuRef.current?.querySelector('[data-active=\"true\"]') as HTMLElement | null;
+      active?.scrollIntoView({ block: 'center' });
+    }
+  }, [monthOpen]);
+
+  useEffect(() => {
+    if (yearOpen) {
+      const active = yearMenuRef.current?.querySelector('[data-active=\"true\"]') as HTMLElement | null;
+      active?.scrollIntoView({ block: 'center' });
+    }
+  }, [yearOpen, viewMonth.year]);
+
   return (
     <div className={clsx('np-picker', className)} ref={wrapperRef}>
       <label className="np-popover__title" style={{ marginBottom: 4, fontSize: 13, fontWeight: 600 }}>
@@ -150,12 +166,13 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
               <div className="np-popover__selector" onClick={() => { setMonthOpen((v) => !v); setYearOpen(false); }}>
                 {monthName} ▾
                 {monthOpen && (
-                  <div className="np-popover__menu">
+                  <div className="np-popover__menu" ref={monthMenuRef}>
                     {bsMonthNames.slice(1).map((m, idx) => (
                       <button
                         key={m}
                         type="button"
                         className={clsx('np-popover__menu-item', idx + 1 === viewMonth.month && 'np-popover__menu-item--active')}
+                        data-active={idx + 1 === viewMonth.month}
                         onClick={() => {
                           setViewMonth({ ...viewMonth, month: idx + 1, day: 1 });
                           setMonthOpen(false);
@@ -170,12 +187,13 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
               <div className="np-popover__selector" onClick={() => { setYearOpen((v) => !v); setMonthOpen(false); }}>
                 {viewMonth.year} ▾
                 {yearOpen && (
-                  <div className="np-popover__menu np-popover__menu--years">
+                  <div className="np-popover__menu np-popover__menu--years" ref={yearMenuRef}>
                     {Array.from({ length: bsRange.maxYear - bsRange.minYear + 1 }, (_, i) => bsRange.minYear + i).map((y) => (
                       <button
                         key={y}
                         type="button"
                         className={clsx('np-popover__menu-item', y === viewMonth.year && 'np-popover__menu-item--active')}
+                        data-active={y === viewMonth.year}
                         onClick={() => {
                           setViewMonth({ ...viewMonth, year: y, day: 1 });
                           setYearOpen(false);
