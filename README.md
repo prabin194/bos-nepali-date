@@ -32,6 +32,11 @@ function Demo() {
 }
 ```
 
+Styles are auto-imported by the component. If your bundler strips CSS side effects, you can import explicitly:
+```ts
+import 'bos-nepali-date/style';
+```
+
 ## Adapter
 
 `MemoryBsAdapter` takes a year table: `{ [bsYear]: [12 month lengths] }` plus an anchor mapping BS→AD. The published default only contains demo data for 2080-2081; plug a full table before production.
