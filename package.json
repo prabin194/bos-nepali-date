@@ -1,0 +1,49 @@
+{
+  "name": "bos-nepali-date",
+  "version": "0.1.0",
+  "description": "Reusable React Bikram Sambat (Nepali) date picker with pluggable conversion engine.",
+  "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format cjs,esm --sourcemap --clean",
+    "dev": "tsup src/index.ts --dts --format cjs,esm --watch",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "nepali",
+    "bikram-sambat",
+    "date-picker",
+    "react",
+    "calendar"
+  ],
+  "author": "",
+  "peerDependencies": {
+    "react": ">=18.2.0",
+    "react-dom": ">=18.2.0"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.20",
+    "@types/react": "^18.2.62",
+    "@types/react-dom": "^18.2.19",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.1.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,118 @@
+:root {
+  --np-bg: #ffffff;
+  --np-border: #dcdfe5;
+  --np-text: #1f2933;
+  --np-muted: #9aa5b1;
+  --np-primary: #1c7ed6;
+  --np-primary-soft: rgba(28, 126, 214, 0.12);
+  --np-radius: 10px;
+  --np-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  --np-font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.np-picker {
+  position: relative;
+  width: 280px;
+  font-family: var(--np-font);
+  color: var(--np-text);
+}
+
+.np-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--np-bg);
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius);
+  padding: 8px 10px;
+}
+
+.np-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+}
+
+.np-toggle {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.np-popover {
+  margin-top: 8px;
+  background: var(--np-bg);
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius);
+  box-shadow: var(--np-shadow);
+  padding: 12px;
+  width: 100%;
+  z-index: 10;
+}
+
+.np-popover__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.np-popover__title {
+  font-weight: 600;
+}
+
+.np-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.np-cal-dow {
+  text-align: center;
+  font-size: 12px;
+  color: var(--np-muted);
+  padding: 6px 0;
+}
+
+.np-cal-cell {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--np-text);
+  transition: background 120ms ease, color 120ms ease, border 120ms ease;
+}
+
+.np-cal-cell--muted {
+  color: var(--np-muted);
+}
+
+.np-cal-cell--range {
+  background: var(--np-primary-soft);
+}
+
+.np-cal-cell--selected {
+  background: var(--np-primary);
+  color: #fff;
+  border-color: var(--np-primary);
+}
+
+.np-cal-cell:hover:not(:disabled):not(.np-cal-cell--selected) {
+  border-color: var(--np-border);
+  background: rgba(31, 41, 51, 0.06);
+}
+
+.np-cal-cell:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.np-cal-day {
+  font-size: 13px;
+}
