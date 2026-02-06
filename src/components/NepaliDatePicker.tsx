@@ -22,6 +22,7 @@ export type NepaliDatePickerProps = {
   placeholder?: string;
   firstDayOfWeek?: 0 | 1;
   className?: string;
+  inputClassName?: string;
   showMonth?: boolean;
   showYear?: boolean;
   lang?: 'en' | 'ne';
@@ -92,6 +93,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   placeholder,
   firstDayOfWeek = 0,
   className,
+  inputClassName,
   showMonth = true,
   showYear = true,
   lang = 'en',
@@ -258,7 +260,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
       )}
       <div className="np-input-wrapper" onClick={() => setOpen(true)}>
         <input
-          className="np-input"
+          className={clsx('np-input', inputClassName)}
           placeholder={placeholderText}
           value={input}
           onChange={handleInputChange}
