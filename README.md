@@ -11,6 +11,12 @@ npm install
 npm run dev
 ```
 
+Build for publishing:
+
+```bash
+npm run build
+```
+
 ```tsx
 import { NepaliDatePicker, defaultAdapter } from 'bos-nepali-date';
 
@@ -67,13 +73,30 @@ const adapter = new MemoryBsAdapter({
 ### Disable rules
 Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date is not selectable.
 
+### Accessibility
+- Escape closes the popover; click-outside also closes.
+- Month/year toggles are real buttons with `aria-haspopup`/`aria-expanded`.
+- Calendar days expose `disabled` state; input uses numeric mask (`YYYY-MM-DD`).
+
 ## Styling
 
 Base styles live in `src/styles/base.css` and are imported automatically. Override CSS variables (see file) to theme.
 
+If you want to tree-shake safely, the package declares `"sideEffects": false`; styles are imported by the component.
+
 ## Build
 
 `npm run build` uses `tsup` to emit CJS+ESM bundles with types to `dist/`.
+
+## Changelog
+
+### 0.1.1
+- Added localization (`lang=en|ne`) with Nepali digits/labels.
+- Added disable rules (single date, list, today, before/after).
+- Input mask now normalizes Nepali digits and blocks non-numeric.
+- Month/year selectors can be hidden; static labels still render.
+- Added Vitest + jsdom tests and fixed edge cases at dataset boundaries.
+- Marked package as ESM tooling (`type: module`) and side-effect free.
 
 ## Roadmap
 
