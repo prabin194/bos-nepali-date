@@ -11,12 +11,6 @@ npm install
 npm run dev
 ```
 
-Build for publishing:
-
-```bash
-npm run build
-```
-
 ```tsx
 import { NepaliDatePicker, defaultAdapter } from 'bos-nepali-date';
 
@@ -89,13 +83,21 @@ Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date
 
 Base styles live in `src/styles/base.css` and are imported automatically. Override CSS variables (see file) to theme.
 
-If you want to tree-shake safely, the package declares `"sideEffects": false`; styles are imported by the component.
-
-## Build
-
-`npm run build` uses `tsup` to emit CJS+ESM bundles with types to `dist/`.
+Styles are flagged as side effects so bundlers keep them; if your setup drops CSS, import explicitly:
+```ts
+import 'bos-nepali-date/style';
+```
 
 ## Changelog
+
+### 0.1.7
+- Added `inputClassName` for custom input styling.
+- Swapped caret for a calendar icon on the trigger.
+- Version bump for npm publish.
+
+### 0.1.6
+- Bundles now auto-inject CSS (no manual import needed).
+- Added tsup config to ensure styles are emitted.
 
 ### 0.1.1
 - Added localization (`lang=en|ne`) with Nepali digits/labels.
