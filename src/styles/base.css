@@ -79,6 +79,12 @@
   font-weight: 400;
 }
 
+.np-popover__selectors {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .np-popover__year {
   color: var(--np-text);
   font-weight: 400;
@@ -118,6 +124,14 @@
 
 .np-popover__selector:hover {
   border-color: var(--np-border);
+}
+
+.np-popover__selector--static {
+  cursor: default;
+  background: transparent;
+}
+.np-popover__selector--static:hover {
+  border-color: transparent;
 }
 
 .np-caret {

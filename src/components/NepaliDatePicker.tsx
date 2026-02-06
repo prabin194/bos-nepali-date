@@ -178,7 +178,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
             </button>
             {showMonth || showYear ? (
               <div className="np-popover__selectors">
-                {showMonth && (
+                {showMonth ? (
                   <div className="np-popover__selector" onClick={() => { setMonthOpen((v) => !v); setYearOpen(false); }}>
                     <span>{monthName}</span>
                     {monthOpen && (
@@ -200,8 +200,12 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                       </div>
                     )}
                   </div>
+                ) : (
+                  <div className="np-popover__selector np-popover__selector--static">
+                    <span>{monthName}</span>
+                  </div>
                 )}
-                {showYear && (
+                {showYear ? (
                   <div className="np-popover__selector" onClick={() => { setYearOpen((v) => !v); setMonthOpen(false); }}>
                     <span>{viewMonth.year}</span>
                     {yearOpen && (
@@ -222,6 +226,10 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                         ))}
                       </div>
                     )}
+                  </div>
+                ) : (
+                  <div className="np-popover__selector np-popover__selector--static">
+                    <span>{viewMonth.year}</span>
                   </div>
                 )}
               </div>
