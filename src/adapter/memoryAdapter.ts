@@ -1,5 +1,6 @@
 import { BsAdapter, BsDate } from '../types';
 import { epochDayToIso, isoToEpochDay } from '../utils/dateMath';
+import { bsMonthData } from './bsTable';
 
 type YearTable = Record<number, [number, number, number, number, number, number, number, number, number, number, number, number]>;
 
@@ -9,6 +10,10 @@ export type MemoryAdapterOptions = {
   anchorAdIso: string;
   /** Month lengths table for every supported BS year. */
   yearTable: YearTable;
+  range?: {
+    min?: BsDate;
+    max?: BsDate;
+  };
 };
 
 /**
@@ -20,15 +25,31 @@ export class MemoryBsAdapter implements BsAdapter {
   private anchorBs: BsDate;
   private anchorAdDay: number;
   private yearTable: YearTable;
+  private minYear: number;
+  private maxYear: number;
+  readonly range?: { min?: BsDate; max?: BsDate };
 
   constructor(options: MemoryAdapterOptions) {
     this.anchorBs = options.anchorBs;
     this.anchorAdDay = isoToEpochDay(options.anchorAdIso);
     this.yearTable = options.yearTable;
+    this.range = options.range;
+    const years = Object.keys(this.yearTable).map(Number);
+    this.minYear = Math.min(...years);
+    this.maxYear = Math.max(...years);
   }
 
   today(): BsDate {
-    return this.toBS(epochDayToIso(Math.floor(Date.now() / (24 * 60 * 60 * 1000))));
+    const isoToday = epochDayToIso(Math.floor(Date.now() / (24 * 60 * 60 * 1000)));
+    try {
+      return this.toBS(isoToday);
+    } catch {
+      // Clamp to supported range
+      const beyond = isoToEpochDay(isoToday) > this.anchorAdDay;
+      return beyond
+        ? { year: this.maxYear, month: 12, day: this.daysInMonth(this.maxYear, 12) }
+        : { year: this.minYear, month: 1, day: 1 };
+    }
   }
 
   toAD(date: BsDate): string {
@@ -122,15 +143,15 @@ export class MemoryBsAdapter implements BsAdapter {
   }
 }
 
-// Minimal sample dataset (BS 2080-2081) for quick prototyping; replace with a full table.
-const SAMPLE_TABLE: YearTable = {
-  2080: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30],
-  2081: [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
-};
+import { bsRange } from './bsTable';
 
-/** Default adapter: anchor at BS 2080-01-01 = AD 2023-04-14 (approx). */
+/** Default adapter: anchor at BS 2000-01-01 = AD 1943-04-14 (per dataset). */
 export const defaultAdapter = new MemoryBsAdapter({
-  anchorBs: { year: 2080, month: 1, day: 1 },
-  anchorAdIso: '2023-04-14',
-  yearTable: SAMPLE_TABLE,
+  anchorBs: { year: 2000, month: 1, day: 1 },
+  anchorAdIso: '1943-04-14',
+  yearTable: bsMonthData,
+  range: {
+    min: { year: bsRange.minYear, month: 1, day: 1 },
+    max: { year: bsRange.maxYear, month: 12, day: bsMonthData[bsRange.maxYear][11] },
+  },
 });
