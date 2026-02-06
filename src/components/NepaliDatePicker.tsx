@@ -32,6 +32,21 @@ function toNepaliDigits(input: number | string): string {
   return String(input).replace(/[0-9]/g, (d) => map[Number(d)]);
 }
 
+function normalizeDigitsToAscii(value: string): string {
+  // convert any Unicode digit (e.g., Devanagari) to ASCII 0-9
+  return value.replace(/[\d]/gu, (ch) => {
+    // generic Unicode digit to number then to ascii
+    const code = ch.charCodeAt(0);
+    // Devanagari ०-९ range
+    if (code >= 0x0966 && code <= 0x096f) return String(code - 0x0966);
+    // Arabic-Indic ٠-٩
+    if (code >= 0x0660 && code <= 0x0669) return String(code - 0x0660);
+    // fallback using Number
+    const n = Number(ch);
+    return Number.isNaN(n) ? '' : String(n);
+  });
+}
+
 function parseBs(input: string): BsDate | null {
   const match = input.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if (!match) return null;
@@ -72,7 +87,8 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   }, [adapter, minDate, maxDate]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 8); // YYYYMMDD max
+    const normalized = normalizeDigitsToAscii(e.target.value);
+    const digits = normalized.replace(/[^0-9]/g, '').slice(0, 8); // YYYYMMDD max
     const next =
       digits.length <= 4
         ? digits
