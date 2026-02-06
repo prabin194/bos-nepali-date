@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { BsAdapter, BsDate } from '../types';
 import { CalendarGrid } from './CalendarGrid';
 import { defaultAdapter } from '../adapter/memoryAdapter';
-import { bsMonthNames } from '../adapter/bsTable';
+import { bsMonthNames, bsRange } from '../adapter/bsTable';
 import { useEffect, useRef } from 'react';
 
 export type NepaliDatePickerProps = {
@@ -47,6 +47,8 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   const initialMonth = value ?? adapter.today();
   const [viewMonth, setViewMonth] = useState<BsDate>({ ...initialMonth, day: 1 });
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [monthOpen, setMonthOpen] = useState(false);
+  const [yearOpen, setYearOpen] = useState(false);
 
   const disabled = useMemo(() => {
     return (date: BsDate) => {
@@ -113,6 +115,8 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
       if (!wrapperRef.current) return;
       if (wrapperRef.current.contains(e.target as Node)) return;
       setOpen(false);
+      setMonthOpen(false);
+      setYearOpen(false);
     }
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
@@ -143,7 +147,46 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
               ‹
             </button>
             <div className="np-popover__title">
-              {monthName} <span className="np-popover__year">{viewMonth.year}</span>
+              <div className="np-popover__selector" onClick={() => { setMonthOpen((v) => !v); setYearOpen(false); }}>
+                {monthName} ▾
+                {monthOpen && (
+                  <div className="np-popover__menu">
+                    {bsMonthNames.slice(1).map((m, idx) => (
+                      <button
+                        key={m}
+                        type="button"
+                        className={clsx('np-popover__menu-item', idx + 1 === viewMonth.month && 'np-popover__menu-item--active')}
+                        onClick={() => {
+                          setViewMonth({ ...viewMonth, month: idx + 1, day: 1 });
+                          setMonthOpen(false);
+                        }}
+                      >
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="np-popover__selector" onClick={() => { setYearOpen((v) => !v); setMonthOpen(false); }}>
+                {viewMonth.year} ▾
+                {yearOpen && (
+                  <div className="np-popover__menu np-popover__menu--years">
+                    {Array.from({ length: bsRange.maxYear - bsRange.minYear + 1 }, (_, i) => bsRange.minYear + i).map((y) => (
+                      <button
+                        key={y}
+                        type="button"
+                        className={clsx('np-popover__menu-item', y === viewMonth.year && 'np-popover__menu-item--active')}
+                        onClick={() => {
+                          setViewMonth({ ...viewMonth, year: y, day: 1 });
+                          setYearOpen(false);
+                        }}
+                      >
+                        {y}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <button type="button" className="np-popover__nav-btn" onClick={() => moveMonth(1)} aria-label="Next month">
               ›

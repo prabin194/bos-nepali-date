@@ -74,7 +74,7 @@
 .np-popover__title {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   font-size: 15px;
 }
 
@@ -99,6 +99,65 @@
 
 .np-popover__nav-btn:hover {
   background: #f3f4f6;
+}
+
+.np-popover__selector {
+  position: relative;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.np-popover__selector:hover {
+  border-color: var(--np-border);
+}
+
+.np-popover__menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: var(--np-surface);
+  border: 1px solid var(--np-border);
+  border-radius: 12px;
+  box-shadow: var(--np-shadow);
+  padding: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  min-width: 140px;
+  z-index: 30;
+}
+
+.np-popover__menu--years {
+  max-height: 260px;
+  min-width: 100px;
+}
+
+.np-popover__menu-item {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--np-text);
+}
+
+.np-popover__menu-item:hover {
+  background: #f3f4f6;
+}
+
+.np-popover__menu-item--active {
+  background: var(--np-primary-soft);
+  color: var(--np-primary);
+  font-weight: 600;
 }
 
 .np-cal-grid {
