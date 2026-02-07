@@ -64,6 +64,7 @@ const adapter = new MemoryBsAdapter({
 | `firstDayOfWeek` | `0 \| 1` | `0` | Sunday or Monday start. |
 | `placeholder` | `string` | `YYYY-MM-DD (BS)` | Input placeholder; mask enforces numeric `YYYY-MM-DD`. |
 | `inputClassName` | `string` | — | Extra class for the input element (for custom styling). |
+| `inputPattern` | `string \| false` | `\d{4}-\d{2}-\d{2}` | Native pattern attribute. Set `false` to remove browser validation. |
 | `showLabel` | `boolean` | `false` | Whether to render the built-in label text. |
 | `className` | `string` | — | Extra class for the root wrapper. |
 
@@ -89,6 +90,12 @@ import 'bos-nepali-date/style';
 ```
 
 ## Changelog
+
+### 0.1.9
+- Make input pattern optional (`inputPattern` prop); allows disabling native validation.
+
+### 0.1.8
+- Added `inputPattern` prop; set to `false` to remove native input pattern validation.
 
 ### 0.1.7
 - Added `inputClassName` for custom input styling.

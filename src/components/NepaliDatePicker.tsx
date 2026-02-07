@@ -23,6 +23,10 @@ export type NepaliDatePickerProps = {
   firstDayOfWeek?: 0 | 1;
   className?: string;
   inputClassName?: string;
+  /**
+   * Pattern attribute for the native input. Set to `false` to remove the pattern/validation entirely.
+   */
+  inputPattern?: string | false;
   showMonth?: boolean;
   showYear?: boolean;
   lang?: 'en' | 'ne';
@@ -94,6 +98,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   firstDayOfWeek = 0,
   className,
   inputClassName,
+  inputPattern = '\\d{4}-\\d{2}-\\d{2}',
   showMonth = true,
   showYear = true,
   lang = 'en',
@@ -266,7 +271,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
           onChange={handleInputChange}
           onFocus={() => setOpen(true)}
           inputMode="numeric"
-          pattern="\\d{4}-\\d{2}-\\d{2}"
+          pattern={inputPattern === false ? undefined : inputPattern}
           maxLength={10}
           aria-label={label}
         />
