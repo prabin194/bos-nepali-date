@@ -10,6 +10,7 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
+    warnOnUnsupportedTypeScriptVersion: false,
   },
   plugins: ['@typescript-eslint', 'react', 'react-hooks'],
   settings: {
