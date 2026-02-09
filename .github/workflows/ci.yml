@@ -19,6 +19,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Install rollup native binary (linux)
+        if: runner.os == 'Linux'
         run: npm install @rollup/rollup-linux-x64-gnu --no-save
       - name: Lint
         run: npm run lint
