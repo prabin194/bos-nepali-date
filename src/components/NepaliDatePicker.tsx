@@ -199,14 +199,14 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
 
   useEffect(() => {
     if (monthOpen) {
-      const active = monthMenuRef.current?.querySelector('[data-active=\"true\"]') as HTMLElement | null;
+      const active = monthMenuRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
       active?.scrollIntoView({ block: 'center' });
     }
   }, [monthOpen]);
 
   useEffect(() => {
     if (yearOpen) {
-      const active = yearMenuRef.current?.querySelector('[data-active=\"true\"]') as HTMLElement | null;
+      const active = yearMenuRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
       active?.scrollIntoView({ block: 'center' });
     }
   }, [yearOpen, viewMonth.year]);
