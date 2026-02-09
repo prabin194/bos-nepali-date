@@ -20,8 +20,8 @@ function sameDay(a?: BsDate | null, b?: BsDate | null) {
 
 function daysInMonth(base: BsDate, adapter: BsAdapter): number {
   let count = 1;
-  let cur = { ...base, day: 1 };
-  let next = adapter.addDays(cur, 1);
+  const start = { ...base, day: 1 };
+  let next = adapter.addDays(start, 1);
   while (next.month === base.month && next.year === base.year) {
     count += 1;
     next = adapter.addDays(next, 1);
