@@ -8,7 +8,9 @@
   --np-primary-soft: #eef2ff;
   --np-radius: 12px;
   --np-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
-  --np-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --np-font: inherit;
+  --np-popover-min-width: 280px;
+  --np-popover-max-width: 320px;
 }
 
 .np-picker {
@@ -35,6 +37,7 @@
   border: none;
   outline: none;
   font-size: 14px;
+  font: inherit;
   background: transparent;
   color: var(--np-text);
 }
@@ -47,19 +50,22 @@
   border: none;
   background: transparent;
   cursor: pointer;
+  font: inherit;
   font-size: 14px;
   color: var(--np-muted);
 }
 
 .np-popover {
   position: absolute;
+  left: 0;
   margin-top: 8px;
   background: var(--np-surface);
   border: 1px solid var(--np-border);
   border-radius: 16px;
   box-shadow: var(--np-shadow);
   padding: 12px;
-  width: 100%;
+  width: min(var(--np-popover-max-width), max(100%, var(--np-popover-min-width)));
+  max-width: calc(100vw - 24px);
   z-index: 20;
 }
 
@@ -103,6 +109,7 @@
   color: var(--np-text);
   cursor: pointer;
   transition: background 120ms ease, transform 80ms ease;
+  font: inherit;
   font-size: 18px;
 }
 
@@ -121,6 +128,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  font: inherit;
 }
 
 .np-popover__selector:hover {
@@ -172,6 +180,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
+  font: inherit;
   font-size: 14px;
   color: var(--np-text);
 }
@@ -220,6 +229,7 @@
   cursor: pointer;
   color: var(--np-text);
   transition: background 120ms ease, color 120ms ease, border 120ms ease;
+  font: inherit;
 }
 
 .np-cal-cell--muted {
@@ -267,6 +277,7 @@
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
+  font: inherit;
   font-weight: 400;
   color: var(--np-text);
   padding: 8px 12px;
