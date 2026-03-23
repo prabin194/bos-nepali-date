@@ -84,12 +84,22 @@ Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date
 
 Base styles live in `src/styles/base.css` and are imported automatically. Override CSS variables (see file) to theme.
 
+The picker inherits the host application's font by default. If you need to force a font family, override `--np-font` on a wrapper or on `.np-picker`.
+
+The calendar popover uses a standard width by default: `280px` minimum and `320px` maximum. Override `--np-popover-min-width` and `--np-popover-max-width` if your layout needs a different size.
+
 Styles are flagged as side effects so bundlers keep them; if your setup drops CSS, import explicitly:
 ```ts
 import 'bos-nepali-date/style';
 ```
 
 ## Changelog
+
+### 0.1.11
+- Stop forcing `Inter/system-ui` as the default picker font.
+- Picker controls now inherit the host app font, which avoids incorrect Nepali glyph rendering on systems with problematic fallback fonts.
+- Use a standard calendar popover width instead of stretching to the input width.
+- Added `--np-popover-min-width` and `--np-popover-max-width` CSS variables for popover sizing overrides.
 
 ### 0.1.9
 - Make input pattern optional (`inputPattern` prop); allows disabling native validation.
