@@ -129,6 +129,10 @@
   font: inherit;
 }
 
+.np-popover__selector-wrap {
+  position: relative;
+}
+
 .np-popover__selector:hover {
   border-color: var(--np-border);
 }

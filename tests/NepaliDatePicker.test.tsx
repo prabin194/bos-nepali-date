@@ -226,3 +226,51 @@ describe('popover overlay behavior', () => {
     });
   });
 });
+
+describe('month/year selector behavior', () => {
+  it('closes the year selector after choosing a new year', async () => {
+    render(
+      <NepaliDatePicker
+        value={{ year: 2000, month: 1, day: 1 }}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+
+    openPicker();
+
+    const yearTrigger = screen.getByRole('button', { name: '2000' });
+    fireEvent.click(yearTrigger);
+
+    expect(screen.getByRole('listbox', { name: 'Select year' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('option', { name: '2001' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('listbox', { name: 'Select year' })).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: '2001' })).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('closes the month selector after choosing a new month', async () => {
+    render(
+      <NepaliDatePicker
+        value={{ year: 2000, month: 1, day: 1 }}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+
+    openPicker();
+
+    const monthTrigger = screen.getByRole('button', { name: 'Baishak' });
+    fireEvent.click(monthTrigger);
+
+    expect(screen.getByRole('listbox', { name: 'Select month' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('option', { name: 'Jestha' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('listbox', { name: 'Select month' })).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: 'Jestha' })).toHaveAttribute('aria-expanded', 'false');
+  });
+});

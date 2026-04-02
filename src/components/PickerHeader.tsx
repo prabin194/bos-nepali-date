@@ -47,23 +47,27 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
     {showMonth || showYear ? (
       <div className="np-popover__selectors">
         {showMonth ? (
-          <button
-            type="button"
-            className="np-popover__selector"
-            aria-haspopup="listbox"
-            aria-expanded={monthOpen}
-            aria-pressed={monthOpen}
-            onClick={onToggleMonth}
-          >
-            <span>{monthName}</span>
+          <div className="np-popover__selector-wrap">
+            <button
+              type="button"
+              className="np-popover__selector"
+              aria-haspopup="listbox"
+              aria-expanded={monthOpen}
+              aria-pressed={monthOpen}
+              onClick={onToggleMonth}
+            >
+              <span>{monthName}</span>
+            </button>
             {monthOpen && (
-              <div className="np-popover__menu" ref={monthMenuRef}>
+              <div className="np-popover__menu" role="listbox" aria-label="Select month" ref={monthMenuRef}>
                 {monthList.slice(1).map((m, idx) => (
                   <button
                     key={m}
                     type="button"
                     className={clsx('np-popover__menu-item', idx + 1 === viewMonth && 'np-popover__menu-item--active')}
                     data-active={idx + 1 === viewMonth}
+                    role="option"
+                    aria-selected={idx + 1 === viewMonth}
                     onClick={() => onSelectMonth(idx + 1)}
                   >
                     {m}
@@ -71,30 +75,34 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
                 ))}
               </div>
             )}
-          </button>
+          </div>
         ) : (
           <div className="np-popover__selector np-popover__selector--static">
             <span>{monthName}</span>
           </div>
         )}
         {showYear ? (
-          <button
-            type="button"
-            className="np-popover__selector"
-            aria-haspopup="listbox"
-            aria-expanded={yearOpen}
-            aria-pressed={yearOpen}
-            onClick={onToggleYear}
-          >
-            <span>{isNepali ? toNepaliDigits(viewYear) : viewYear}</span>
+          <div className="np-popover__selector-wrap">
+            <button
+              type="button"
+              className="np-popover__selector"
+              aria-haspopup="listbox"
+              aria-expanded={yearOpen}
+              aria-pressed={yearOpen}
+              onClick={onToggleYear}
+            >
+              <span>{isNepali ? toNepaliDigits(viewYear) : viewYear}</span>
+            </button>
             {yearOpen && (
-              <div className="np-popover__menu np-popover__menu--years" ref={yearMenuRef}>
+              <div className="np-popover__menu np-popover__menu--years" role="listbox" aria-label="Select year" ref={yearMenuRef}>
                 {Array.from({ length: bsRange.maxYear - bsRange.minYear + 1 }, (_, i) => bsRange.minYear + i).map((y) => (
                   <button
                     key={y}
                     type="button"
                     className={clsx('np-popover__menu-item', y === viewYear && 'np-popover__menu-item--active')}
                     data-active={y === viewYear}
+                    role="option"
+                    aria-selected={y === viewYear}
                     onClick={() => onSelectYear(y)}
                   >
                     {isNepali ? toNepaliDigits(y) : y}
@@ -102,7 +110,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
                 ))}
               </div>
             )}
-          </button>
+          </div>
         ) : (
           <div className="np-popover__selector np-popover__selector--static">
             <span>{isNepali ? toNepaliDigits(viewYear) : viewYear}</span>
