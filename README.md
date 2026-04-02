@@ -95,6 +95,12 @@ import 'bos-nepali-date/style';
 
 ## Changelog
 
+### 0.1.13
+- Fix calendar popover clipping inside dialogs, drawers, cards, and other overflow-constrained containers.
+- Render the picker overlay through a portal and anchor it with viewport-aware fixed positioning.
+- Reposition the overlay on scroll and resize while keeping outside-click and keyboard dismissal behavior intact.
+- Added regression coverage for portaled popover rendering and outside-click handling.
+
 ### 0.1.11
 - Stop forcing `Inter/system-ui` as the default picker font.
 - Picker controls now inherit the host app font, which avoids incorrect Nepali glyph rendering on systems with problematic fallback fonts.

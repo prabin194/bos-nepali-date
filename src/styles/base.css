@@ -56,17 +56,15 @@
 }
 
 .np-popover {
-  position: absolute;
-  left: 0;
-  margin-top: 8px;
+  position: fixed;
   background: var(--np-surface);
   border: 1px solid var(--np-border);
   border-radius: 16px;
   box-shadow: var(--np-shadow);
   padding: 12px;
-  width: min(var(--np-popover-max-width), max(100%, var(--np-popover-min-width)));
+  width: var(--np-popover-min-width);
   max-width: calc(100vw - 24px);
-  z-index: 20;
+  z-index: 9999;
 }
 
 .np-popover__header {

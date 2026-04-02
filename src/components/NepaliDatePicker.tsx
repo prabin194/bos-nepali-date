@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { BsAdapter, BsDate } from '../types';
 import { CalendarGrid } from './CalendarGrid';
 import { defaultAdapter } from '../adapter/memoryAdapter';
@@ -62,6 +63,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   const [input, setInput] = useState(formatBs(value));
   const initialMonth = value ?? adapter.today();
   const [viewMonth, setViewMonth] = useState<BsDate>({ ...initialMonth, day: 1 });
+  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const [monthOpen, setMonthOpen] = useState(false);
@@ -154,10 +156,45 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   const monthName = monthList[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
   const placeholderText = placeholder ?? (isNepali ? 'YYYY-MM-DD (BS)' : 'YYYY-MM-DD (BS)');
 
+  function updatePopoverPosition() {
+    if (!wrapperRef.current || typeof window === 'undefined') return;
+
+    const rect = wrapperRef.current.getBoundingClientRect();
+    const gap = 8;
+    const viewportPadding = 12;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const maxWidth = Math.max(0, Math.min(320, viewportWidth - viewportPadding * 2));
+    const width = Math.max(0, Math.min(maxWidth, Math.max(rect.width, 280)));
+
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const openUp = spaceBelow < 320 && spaceAbove > spaceBelow;
+
+    let left = rect.left;
+    if (left + width > viewportWidth - viewportPadding) {
+      left = viewportWidth - width - viewportPadding;
+    }
+    left = Math.max(viewportPadding, left);
+
+    const top = openUp ? Math.max(viewportPadding, rect.top - gap) : Math.min(viewportHeight - viewportPadding, rect.bottom + gap);
+
+    setPopoverStyle({
+      position: 'fixed',
+      top,
+      left,
+      width,
+      maxWidth: `calc(100vw - ${viewportPadding * 2}px)`,
+      zIndex: 9999,
+      transform: openUp ? 'translateY(-100%)' : undefined,
+    });
+  }
+
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
-      if (!wrapperRef.current) return;
-      if (wrapperRef.current.contains(e.target as Node)) return;
+      const target = e.target as Node;
+      if (wrapperRef.current?.contains(target)) return;
+      if (popoverRef.current?.contains(target)) return;
       setOpen(false);
       setMonthOpen(false);
       setYearOpen(false);
@@ -198,6 +235,24 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   }, [open]);
 
   useEffect(() => {
+    if (!open) return;
+
+    updatePopoverPosition();
+
+    function onReposition() {
+      updatePopoverPosition();
+    }
+
+    window.addEventListener('resize', onReposition);
+    window.addEventListener('scroll', onReposition, true);
+
+    return () => {
+      window.removeEventListener('resize', onReposition);
+      window.removeEventListener('scroll', onReposition, true);
+    };
+  }, [open, monthOpen, yearOpen, viewMonth.year, viewMonth.month]);
+
+  useEffect(() => {
     if (monthOpen) {
       const active = monthMenuRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
       active?.scrollIntoView({ block: 'center' });
@@ -229,39 +284,42 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
         onToggle={() => setOpen((v) => !v)}
       />
 
-      {open && (
-        <div className="np-popover" role="dialog" aria-label="Nepali date picker" ref={popoverRef}>
-          <PickerHeader
-            showMonth={showMonth}
-            showYear={showYear}
-            monthName={monthName}
-            monthList={monthList}
-            viewYear={viewMonth.year}
-            viewMonth={viewMonth.month}
-            isNepali={isNepali}
-            monthOpen={monthOpen}
-            yearOpen={yearOpen}
-            onToggleMonth={() => { setMonthOpen((v) => !v); setYearOpen(false); }}
-            onToggleYear={() => { setYearOpen((v) => !v); setMonthOpen(false); }}
-            onSelectMonth={(m) => { setViewMonth({ ...viewMonth, month: m, day: 1 }); setMonthOpen(false); }}
-            onSelectYear={(y) => { setViewMonth({ ...viewMonth, year: y, day: 1 }); setYearOpen(false); }}
-            moveMonth={moveMonth}
-            monthMenuRef={monthMenuRef}
-            yearMenuRef={yearMenuRef}
-          />
-          <CalendarGrid
-            month={viewMonth}
-            adapter={adapter}
-            selected={value ?? null}
-            onSelect={handleSelect}
-            firstDayOfWeek={firstDayOfWeek}
-            disabled={disabled}
-            dowLabels={isNepali ? ['आ','सो','मं','बु','बि','शु','श'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']}
-            formatDay={(d) => (isNepali ? toNepaliDigits(d) : String(d))}
-          />
-          <PickerFooter isNepali={isNepali} onClear={handleClear} onToday={handleToday} />
-        </div>
-      )}
+      {open && typeof document !== 'undefined'
+        ? createPortal(
+            <div className="np-popover" style={popoverStyle} role="dialog" aria-label="Nepali date picker" ref={popoverRef}>
+              <PickerHeader
+                showMonth={showMonth}
+                showYear={showYear}
+                monthName={monthName}
+                monthList={monthList}
+                viewYear={viewMonth.year}
+                viewMonth={viewMonth.month}
+                isNepali={isNepali}
+                monthOpen={monthOpen}
+                yearOpen={yearOpen}
+                onToggleMonth={() => { setMonthOpen((v) => !v); setYearOpen(false); }}
+                onToggleYear={() => { setYearOpen((v) => !v); setMonthOpen(false); }}
+                onSelectMonth={(m) => { setViewMonth({ ...viewMonth, month: m, day: 1 }); setMonthOpen(false); }}
+                onSelectYear={(y) => { setViewMonth({ ...viewMonth, year: y, day: 1 }); setYearOpen(false); }}
+                moveMonth={moveMonth}
+                monthMenuRef={monthMenuRef}
+                yearMenuRef={yearMenuRef}
+              />
+              <CalendarGrid
+                month={viewMonth}
+                adapter={adapter}
+                selected={value ?? null}
+                onSelect={handleSelect}
+                firstDayOfWeek={firstDayOfWeek}
+                disabled={disabled}
+                dowLabels={isNepali ? ['आ','सो','मं','बु','बि','शु','श'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']}
+                formatDay={(d) => (isNepali ? toNepaliDigits(d) : String(d))}
+              />
+              <PickerFooter isNepali={isNepali} onClear={handleClear} onToday={handleToday} />
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
 };

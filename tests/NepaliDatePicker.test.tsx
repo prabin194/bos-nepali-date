@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { NepaliDatePicker } from '../src/components/NepaliDatePicker';
 import { defaultAdapter } from '../src/adapter/memoryAdapter';
@@ -27,6 +27,10 @@ function typeIntoInput(val: string) {
   fireEvent.change(input, { target: { value: val } });
   return input.value;
 }
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('disable rules', () => {
   it('disables today when disableToday is true', () => {
@@ -152,5 +156,73 @@ describe('onChange not called for disabled date', () => {
     const btn = getDayButton(1);
     fireEvent.click(btn);
     expect(spy).not.toHaveBeenCalled();
+  });
+});
+
+describe('popover overlay behavior', () => {
+  it('renders the dialog in document.body with viewport-based fixed positioning', async () => {
+    const rect = {
+      x: 40,
+      y: 120,
+      width: 260,
+      height: 48,
+      top: 120,
+      right: 300,
+      bottom: 168,
+      left: 40,
+      toJSON: () => ({}),
+    };
+
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function () {
+      if ((this as HTMLElement).classList.contains('np-picker')) {
+        return rect as DOMRect;
+      }
+      return {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        toJSON: () => ({}),
+      } as DOMRect;
+    });
+
+    render(
+      <div style={{ overflow: 'hidden' }}>
+        <NepaliDatePicker value={null} onChange={() => {}} adapter={adapter} />
+      </div>
+    );
+
+    openPicker();
+
+    const dialog = await screen.findByRole('dialog', { name: 'Nepali date picker' });
+
+    expect(dialog.parentElement).toBe(document.body);
+    await waitFor(() => {
+      expect(dialog).toHaveStyle({
+        position: 'fixed',
+        left: '40px',
+        top: '176px',
+        width: '280px',
+      });
+    });
+  });
+
+  it('keeps the portaled dialog open for internal clicks and closes on outside clicks', async () => {
+    render(<NepaliDatePicker value={null} onChange={() => {}} adapter={adapter} />);
+
+    openPicker();
+
+    const dialog = await screen.findByRole('dialog', { name: 'Nepali date picker' });
+    fireEvent.mouseDown(dialog);
+    expect(screen.getByRole('dialog', { name: 'Nepali date picker' })).toBeInTheDocument();
+
+    fireEvent.mouseDown(document.body);
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: 'Nepali date picker' })).not.toBeInTheDocument();
+    });
   });
 });
