@@ -1,5 +1,7 @@
 # bos-nepali-date
 
+[**Try the Demo →**](https://prabin194.github.io/portfolio/projects/bos-nepali-date)
+
 React-ready Nepali (Bikram Sambat) date picker packaged for reuse. Ships with a pluggable conversion adapter so you can swap in your own BS↔AD tables.
 
 ## Quick start
