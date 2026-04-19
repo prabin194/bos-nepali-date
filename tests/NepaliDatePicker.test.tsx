@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { NepaliDatePicker } from '../src/components/NepaliDatePicker';
+import { bsMonthData } from '../src/adapter/bsTable';
+import { MemoryBsAdapter } from '../src/adapter/memoryAdapter';
 import { defaultAdapter } from '../src/adapter/memoryAdapter';
 import { BsDate } from '../src/types';
 
@@ -27,6 +31,8 @@ function typeIntoInput(val: string) {
   fireEvent.change(input, { target: { value: val } });
   return input.value;
 }
+
+const baseCss = readFileSync(resolve(__dirname, '../src/styles/base.css'), 'utf8');
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -121,6 +127,53 @@ describe('input mask', () => {
     render(<NepaliDatePicker value={null} onChange={() => {}} adapter={adapter} />);
     const masked = typeIntoInput('2024-01-02abc');
     expect(masked).toBe('2024-01-02');
+  });
+
+  it('does not emit typed dates that are disabled by constraints', () => {
+    const spy = vi.fn();
+    render(
+      <NepaliDatePicker
+        value={null}
+        onChange={spy}
+        adapter={adapter}
+        minDate={{ year: 2000, month: 1, day: 10 }}
+      />
+    );
+
+    const masked = typeIntoInput('20000105');
+    expect(masked).toBe('2000-01-05');
+    expect(spy).not.toHaveBeenCalled();
+  });
+});
+
+describe('controlled value behavior', () => {
+  it('syncs the input and visible month when the controlled value prop changes', async () => {
+    const { rerender } = render(
+      <NepaliDatePicker
+        value={{ year: 2000, month: 1, day: 1 }}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+
+    const input = screen.getByPlaceholderText('YYYY-MM-DD (BS)') as HTMLInputElement;
+    expect(input.value).toBe('2000-01-01');
+
+    rerender(
+      <NepaliDatePicker
+        value={{ year: 2000, month: 2, day: 5 }}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+
+    await waitFor(() => {
+      expect(input.value).toBe('2000-02-05');
+    });
+
+    openPicker();
+    expect(screen.getByRole('button', { name: 'Jestha' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '2000' })).toBeInTheDocument();
   });
 });
 
@@ -227,6 +280,24 @@ describe('popover overlay behavior', () => {
   });
 });
 
+describe('responsive sizing', () => {
+  it('does not enforce a root minimum width in constrained side-by-side layouts', () => {
+    render(
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 180px))', gap: '12px', width: 372 }}>
+        <NepaliDatePicker value={null} onChange={() => {}} adapter={adapter} />
+        <NepaliDatePicker value={null} onChange={() => {}} adapter={adapter} />
+      </div>
+    );
+
+    const pickers = document.querySelectorAll('.np-picker');
+
+    expect(pickers).toHaveLength(2);
+    expect(baseCss).toContain('.np-picker');
+    expect(baseCss).toContain('min-width: 0;');
+    expect(baseCss).not.toContain('min-width: 200px;');
+  });
+});
+
 describe('month/year selector behavior', () => {
   it('closes the year selector after choosing a new year', async () => {
     render(
@@ -272,5 +343,97 @@ describe('month/year selector behavior', () => {
       expect(screen.queryByRole('listbox', { name: 'Select month' })).not.toBeInTheDocument();
     });
     expect(screen.getByRole('button', { name: 'Jestha' })).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
+describe('adapter boundary behavior', () => {
+  const narrowAdapter = new MemoryBsAdapter({
+    anchorBs: { year: 2080, month: 1, day: 1 },
+    anchorAdIso: '2023-04-14',
+    yearTable: {
+      2080: bsMonthData[2080],
+      2081: bsMonthData[2081],
+    },
+    range: {
+      min: { year: 2080, month: 1, day: 1 },
+      max: { year: 2081, month: 12, day: bsMonthData[2081][11] },
+    },
+  });
+
+  const minOnlyRangeAdapter = new MemoryBsAdapter({
+    anchorBs: { year: 2080, month: 1, day: 1 },
+    anchorAdIso: '2023-04-14',
+    yearTable: {
+      2080: bsMonthData[2080],
+      2081: bsMonthData[2081],
+    },
+    range: {
+      min: { year: 2080, month: 1, day: 1 },
+    },
+  });
+
+  it('disables previous-month navigation at the minimum supported month', async () => {
+    render(
+      <NepaliDatePicker
+        value={{ year: 2080, month: 1, day: 1 }}
+        onChange={() => {}}
+        adapter={narrowAdapter}
+      />
+    );
+
+    openPicker();
+
+    expect(screen.getByRole('button', { name: 'Previous month' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Next month' })).not.toBeDisabled();
+  });
+
+  it('uses the adapter range for year options', async () => {
+    render(
+      <NepaliDatePicker
+        value={{ year: 2080, month: 1, day: 1 }}
+        onChange={() => {}}
+        adapter={narrowAdapter}
+      />
+    );
+
+    openPicker();
+    fireEvent.click(screen.getByRole('button', { name: '2080' }));
+
+    expect(screen.getByRole('option', { name: '2080' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '2081' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: '2000' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: '2099' })).not.toBeInTheDocument();
+  });
+
+  it('keeps reachable years visible when only a minimum adapter year is provided', () => {
+    render(
+      <NepaliDatePicker
+        value={{ year: 2081, month: 1, day: 1 }}
+        onChange={() => {}}
+        adapter={minOnlyRangeAdapter}
+      />
+    );
+
+    openPicker();
+    fireEvent.click(screen.getByRole('button', { name: '2081' }));
+
+    expect(screen.getByRole('option', { name: '2080' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '2081' })).toBeInTheDocument();
+  });
+
+  it('ignores out-of-range constraint props instead of crashing', () => {
+    render(
+      <NepaliDatePicker
+        value={{ year: 2080, month: 1, day: 1 }}
+        onChange={() => {}}
+        adapter={narrowAdapter}
+        minDate={{ year: 2000, month: 1, day: 1 }}
+        disableDates={[{ year: 2000, month: 1, day: 2 }]}
+        disableBefore={{ year: 2000, month: 1, day: 3 }}
+      />
+    );
+
+    expect(() => openPicker()).not.toThrow();
+    expect(screen.getByRole('dialog', { name: 'Nepali date picker' })).toBeInTheDocument();
   });
 });

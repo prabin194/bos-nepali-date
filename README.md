@@ -4,6 +4,10 @@
 
 React-ready Nepali (Bikram Sambat) date picker packaged for reuse. Ships with a pluggable conversion adapter so you can swap in your own BS↔AD tables.
 
+## Live demo
+
+[https://www.prabin194.com.np/projects/bos-nepali-date](https://www.prabin194.com.np/projects/bos-nepali-date)
+
 ## Quick start
 
 ```bash
@@ -35,7 +39,9 @@ import 'bos-nepali-date/style';
 
 ## Adapter
 
-`MemoryBsAdapter` takes a year table: `{ [bsYear]: [12 month lengths] }` plus an anchor mapping BS→AD. The published default only contains demo data for 2080-2081; plug a full table before production.
+`MemoryBsAdapter` takes a year table: `{ [bsYear]: [12 month lengths] }` plus an anchor mapping BS→AD.
+
+The published `defaultAdapter` currently ships with BS year data for `2000-2099` and exposes that range via `adapter.range`. If you need a different window or a separately maintained dataset, provide your own adapter instance.
 
 ```ts
 import { MemoryBsAdapter } from 'bos-nepali-date';
@@ -51,6 +57,7 @@ const adapter = new MemoryBsAdapter({
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
+| `label` | `string` | `Select date` | Accessible label text used by the input and optional visible label. |
 | `value` | `BsDate \| null` | `null` | Controlled BS date value. |
 | `onChange` | `(date: BsDate \| null) => void` | — | Fired on selection or clear. |
 | `adapter` | `BsAdapter` | `defaultAdapter` | Conversion engine (BS↔AD). |
@@ -82,6 +89,13 @@ Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date
 - Month/year toggles are real buttons with `aria-haspopup`/`aria-expanded`.
 - Calendar days expose `disabled` state; input uses numeric mask (`YYYY-MM-DD`).
 
+## What To Know
+
+- The component is controlled: pass `value` and update it through `onChange`.
+- `onChange` returns a structured BS date object, not a formatted string.
+- The package is React-only and expects `react` and `react-dom` as peer dependencies.
+- The bundled stylesheet is imported automatically, with `bos-nepali-date/style` available as a fallback import.
+
 ## Styling
 
 Base styles live in `src/styles/base.css` and are imported automatically. Override CSS variables (see file) to theme.
@@ -96,6 +110,19 @@ import 'bos-nepali-date/style';
 ```
 
 ## Changelog
+
+### 0.1.16
+- Fix controlled-state sync so external `value` updates refresh the input and visible month.
+- Prevent calendar navigation crashes at adapter boundaries and disable unavailable prev/next controls.
+- Make the year selector follow the active adapter range, including partial ranges.
+- Apply disable and min/max rules consistently to typed input as well as calendar clicks.
+- Guard custom-adapter constraint checks so out-of-range rule props do not crash the picker.
+- Added regression coverage for controlled rerenders, typed disabled dates, narrow adapter ranges, and out-of-range constraints.
+
+### 0.1.15
+- Remove the picker root minimum width so BS date fields can shrink inside narrow filter grids, drawers, and modal forms without overlapping adjacent fields.
+- Make the input row and text input explicitly shrink-safe in flex/grid layouts.
+- Added regression coverage for constrained side-by-side picker sizing.
 
 ### 0.1.13
 - Fix calendar popover clipping inside dialogs, drawers, cards, and other overflow-constrained containers.

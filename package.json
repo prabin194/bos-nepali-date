@@ -1,6 +1,6 @@
 {
   "name": "bos-nepali-date",
-  "version": "0.1.13",
+  "version": "0.1.16",
   "type": "module",
   "description": "Reusable React Bikram Sambat (Nepali) date picker with pluggable conversion engine.",
   "license": "MIT",
@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/prabin194/bos-nepali-date.git"
   },
-  "homepage": "https://github.com/prabin194/bos-nepali-date#readme",
+  "homepage": "https://www.prabin194.com.np/projects/bos-nepali-date",
   "bugs": {
     "url": "https://github.com/prabin194/bos-nepali-date/issues"
   },

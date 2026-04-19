@@ -1,6 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-import { bsRange } from '../adapter/bsTable';
 import { toNepaliDigits } from './pickerUtils';
 
 type PickerHeaderProps = {
@@ -10,9 +9,12 @@ type PickerHeaderProps = {
   monthList: string[];
   viewYear: number;
   viewMonth: number;
+  yearOptions: number[];
   isNepali: boolean;
   monthOpen: boolean;
   yearOpen: boolean;
+  canMovePrev: boolean;
+  canMoveNext: boolean;
   onToggleMonth: () => void;
   onToggleYear: () => void;
   onSelectMonth: (month: number) => void;
@@ -29,9 +31,12 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
   monthList,
   viewYear,
   viewMonth,
+  yearOptions,
   isNepali,
   monthOpen,
   yearOpen,
+  canMovePrev,
+  canMoveNext,
   onToggleMonth,
   onToggleYear,
   onSelectMonth,
@@ -41,7 +46,13 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
   yearMenuRef,
 }) => (
   <div className="np-popover__header">
-    <button type="button" className="np-popover__nav-btn" onClick={() => moveMonth(-1)} aria-label="Previous month">
+    <button
+      type="button"
+      className="np-popover__nav-btn"
+      onClick={() => moveMonth(-1)}
+      aria-label="Previous month"
+      disabled={!canMovePrev}
+    >
       ‹
     </button>
     {showMonth || showYear ? (
@@ -95,7 +106,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
             </button>
             {yearOpen && (
               <div className="np-popover__menu np-popover__menu--years" role="listbox" aria-label="Select year" ref={yearMenuRef}>
-                {Array.from({ length: bsRange.maxYear - bsRange.minYear + 1 }, (_, i) => bsRange.minYear + i).map((y) => (
+                {yearOptions.map((y) => (
                   <button
                     key={y}
                     type="button"
@@ -122,7 +133,13 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
         {monthName} {isNepali ? toNepaliDigits(viewYear) : viewYear}
       </div>
     )}
-    <button type="button" className="np-popover__nav-btn" onClick={() => moveMonth(1)} aria-label="Next month">
+    <button
+      type="button"
+      className="np-popover__nav-btn"
+      onClick={() => moveMonth(1)}
+      aria-label="Next month"
+      disabled={!canMoveNext}
+    >
       ›
     </button>
   </div>

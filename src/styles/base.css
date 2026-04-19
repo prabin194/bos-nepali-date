@@ -16,7 +16,7 @@
 .np-picker {
   position: relative;
   width: 100%;
-  min-width: 200px;
+  min-width: 0;
   font-family: var(--np-font);
   color: var(--np-text);
 }
@@ -24,6 +24,8 @@
 .np-input-wrapper {
   display: flex;
   align-items: center;
+  width: 100%;
+  min-width: 0;
   gap: 10px;
   background: var(--np-bg);
   border: 1px solid var(--np-border);
@@ -34,6 +36,7 @@
 
 .np-input {
   flex: 1;
+  min-width: 0;
   border: none;
   outline: none;
   font-size: 14px;
@@ -47,6 +50,7 @@
 }
 
 .np-toggle {
+  flex-shrink: 0;
   border: none;
   background: transparent;
   cursor: pointer;

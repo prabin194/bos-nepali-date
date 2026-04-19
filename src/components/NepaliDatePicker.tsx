@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { BsAdapter, BsDate } from '../types';
 import { CalendarGrid } from './CalendarGrid';
@@ -71,18 +71,54 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   const monthMenuRef = useRef<HTMLDivElement | null>(null);
   const yearMenuRef = useRef<HTMLDivElement | null>(null);
 
+  const safeDiffDays = useCallback((date1: BsDate, date2: BsDate): number | null => {
+    try {
+      return adapter.diffDays(date1, date2);
+    } catch {
+      return null;
+    }
+  }, [adapter]);
+
+  function shiftMonth(base: BsDate, direction: 1 | -1): BsDate | null {
+    try {
+      let next = adapter.addDays(base, direction * 32);
+      next = { year: next.year, month: next.month, day: 1 };
+      const originalMonth = base.month;
+      const originalYear = base.year;
+
+      while (next.year === originalYear && next.month === originalMonth) {
+        next = adapter.addDays(next, direction);
+      }
+
+      return { year: next.year, month: next.month, day: 1 };
+    } catch {
+      return null;
+    }
+  }
+
   const disabled = useMemo(() => {
     return (date: BsDate) => {
-      const clampMin = minDate ? adapter.diffDays(minDate, date) >= 0 : true;
-      const clampMax = maxDate ? adapter.diffDays(date, maxDate) >= 0 : true;
-      const isToday = disableToday && adapter.diffDays(adapter.today(), date) === 0;
-      const isSingle = disableDate ? adapter.diffDays(disableDate, date) === 0 : false;
-      const isList = disableDates.some((d) => adapter.diffDays(d, date) === 0);
-      const isBefore = disableBefore ? adapter.diffDays(date, disableBefore) > 0 : false; // date earlier than threshold
-      const isAfter = disableAfter ? adapter.diffDays(disableAfter, date) > 0 : false; // date later than threshold
+      const clampMinDiff = minDate ? safeDiffDays(minDate, date) : null;
+      const clampMaxDiff = maxDate ? safeDiffDays(date, maxDate) : null;
+      const todayDiff = disableToday ? safeDiffDays(adapter.today(), date) : null;
+      const singleDiff = disableDate ? safeDiffDays(disableDate, date) : null;
+      const clampMin = clampMinDiff === null ? true : clampMinDiff >= 0;
+      const clampMax = clampMaxDiff === null ? true : clampMaxDiff >= 0;
+      const isToday = disableToday && todayDiff === 0;
+      const isSingle = singleDiff === 0;
+      const isList = disableDates.some((d) => safeDiffDays(d, date) === 0);
+      const beforeDiff = disableBefore ? safeDiffDays(date, disableBefore) : null;
+      const afterDiff = disableAfter ? safeDiffDays(disableAfter, date) : null;
+      const isBefore = beforeDiff === null ? false : beforeDiff > 0; // date earlier than threshold
+      const isAfter = afterDiff === null ? false : afterDiff > 0; // date later than threshold
       return !clampMin || !clampMax || isToday || isSingle || isList || isBefore || isAfter;
     };
-  }, [adapter, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter]);
+  }, [adapter, safeDiffDays, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter]);
+
+  useEffect(() => {
+    setInput(formatBs(value));
+    setViewMonth({ ...(value ?? adapter.today()), day: 1 });
+  }, [value, adapter]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const normalized = normalizeDigitsToAscii(e.target.value);
@@ -99,7 +135,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     try {
       const iso = adapter.toAD(parsed);
       const bs = adapter.toBS(iso); // round-trip validation
-      if (bs.year === parsed.year && bs.month === parsed.month && bs.day === parsed.day) {
+      if (bs.year === parsed.year && bs.month === parsed.month && bs.day === parsed.day && !disabled(parsed)) {
         onChange?.(parsed);
         setViewMonth({ ...parsed, day: 1 });
       }
@@ -112,23 +148,11 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     let next = { ...viewMonth };
     const step = delta > 0 ? 1 : -1;
     for (let i = 0; i < Math.abs(delta); i++) {
-      // move by month
-      const currentMonth = next.month;
-      // jump 32 days in direction then set day 1
-      next = adapter.addDays(next, step * 32);
-      next = { year: next.year, month: next.month, day: 1 };
-      // if overshoot months, roll back
-      if (step === 1) {
-        while (next.month === currentMonth) {
-          next = adapter.addDays(next, 1);
-        }
-        next = { ...next, day: 1 };
-      } else {
-        while (next.month === currentMonth) {
-          next = adapter.addDays(next, -1);
-        }
-        next = { year: next.year, month: next.month, day: 1 };
+      const shifted = shiftMonth(next, step);
+      if (!shifted) {
+        return;
       }
+      next = shifted;
     }
     setViewMonth(next);
   }
@@ -155,6 +179,18 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   const monthList = isNepali ? bsMonthNamesNe : bsMonthNames;
   const monthName = monthList[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
   const placeholderText = placeholder ?? (isNepali ? 'YYYY-MM-DD (BS)' : 'YYYY-MM-DD (BS)');
+  const canMovePrev = shiftMonth(viewMonth, -1) !== null;
+  const canMoveNext = shiftMonth(viewMonth, 1) !== null;
+  const rangeMinYear = adapter.range?.min?.year;
+  const rangeMaxYear = adapter.range?.max?.year;
+  const yearOptions =
+    rangeMinYear !== undefined && rangeMaxYear !== undefined && rangeMaxYear >= rangeMinYear
+      ? Array.from({ length: rangeMaxYear - rangeMinYear + 1 }, (_, i) => rangeMinYear + i)
+      : rangeMinYear !== undefined && rangeMaxYear === undefined
+      ? Array.from({ length: Math.max(1, viewMonth.year - rangeMinYear + 1) }, (_, i) => rangeMinYear + i)
+      : rangeMinYear === undefined && rangeMaxYear !== undefined
+      ? Array.from({ length: Math.max(1, rangeMaxYear - viewMonth.year + 1) }, (_, i) => viewMonth.year + i)
+      : [viewMonth.year];
 
   function updatePopoverPosition() {
     if (!wrapperRef.current || typeof window === 'undefined') return;
@@ -294,9 +330,12 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                 monthList={monthList}
                 viewYear={viewMonth.year}
                 viewMonth={viewMonth.month}
+                yearOptions={yearOptions}
                 isNepali={isNepali}
                 monthOpen={monthOpen}
                 yearOpen={yearOpen}
+                canMovePrev={canMovePrev}
+                canMoveNext={canMoveNext}
                 onToggleMonth={() => { setMonthOpen((v) => !v); setYearOpen(false); }}
                 onToggleYear={() => { setYearOpen((v) => !v); setMonthOpen(false); }}
                 onSelectMonth={(m) => { setViewMonth({ ...viewMonth, month: m, day: 1 }); setMonthOpen(false); }}
