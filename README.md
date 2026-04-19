@@ -111,6 +111,9 @@ import 'bos-nepali-date/style';
 
 ## Changelog
 
+### 0.1.17
+- Fix the publish pipeline so `prepublishOnly` runs Vitest in non-watch mode during npm releases.
+
 ### 0.1.16
 - Fix controlled-state sync so external `value` updates refresh the input and visible month.
 - Prevent calendar navigation crashes at adapter boundaries and disable unavailable prev/next controls.
