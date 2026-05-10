@@ -53,6 +53,7 @@ export class MemoryBsAdapter implements BsAdapter {
   }
 
   toAD(date: BsDate): string {
+    this.validate(date);
     const offset = this.bsToOffset(date);
     return epochDayToIso(this.anchorAdDay + offset);
   }
@@ -64,11 +65,28 @@ export class MemoryBsAdapter implements BsAdapter {
   }
 
   addDays(date: BsDate, days: number): BsDate {
+    this.validate(date);
     return this.offsetToBs(this.bsToOffset(date) + days);
   }
 
   diffDays(date1: BsDate, date2: BsDate): number {
+    this.validate(date1);
+    this.validate(date2);
     return this.bsToOffset(date2) - this.bsToOffset(date1);
+  }
+
+  private validate(date: BsDate) {
+    const { year, month, day } = date;
+    if (!this.yearTable[year]) {
+      throw new Error(`BS year ${year} not supported by adapter.`);
+    }
+    if (month < 1 || month > 12) {
+      throw new Error(`Invalid BS month ${month}.`);
+    }
+    const maxDays = this.daysInMonth(year, month);
+    if (day < 1 || day > maxDays) {
+      throw new Error(`Invalid BS day ${day} for year ${year} month ${month}.`);
+    }
   }
 
   private bsToOffset(date: BsDate): number {

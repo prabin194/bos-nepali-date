@@ -46,5 +46,9 @@ export function parseBs(input: string): BsDate | null {
   const match = input.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if (!match) return null;
   const [, y, m, d] = match;
-  return { year: Number(y), month: Number(m), day: Number(d) };
+  const year = Number(y);
+  const month = Number(m);
+  const day = Number(d);
+  if (month < 1 || month > 12 || day < 1 || day > 32) return null;
+  return { year, month, day };
 }

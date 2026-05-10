@@ -116,7 +116,10 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   }, [adapter, safeDiffDays, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter]);
 
   useEffect(() => {
-    setInput(formatBs(value));
+    const formatted = formatBs(value);
+    if (parseBs(input)?.year !== value?.year || parseBs(input)?.month !== value?.month || parseBs(input)?.day !== value?.day) {
+      setInput(formatted);
+    }
     setViewMonth({ ...(value ?? adapter.today()), day: 1 });
   }, [value, adapter]);
 

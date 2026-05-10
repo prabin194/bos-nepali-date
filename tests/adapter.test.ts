@@ -93,4 +93,14 @@ describe('MemoryBsAdapter', () => {
     expect(() => adapterLimited.toAD({ year: 2079, month: 12, day: 30 })).toThrow(/not supported/);
     expect(() => adapterLimited.addDays({ year: 2080, month: 1, day: 1 }, -1)).toThrow(/not supported/);
   });
+
+  it('throws for invalid BS month', () => {
+    expect(() => adapter.toAD({ year: 2080, month: 0, day: 1 })).toThrow(/Invalid BS month/);
+    expect(() => adapter.toAD({ year: 2080, month: 13, day: 1 })).toThrow(/Invalid BS month/);
+  });
+
+  it('throws for invalid BS day', () => {
+    expect(() => adapter.toAD({ year: 2080, month: 1, day: 0 })).toThrow(/Invalid BS day/);
+    expect(() => adapter.toAD({ year: 2080, month: 1, day: 32 })).toThrow(/Invalid BS day/); // Baishak 2080 has 31 days
+  });
 });
