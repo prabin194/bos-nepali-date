@@ -20,10 +20,6 @@
   "files": [
     "dist"
   ],
-  "vitest": {
-    "environment": "jsdom",
-    "setupFiles": "tests/setup.ts"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
