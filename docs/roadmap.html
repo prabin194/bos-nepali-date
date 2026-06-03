@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="bos-nepali-date roadmap — upcoming features, improvements, and future direction.">
+<meta property="og:title" content="bos-nepali-date — Roadmap">
+<meta property="og:description" content="See what's planned for the Nepali date picker — authoritative BS tables, range picker, Storybook, and more.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/roadmap.html">
+<meta name="twitter:card" content="summary_large_image">
+<title>Roadmap — bos-nepali-date</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c026d3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --hue:262;
+  --bg:oklch(0.985 0 0);
+  --bg2:oklch(0.965 0.004 var(--hue));
+  --surface:oklch(1 0 0);
+  --border:oklch(0.91 0.006 var(--hue));
+  --text:oklch(0.13 0.012 var(--hue));
+  --text2:oklch(0.42 0.018 var(--hue));
+  --accent:oklch(0.52 0.19 var(--hue));
+  --accent2:oklch(0.62 0.16 var(--hue));
+  --radius:10px;
+  --radius-sm:8px;
+  --font-sans:'Inter','SF Pro','system-ui',sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono','Fira Code','Consolas',monospace;
+}
+.dark{
+  --bg:oklch(0.1 0.01 var(--hue));
+  --bg2:oklch(0.16 0.015 var(--hue));
+  --surface:oklch(0.13 0.012 var(--hue));
+  --border:oklch(0.25 0.015 var(--hue));
+  --text:oklch(0.9 0.005 var(--hue));
+  --text2:oklch(0.6 0.01 var(--hue));
+  --accent:oklch(0.65 0.2 var(--hue));
+  --accent2:oklch(0.72 0.17 var(--hue));
+}
+.dark header{background:oklch(0.12 0.01 var(--hue) / 0.92)}
+.dark .phase:hover{border-color:var(--accent);box-shadow:0 2px 16px oklch(1 1 1 / 0.06)}
+.dark #search-overlay>div>div{background:var(--surface)!important}
+.dark #search-overlay>div>div>div{border-bottom-color:var(--border)!important}
+.dark #search-overlay input{color:var(--text)!important}
+.dark #search-overlay kbd{background:var(--bg2)!important;border-color:var(--border)!important;color:var(--text2)!important}
+.dark #search-overlay .sr-item{border-bottom-color:var(--border)!important}
+.dark #search-overlay .sr-item div:nth-child(1){color:var(--text)!important}
+.dark #search-overlay .sr-item div:nth-child(3){color:var(--text2)!important}
+.dark #search-overlay .sr-item[style*="oklch(0.935"]{background:oklch(0.22 0.02 var(--hue))!important}
+html{font-family:var(--font-sans);color:var(--text);background:var(--bg);scroll-behavior:smooth;line-height:1.6;font-size:16px}
+body{display:flex;flex-direction:column;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.wrapper{max-width:900px;margin:0 auto;padding:0 1.5rem;width:100%}
+
+/* ── Header ── */
+header{position:sticky;top:0;z-index:50;background:oklch(1 0 0 / 0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+header .inner{display:flex;align-items:center;justify-content:space-between;height:58px}
+header .logo{display:flex;align-items:center;gap:8px;font-weight:650;font-size:0.95rem;color:var(--text)}
+header .logo svg{width:20px;height:20px;color:var(--accent)}
+header nav{display:flex;align-items:center;gap:2px}
+header nav a{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;color:var(--text2);transition:all 0.15s}
+header nav a:hover{background:var(--bg2);color:var(--text);text-decoration:none}
+header nav a.active{background:var(--bg2);color:var(--accent);font-weight:600}
+@media(max-width:560px){header nav a{padding:7px 8px;font-size:0.75rem;gap:3px}}#search-btn:hover{background:var(--bg2)}#search-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+
+/* ── Page header ── */
+.page-header{padding:2.5rem 0 1rem}
+.page-header h1{font-size:1.8rem;font-weight:700;letter-spacing:-0.02em}
+.page-header .subtitle{color:var(--text2);margin-top:4px;font-size:0.95rem}
+.page-header .last-updated{display:inline-block;margin-top:8px;font-size:0.78rem;color:var(--text2);background:var(--bg2);padding:3px 10px;border-radius:999px}
+
+/* ── Phase cards ── */
+.phase{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;margin-bottom:1rem;transition:all 0.2s}
+.phase:hover{border-color:var(--accent);box-shadow:0 2px 16px oklch(0 0 0 / 0.05)}
+.phase:last-child{margin-bottom:0}
+
+.phase .phase-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px}
+.phase .phase-name{font-size:1.05rem;font-weight:650;letter-spacing:-0.01em}
+.phase .phase-status{display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;font-weight:600;padding:3px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:0.04em}
+.phase .phase-status.planned{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
+.phase .phase-status.in-progress{background:oklch(0.9 0.08 45);color:oklch(0.38 0.1 45)}
+.phase .phase-status.shipped{background:oklch(0.9 0.08 145);color:oklch(0.35 0.1 145)}
+.phase .phase-status.research{background:oklch(0.9 0.05 var(--hue));color:var(--accent)}
+
+.phase .phase-desc{font-size:0.88rem;color:var(--text2);line-height:1.6;margin-bottom:0.75rem}
+.phase .phase-detail{list-style:none;padding:0}
+.phase .phase-detail li{display:flex;align-items:flex-start;gap:7px;padding:3px 0;font-size:0.84rem;color:var(--text2);line-height:1.5}
+.phase .phase-detail li .bullet{flex-shrink:0;width:16px;text-align:center;font-size:0.7rem;color:var(--accent);margin-top:3px}
+.phase .phase-detail li .text{flex:1}
+
+/* ── Section spacing ── */
+section{padding:0.5rem 0 2.5rem}
+section h2{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text2);font-weight:600;margin-bottom:1rem;padding-bottom:6px;border-bottom:1px solid var(--border)}
+
+/* ── Contribute box ── */
+.contribute-box{margin-top:2rem;padding:1.25rem 1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
+.contribute-box p{font-size:0.9rem;color:var(--text2);margin-bottom:10px}
+.contribute-box a{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;transition:all 0.2s}
+.contribute-box .primary{background:var(--accent);color:#fff}
+.contribute-box .primary:hover{opacity:0.9;text-decoration:none}
+.contribute-box .secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);margin-left:8px}
+.contribute-box .secondary:hover{background:var(--border);text-decoration:none}
+@media(max-width:480px){.contribute-box a{display:block;margin:6px 0 !important}}
+
+/* ── Footer ── */
+footer{padding:2rem 0;margin-top:auto;border-top:1px solid var(--border);text-align:center;font-size:0.8rem;color:var(--text2)}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrapper">
+<div class="inner">
+<a href="/" class="logo" style="text-decoration:none;color:inherit">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+bos-nepali-date
+</a>
+<nav>
+<a href="/">Home</a>
+<a href="/documentation.html">Docs</a>
+<a href="/roadmap.html" class="active">Roadmap</a>
+<a href="/changelogs.html">Changelogs</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
+<button id="search-btn" aria-label="Search" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;color:var(--text2);display:flex;align-items:center;gap:4px;transition:all 0.15s;margin-left:4px">🔍 <span style="font-size:0.7rem;opacity:0.5;font-weight:500">⌘K</span></button>
+<button id="theme-btn" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;transition:all 0.15s">🌙</button>
+</nav>
+</div>
+</div>
+</header>
+
+<main>
+<div class="wrapper">
+<div class="page-header">
+<h1>Roadmap</h1>
+<p class="subtitle">What's coming next for bos-nepali-date — planned features, improvements, and the long-term vision.</p>
+<span class="last-updated">Last updated: June 2026</span>
+</div>
+
+<!-- ── Now ── -->
+<section>
+<h2>🔄 Now — In progress</h2>
+
+<div class="phase">
+<div class="phase-header">
+<span class="phase-name">📦 Authoritative BS tables</span>
+<span class="phase-status in-progress">In progress</span>
+</div>
+<p class="phase-desc">Ship a complete, authoritative Bikram Sambat year table (2000–2100 BS) as a separate data package so users don't need to source and maintain their own conversion data.</p>
+<ul class="phase-detail">
+<li><span class="bullet">•</span><span class="text">Compile and verify BS↔AD mappings for 2000–2100 from official Nepali calendar sources.</span></li>
+<li><span class="bullet">•</span><span class="text">Publish as a companion npm package <code>@bos/nepali-date-data</code> with versioned releases.</span></li>
+<li><span class="bullet">•</span><span class="text">Include a pre-built <code>MemoryBsAdapter</code> factory that consumes the data package.</span></li>
+<li><span class="bullet">•</span><span class="text">Add CI verification to catch date mismatch regressions.</span></li>
+</ul>
+</div>
+</section>
+
+<!-- ── Next ── -->
+<section>
+<h2>⏳ Next — Planned</h2>
+
+<div class="phase">
+<div class="phase-header">
+<span class="phase-name">📅 Range picker + dual calendar view</span>
+<span class="phase-status planned">Planned</span>
+</div>
+<p class="phase-desc">A new <code>NepaliDateRangePicker</code> component for selecting a start and end date, with a side-by-side dual-month view.</p>
+<ul class="phase-detail">
+<li><span class="bullet">•</span><span class="text">Select start and end dates with visual range highlighting.</span></li>
+<li><span class="bullet">•</span><span class="text">Dual-month layout showing two consecutive BS months side by side.</span></li>
+<li><span class="bullet">•</span><span class="text">Reuse disable rules, localization, and styling from the single picker.</span></li>
+<li><span class="bullet">•</span><span class="text">Controlled and uncontrolled modes with <code>onChange</code> returning <code>[BsDate | null, BsDate | null]</code>.</span></li>
+</ul>
+</div>
+
+<div class="phase">
+<div class="phase-header">
+<span class="phase-name">📖 Storybook stories & visual regression</span>
+<span class="phase-status planned">Planned</span>
+</div>
+<p class="phase-desc">Build a comprehensive Storybook catalog for visual testing, documentation, and easier contributor onboarding.</p>
+<ul class="phase-detail">
+<li><span class="bullet">•</span><span class="text">Stories for every prop combination, locale, and disable rule.</span></li>
+<li><span class="bullet">•</span><span class="text">Visual regression testing with Chromatic to catch unintended style changes.</span></li>
+<li><span class="bullet">•</span><span class="text">Interactive playground stories for live prop exploration.</span></li>
+</ul>
+</div>
+</section>
+
+<!-- ── Later ── -->
+<section>
+<h2>🔭 Later — Under research</h2>
+
+<div class="phase">
+<div class="phase-header">
+<span class="phase-name">⌨️ Input masking & ARIA refinements</span>
+<span class="phase-status research">Research</span>
+</div>
+<p class="phase-desc">Polish the input experience with smarter masking, better keyboard navigation, and full WCAG compliance.</p>
+<ul class="phase-detail">
+<li><span class="bullet">•</span><span class="text">Auto-format the input as the user types (dash insertion, digit limits per field).</span></li>
+<li><span class="bullet">•</span><span class="text">Full WCAG 2.1 AA compliance audit and remediation.</span></li>
+<li><span class="bullet">•</span><span class="text">Screen reader announcements for date selection and popover state changes.</span></li>
+<li><span class="bullet">•</span><span class="text">Focus trap management inside the popover for consistent keyboard behavior.</span></li>
+</ul>
+</div>
+
+<div class="phase">
+<div class="phase-header">
+<span class="phase-name">⚡ React 19 & SSR improvements</span>
+<span class="phase-status research">Research</span>
+</div>
+<p class="phase-desc">Ensure compatibility with React 19's concurrent features and improve server-side rendering support.</p>
+<ul class="phase-detail">
+<li><span class="bullet">•</span><span class="text">Test and certify compatibility with React 19.</span></li>
+<li><span class="bullet">•</span><span class="text">Evaluate using <code>useActionState</code> or other React 19 APIs for form integration.</span></li>
+<li><span class="bullet">•</span><span class="text">SSR-safe portal rendering without hydration mismatches.</span></li>
+</ul>
+</div>
+
+<div class="phase">
+<div class="phase-header">
+<span class="phase-name">🧪 Expanded test coverage</span>
+<span class="phase-status research">Research</span>
+</div>
+<p class="phase-desc">Broaden the test suite to cover edge cases, browser interactions, and visual regressions.</p>
+<ul class="phase-detail">
+<li><span class="bullet">•</span><span class="text">Browser-level tests with Playwright for click-outside, keyboard, and popover positioning.</span></li>
+<li><span class="bullet">•</span><span class="text">Property-based testing for date conversion edge cases.</span></li>
+<li><span class="bullet">•</span><span class="text">Accessibility testing with axe-core integration.</span></li>
+</ul>
+</div>
+</section>
+
+<!-- ── Shipped ── -->
+<section>
+<h2>✅ Shipped</h2>
+
+<div class="phase" style="opacity:0.75">
+<div class="phase-header">
+<span class="phase-name">🌐 Localization & disable rules</span>
+<span class="phase-status shipped">Shipped</span>
+</div>
+<p class="phase-desc">Nepali (नेपाली) locale support and comprehensive date disable options — single dates, ranges, today, before/after.</p>
+</div>
+
+<div class="phase" style="opacity:0.75">
+<div class="phase-header">
+<span class="phase-name">🎨 Theming & CSS variables</span>
+<span class="phase-status shipped">Shipped</span>
+</div>
+<p class="phase-desc">Customizable styling through CSS variables (<code>--np-font</code>, <code>--np-popover-min-width</code>, <code>--np-popover-max-width</code>).</p>
+</div>
+
+<div class="phase" style="opacity:0.75">
+<div class="phase-header">
+<span class="phase-name">🔄 Overflow-safe popover</span>
+<span class="phase-status shipped">Shipped</span>
+</div>
+<p class="phase-desc">Portal-based popover with viewport-aware positioning that works inside dialogs, drawers, and scroll containers.</p>
+</div>
+</section>
+
+<!-- ── Contribute ── -->
+<div class="contribute-box">
+<p>Have an idea for the roadmap? Found a bug? Contributions are welcome!</p>
+<a href="https://github.com/prabin194/bos-nepali-date/issues/new" target="_blank" class="primary">🐛 Open an issue</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank" class="secondary">⭐ Star on GitHub</a>
+</div>
+
+</div>
+</main>
+
+<footer>
+<div class="wrapper">
+<p><strong>bos-nepali-date</strong> — MIT · <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a> · <a href="https://www.npmjs.com/package/bos-nepali-date" target="_blank">npm</a> · Built by <a href="https://github.com/prabin194" target="_blank">Prabin Paudel</a></p>
+</div>
+</footer>
+
+<script src="/search.js"></script>
+<script src="/theme.js"></script>
+</body>
+</html>

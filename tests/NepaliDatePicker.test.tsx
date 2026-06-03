@@ -41,7 +41,7 @@ afterEach(() => {
 describe('disable rules', () => {
   it('disables today when disableToday is true', () => {
     const today = adapter.today();
-    render(<NepaliDatePicker value={null} onChange={() => {}} adapter={adapter} disableToday />);
+    render(<NepaliDatePicker value={null} onChange={() => {}} adapter={adapter} disable={{ today: true }} />);
     openPicker();
     const todayBtn = getDayButton(today.day);
     expect(todayBtn).toBeDisabled();
@@ -54,7 +54,7 @@ describe('disable rules', () => {
         value={disableDate}
         onChange={() => {}}
         adapter={adapter}
-        disableDate={disableDate}
+        disable={{ date: disableDate }}
       />
     );
     openPicker();
@@ -72,7 +72,7 @@ describe('disable rules', () => {
         value={{ year: 2000, month: 1, day: 5 }}
         onChange={() => {}}
         adapter={adapter}
-        disableDates={dates}
+        disable={{ dates }}
       />
     );
     openPicker();
@@ -87,8 +87,10 @@ describe('disable rules', () => {
         value={{ year: 2000, month: 1, day: 10 }}
         onChange={() => {}}
         adapter={adapter}
-        disableBefore={{ year: 2000, month: 1, day: 5 }}
-        disableAfter={{ year: 2000, month: 1, day: 20 }}
+        disable={{
+          before: { year: 2000, month: 1, day: 5 },
+          after: { year: 2000, month: 1, day: 20 },
+        }}
       />
     );
     openPicker();
@@ -105,7 +107,7 @@ describe('locale rendering', () => {
         value={{ year: 2000, month: 1, day: 1 }}
         onChange={() => {}}
         adapter={adapter}
-        lang="ne"
+        menu={{ lang: 'ne' }}
       />
     );
     openPicker();
@@ -184,8 +186,7 @@ describe('showMonth/showYear', () => {
         value={{ year: 2000, month: 1, day: 1 }}
         onChange={() => {}}
         adapter={adapter}
-        showMonth={false}
-        showYear={false}
+        menu={{ showMonth: false, showYear: false }}
       />
     );
     openPicker();
@@ -202,7 +203,7 @@ describe('onChange not called for disabled date', () => {
         value={{ year: 2000, month: 1, day: 2 }}
         onChange={spy}
         adapter={adapter}
-        disableDate={disableDate}
+        disable={{ date: disableDate }}
       />
     );
     openPicker();

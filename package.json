@@ -32,6 +32,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "docs:build-index": "node scripts/build-search-index.js",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "typecheck": "tsc --noEmit",
     "test": "vitest",

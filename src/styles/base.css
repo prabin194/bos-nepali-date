@@ -29,8 +29,8 @@
   gap: 10px;
   background: var(--np-bg);
   border: 1px solid var(--np-border);
-  border-radius: 14px;
-  padding: 10px 12px;
+  border-radius: 8px;
+  padding: 8px 10px;
   cursor: text;
 }
 

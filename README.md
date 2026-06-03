@@ -1,6 +1,7 @@
 # bos-nepali-date
 
-[**Try the Demo →**](https://prabin194.github.io/portfolio/projects/bos-nepali-date)
+[**📖 Full Documentation →**](https://prabin194.github.io/bos-nepali-date/)
+[**🎮 Live Demo →**](https://prabin194.github.io/bos-nepali-date/)
 
 React-ready Nepali (Bikram Sambat) date picker packaged for reuse. Ships with a pluggable conversion adapter so you can swap in your own BS↔AD tables.
 
@@ -62,15 +63,8 @@ const adapter = new MemoryBsAdapter({
 | `onChange` | `(date: BsDate \| null) => void` | — | Fired on selection or clear. |
 | `adapter` | `BsAdapter` | `defaultAdapter` | Conversion engine (BS↔AD). |
 | `minDate` / `maxDate` | `BsDate` | — | Clamp selectable range. |
-| `disableToday` | `boolean` | `false` | Prevent selecting today. |
-| `disableDate` | `BsDate` | — | Disable a single date. |
-| `disableDates` | `BsDate[]` | `[]` | Disable a list of dates. |
-| `disableBefore` | `BsDate` | — | Disable all dates before this. |
-| `disableAfter` | `BsDate` | — | Disable all dates after this. |
-| `showMonth` | `boolean` | `true` | Show/hide month selector; hidden still shows current month text. |
-| `showYear` | `boolean` | `true` | Show/hide year selector; hidden still shows current year text. |
-| `lang` | `'en' \| 'ne'` | `'en'` | Localize month/day labels and digits (emitted value stays ASCII `YYYY-MM-DD`). |
-| `firstDayOfWeek` | `0 \| 1` | `0` | Sunday or Monday start. |
+| `disable` | `DisableOptions` | `{}` | Object with disable rules (see below). |
+| `menu` | `MenuOptions` | `{}` | Object with display options (see below). |
 | `placeholder` | `string` | `YYYY-MM-DD (BS)` | Input placeholder; mask enforces numeric `YYYY-MM-DD`. |
 | `inputClassName` | `string` | — | Extra class for the input element (for custom styling). |
 | `inputPattern` | `string \| false` | `\d{4}-\d{2}-\d{2}` | Native pattern attribute. Set `false` to remove browser validation. |
@@ -78,11 +72,27 @@ const adapter = new MemoryBsAdapter({
 | `className` | `string` | — | Extra class for the root wrapper. |
 
 ### Locale behavior
-- `lang="ne"` renders Nepali month names, weekday abbreviations, and Nepali digits in the grid/header. `onChange` still returns ASCII BS `YYYY-MM-DD`.
-- `lang="en"` uses English labels/digits.
+- `menu.lang="ne"` renders Nepali month names, weekday abbreviations, and Nepali digits in the grid/header. `onChange` still returns ASCII BS `YYYY-MM-DD`.
+- `menu.lang="en"` uses English labels/digits.
 
-### Disable rules
+### DisableOptions
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disable.today` | `boolean` | `false` | Prevent selecting today. |
+| `disable.date` | `BsDate` | — | Disable a single date. |
+| `disable.dates` | `BsDate[]` | `[]` | Disable a list of dates. |
+| `disable.before` | `BsDate` | — | Disable all dates before this. |
+| `disable.after` | `BsDate` | — | Disable all dates after this. |
+
 Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date is not selectable.
+
+### MenuOptions
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `menu.showMonth` | `boolean` | `true` | Show/hide month selector; hidden still shows current month text. |
+| `menu.showYear` | `boolean` | `true` | Show/hide year selector; hidden still shows current year text. |
+| `menu.lang` | `'en' \| 'ne'` | `'en'` | Localize month/day labels and digits (emitted value stays ASCII `YYYY-MM-DD`). |
+| `menu.firstDayOfWeek` | `0 \| 1` | `0` | Sunday or Monday start. |
 
 ### Accessibility
 - Escape closes the popover; click-outside also closes.

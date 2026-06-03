@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="bos-nepali-date documentation — installation, props, localization, styling, and adapter guide.">
+<meta property="og:title" content="bos-nepali-date — Documentation">
+<meta property="og:description" content="Learn how to install, configure, and customize the Nepali date picker for React.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/documentation.html">
+<meta name="twitter:card" content="summary_large_image">
+<title>Documentation — bos-nepali-date</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c026d3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bos-nepali-date@0.1.13/dist/index.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --hue:262;
+  --bg:oklch(0.985 0 0);
+  --bg2:oklch(0.965 0.004 var(--hue));
+  --surface:oklch(1 0 0);
+  --border:oklch(0.91 0.006 var(--hue));
+  --text:oklch(0.13 0.012 var(--hue));
+  --text2:oklch(0.42 0.018 var(--hue));
+  --accent:oklch(0.52 0.19 var(--hue));
+  --accent2:oklch(0.62 0.16 var(--hue));
+  --radius:10px;
+  --radius-sm:8px;
+  --font-sans:'Inter','SF Pro','system-ui',sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono','Fira Code','Consolas',monospace;
+}
+.dark{
+  --bg:oklch(0.1 0.01 var(--hue));
+  --bg2:oklch(0.16 0.015 var(--hue));
+  --surface:oklch(0.13 0.012 var(--hue));
+  --border:oklch(0.25 0.015 var(--hue));
+  --text:oklch(0.9 0.005 var(--hue));
+  --text2:oklch(0.6 0.01 var(--hue));
+  --accent:oklch(0.65 0.2 var(--hue));
+  --accent2:oklch(0.72 0.17 var(--hue));
+}
+.dark header{background:oklch(0.12 0.01 var(--hue) / 0.92)}
+.dark .doc .note{background:oklch(0.2 0.02 var(--hue))}
+.dark #search-overlay>div>div{background:var(--surface)!important}
+.dark #search-overlay>div>div>div{border-bottom-color:var(--border)!important}
+.dark #search-overlay input{color:var(--text)!important}
+.dark #search-overlay kbd{background:var(--bg2)!important;border-color:var(--border)!important;color:var(--text2)!important}
+.dark #search-overlay .sr-item{border-bottom-color:var(--border)!important}
+.dark #search-overlay .sr-item div:nth-child(1){color:var(--text)!important}
+.dark #search-overlay .sr-item div:nth-child(3){color:var(--text2)!important}
+.dark #search-overlay .sr-item[style*="oklch(0.935"]{background:oklch(0.22 0.02 var(--hue))!important}
+html{font-family:var(--font-sans);color:var(--text);background:var(--bg);scroll-behavior:smooth;line-height:1.6;font-size:16px}
+body{display:flex;flex-direction:column;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+pre,code{font-family:var(--font-mono);font-size:0.875em}
+code{background:var(--bg2);padding:0.15em 0.4em;border-radius:4px}
+pre{background:#1a1b26;color:#c9d1d9;padding:1.25rem 1.5rem;border-radius:var(--radius);overflow-x:auto;line-height:1.5;font-size:0.85rem}
+pre code{background:none;padding:0;color:inherit;font-size:inherit}
+
+.wrapper{max-width:1100px;margin:0 auto;padding:0 1.5rem;width:100%}
+
+/* ── Header ── */
+header{position:sticky;top:0;z-index:50;background:oklch(1 0 0 / 0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+header .inner{display:flex;align-items:center;justify-content:space-between;height:58px}
+header .logo{display:flex;align-items:center;gap:8px;font-weight:650;font-size:0.95rem;color:var(--text)}
+header .logo svg{width:20px;height:20px;color:var(--accent)}
+header nav{display:flex;align-items:center;gap:2px}
+header nav a{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;color:var(--text2);transition:all 0.15s}
+header nav a:hover{background:var(--bg2);color:var(--text);text-decoration:none}
+header nav a.active{background:var(--bg2);color:var(--accent);font-weight:600}
+@media(max-width:560px){header nav a{padding:7px 8px;font-size:0.75rem;gap:3px}}#search-btn:hover{background:var(--bg2)}#search-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+
+/* ── Page header ── */
+.page-header{padding:2.5rem 0 1.5rem;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.page-header h1{font-size:1.8rem;font-weight:700;letter-spacing:-0.02em}
+.page-header p{color:var(--text2);margin-top:4px;font-size:0.95rem}
+
+/* ── Content layout ── */
+.content-wrapper{display:grid;grid-template-columns:220px 1fr;gap:2.5rem;padding-bottom:3rem}
+@media(max-width:780px){.content-wrapper{grid-template-columns:1fr}}
+
+/* ── Sidebar ── */
+.sidebar{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 90px);overflow-y:auto;padding:0 0 1rem}
+@media(max-width:780px){.sidebar{display:none}}
+.sidebar h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text2);font-weight:600;margin-bottom:8px}
+.sidebar nav{display:flex;flex-direction:column;gap:2px}
+.sidebar nav a{display:block;padding:5px 0;font-size:0.85rem;font-weight:500;color:var(--text2);transition:color 0.15s}
+.sidebar nav a:hover{color:var(--accent);text-decoration:none}
+.sidebar nav .group-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--text2);font-weight:600;padding:10px 0 3px;opacity:0.7}
+
+/* ── Doc content ── */
+.doc h2{font-size:1.4rem;font-weight:650;letter-spacing:-0.02em;margin:2.5rem 0 0.75rem;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.doc h2:first-child{margin-top:0}
+.doc h3{font-size:1.1rem;font-weight:600;margin:1.8rem 0 0.5rem}
+.doc h4{font-size:0.95rem;font-weight:600;margin:1.2rem 0 0.3rem;color:var(--text)}
+.doc p,.doc li{font-size:0.93rem;color:var(--text2);line-height:1.65;margin-bottom:0.5rem}
+.doc ul,.doc ol{padding-left:1.25rem;margin-bottom:0.75rem}
+.doc li{margin-bottom:0.25rem}
+.doc strong{color:var(--text);font-weight:600}
+
+/* ── Tables ── */
+.doc .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem;border:1px solid var(--border);border-radius:var(--radius)}
+.doc table{width:100%;border-collapse:collapse;font-size:0.85rem;min-width:560px}
+.doc th,.doc td{padding:0.6rem 0.85rem;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+.doc th{background:var(--bg2);font-weight:600;font-size:0.82rem;color:var(--text2)}
+.doc td{font-size:0.82rem;color:var(--text2)}
+.doc td:first-child{font-family:var(--font-mono);color:var(--accent);font-weight:500;white-space:nowrap}
+.doc tr:last-child td{border-bottom:none}
+.doc table .mono{font-family:var(--font-mono);font-size:0.78rem}
+
+/* ── Code blocks ── */
+.doc .code-label{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.03em;color:var(--text2);margin-top:0.75rem;margin-bottom:4px}
+
+/* ── Note / Tip boxes ── */
+.doc .note{padding:0.75rem 1rem;background:oklch(0.96 0.02 var(--hue));border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin:1rem 0;font-size:0.85rem;color:var(--text2)}
+.doc .note strong{color:var(--text)}
+
+/* ── Footer ── */
+footer{padding:2rem 0;margin-top:auto;border-top:1px solid var(--border);text-align:center;font-size:0.8rem;color:var(--text2)}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrapper">
+<div class="inner">
+<a href="/" class="logo" style="text-decoration:none;color:inherit">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+bos-nepali-date
+</a>
+<nav>
+<a href="/">Home</a>
+<a href="/documentation.html" class="active">Docs</a>
+<a href="/roadmap.html">Roadmap</a>
+<a href="/changelogs.html">Changelogs</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
+<button id="search-btn" aria-label="Search" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;color:var(--text2);display:flex;align-items:center;gap:4px;transition:all 0.15s;margin-left:4px">🔍 <span style="font-size:0.7rem;opacity:0.5;font-weight:500">⌘K</span></button>
+<button id="theme-btn" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;transition:all 0.15s">🌙</button>
+</nav>
+</div>
+</div>
+</header>
+
+<main>
+<div class="wrapper">
+<div class="page-header">
+<h1>Documentation</h1>
+<p>Everything you need to integrate and customize the Nepali date picker.</p>
+</div>
+
+<div class="content-wrapper">
+<aside class="sidebar">
+<h4>On this page</h4>
+<nav>
+<a href="#getting-started">Getting started</a>
+<a href="#basic-usage">Basic usage</a>
+<div class="group-label">Props</div>
+<a href="#core-props">Core props</a>
+<a href="#disable-options">Disable options</a>
+<a href="#menu-options">Menu / Display options</a>
+<a href="#styling-props">Styling props</a>
+<div class="group-label">Guides</div>
+<a href="#localization">Localization</a>
+<a href="#styling">Styling</a>
+<a href="#adapter">Adapter</a>
+<a href="#accessibility">Accessibility</a>
+</nav>
+</aside>
+
+<div class="doc">
+
+<!-- ── Getting Started ── -->
+<h2 id="getting-started">Getting started</h2>
+<p><strong>bos-nepali-date</strong> is a React component for selecting Bikram Sambat (BS) dates. It ships with a pluggable conversion adapter so you can use the built-in tables or bring your own.</p>
+
+<div class="code-label">Install</div>
+<pre><code>npm install bos-nepali-date</code></pre>
+
+<div class="note"><strong>Styles are auto-imported</strong> — the component imports its CSS as a side effect. If your bundler strips CSS side effects, import styles explicitly: <code>import 'bos-nepali-date/style'</code>.</div>
+
+<!-- ── Basic Usage ── -->
+<h2 id="basic-usage">Basic usage</h2>
+<p>Wire up the component with a controlled value and an <code>onChange</code> handler. The <code>defaultAdapter</code> includes demo data for 2080–2081 BS.</p>
+
+<pre><code>import { useState } from 'react';
+import { NepaliDatePicker, defaultAdapter } from 'bos-nepali-date';
+
+function Demo() {
+  const [value, setValue] = useState(null);
+
+  return (
+    &lt;NepaliDatePicker
+      value={value}
+      onChange={setValue}
+      adapter={defaultAdapter}
+    /&gt;
+  );
+}</code></pre>
+
+<p>The <code>onChange</code> callback receives a <code>BsDate</code> object or <code>null</code> (when cleared).</p>
+
+<pre><code>// BsDate shape:
+{
+  year: number,  // e.g. 2080
+  month: number, // 1–12
+  day: number    // 1–32
+}</code></pre>
+
+<!-- ── Core Props ── -->
+<h2 id="core-props">Core props</h2>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>value</td><td><code>BsDate | null</code></td><td><code>null</code></td><td>Controlled BS date value.</td></tr>
+<tr><td>onChange</td><td><code>(date: BsDate | null) => void</code></td><td>—</td><td>Fired on selection or clear.</td></tr>
+<tr><td>adapter</td><td><code>BsAdapter</code></td><td><code>defaultAdapter</code></td><td>Conversion engine for BS↔AD arithmetic.</td></tr>
+<tr><td>minDate</td><td><code>BsDate</code></td><td>—</td><td>Earliest selectable date.</td></tr>
+<tr><td>maxDate</td><td><code>BsDate</code></td><td>—</td><td>Latest selectable date.</td></tr>
+<tr><td>showLabel</td><td><code>boolean</code></td><td><code>false</code></td><td>Render a visible label above the input.</td></tr>
+<tr><td>placeholder</td><td><code>string</code></td><td><code>"YYYY-MM-DD (BS)"</code></td><td>Placeholder text for the input.</td></tr>
+<tr><td>className</td><td><code>string</code></td><td>—</td><td>Extra class for the root wrapper.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note"><strong>Note:</strong> <code>minDate</code> and <code>maxDate</code> clamp the selectable range. They combine with disable rules — if any rule matches, the date is not selectable.</div>
+
+<!-- ── Disable Options ── -->
+<h2 id="disable-options">Disable options</h2>
+<p>Pass a <code>disable</code> object to control which dates cannot be selected.</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>disable.today</td><td><code>boolean</code></td><td><code>false</code></td><td>Prevent selecting today's date.</td></tr>
+<tr><td>disable.date</td><td><code>BsDate</code></td><td>—</td><td>Disable a single specific date.</td></tr>
+<tr><td>disable.dates</td><td><code>BsDate[]</code></td><td><code>[]</code></td><td>Disable a list of dates.</td></tr>
+<tr><td>disable.before</td><td><code>BsDate</code></td><td>—</td><td>Disable all dates before this.</td></tr>
+<tr><td>disable.after</td><td><code>BsDate</code></td><td>—</td><td>Disable all dates after this.</td></tr>
+</tbody>
+</table>
+</div>
+
+<pre><code>// Example: disable today + block weekends manually
+&lt;NepaliDatePicker
+  disable={{
+    today: true,
+    dates: [
+      { year: 2081, month: 1, day: 1 },
+      { year: 2081, month: 1, day: 15 },
+    ]
+  }}
+/&gt;</code></pre>
+
+<!-- ── Menu / Display Options ── -->
+<h2 id="menu-options">Menu / Display options</h2>
+<p>Pass a <code>menu</code> object to control locale, calendar layout, and visibility of controls.</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>menu.lang</td><td><code>'en' | 'ne'</code></td><td><code>'en'</code></td><td>Localize month/day labels and digits.</td></tr>
+<tr><td>menu.showMonth</td><td><code>boolean</code></td><td><code>true</code></td><td>Show/hide the month selector dropdown.</td></tr>
+<tr><td>menu.showYear</td><td><code>boolean</code></td><td><code>true</code></td><td>Show/hide the year selector dropdown.</td></tr>
+<tr><td>menu.firstDayOfWeek</td><td><code>0 | 1</code></td><td><code>0</code></td><td>Start the week on Sunday (<code>0</code>) or Monday (<code>1</code>).</td></tr>
+</tbody>
+</table>
+</div>
+
+<pre><code>// Example: Nepali locale with Monday start
+&lt;NepaliDatePicker
+  menu={{
+    lang: 'ne',
+    firstDayOfWeek: 1,
+    showMonth: true,
+    showYear: true,
+  }}
+/&gt;</code></pre>
+
+<!-- ── Styling Props ── -->
+<h2 id="styling-props">Styling props</h2>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>inputClassName</td><td><code>string</code></td><td>—</td><td>Extra class for the input element.</td></tr>
+<tr><td>inputPattern</td><td><code>string | false</code></td><td><code>\d{4}-\d{2}-\d{2}</code></td><td>Native <code>pattern</code> attribute. Set <code>false</code> to remove.</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ── Localization ── -->
+<h2 id="localization">Localization</h2>
+<p>Set <code>menu.lang="ne"</code> to render month names, weekday abbreviations, and calendar digits in <strong>Nepali (नेपाली)</strong>. The <code>onChange</code> value still returns the date in ASCII BS <code>YYYY-MM-DD</code> format.</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Option</th><th>Labels</th><th>Digits</th><th>Value format</th></tr>
+</thead>
+<tbody>
+<tr><td><code>menu.lang="en"</code> (default)</td><td>English month/day names</td><td>0–9</td><td><code>2081-01-15</code></td></tr>
+<tr><td><code>menu.lang="ne"</code></td><td>नेपाली month/day names</td><td>०-९</td><td><code>२०८१-०१-१५</code> (display) / <code>2081-01-15</code> (value)</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note"><strong>Note:</strong> The input accepts Nepali digits (०-९) and normalizes them to ASCII automatically.</div>
+
+<!-- ── Styling Guide ── -->
+<h2 id="styling">Styling</h2>
+<p>The picker's base styles are imported automatically from the component. Override these CSS variables to theme the component to match your application.</p>
+
+<h3>CSS Variables</h3>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--np-font</code></td><td>inherits host</td><td>Font family for picker controls.</td></tr>
+<tr><td><code>--np-popover-min-width</code></td><td><code>280px</code></td><td>Minimum calendar popover width.</td></tr>
+<tr><td><code>--np-popover-max-width</code></td><td><code>320px</code></td><td>Maximum calendar popover width.</td></tr>
+</tbody>
+</table>
+</div>
+
+<pre><code>/* Example: custom theme */
+.np-picker {
+  --np-font: 'Noto Sans', sans-serif;
+  --np-popover-min-width: 300px;
+  --np-popover-max-width: 360px;
+}</code></pre>
+
+<div class="note"><strong>Inherited font:</strong> The picker inherits the host app's font family. If you need to force a specific font (e.g., a Nepali-capable font), set <code>--np-font</code> on the wrapper or <code>.np-picker</code> class.</div>
+
+<!-- ── Adapter Guide ── -->
+<h2 id="adapter">Adapter</h2>
+<p>The <strong>adapter</strong> is the conversion engine that translates between Bikram Sambat (BS) and Gregorian (AD) dates. The library ships with a <code>defaultAdapter</code> and a <code>MemoryBsAdapter</code> for custom year tables.</p>
+
+<h3>defaultAdapter</h3>
+<p>Pre-configured with demo data for BS years 2080–2081. Suitable for evaluation and development. <strong>Not recommended for production</strong> — <code>toAD()</code> and <code>toBS()</code> will throw for dates outside this range.</p>
+
+<h3>MemoryBsAdapter</h3>
+<p>Create a custom adapter with your own complete year table.</p>
+
+<pre><code>import { MemoryBsAdapter } from 'bos-nepali-date';
+
+const adapter = new MemoryBsAdapter({
+  anchorBs: { year: 2000, month: 1, day: 1 },
+  anchorAdIso: '1943-04-14',
+  yearTable: {
+    2080: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+    2081: [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+    // ... your full table
+  },
+});</code></pre>
+
+<div class="note"><strong>Note:</strong> To use in production, you'll need to provide a complete BS year table (2000–2100 recommended). The published NPM package only includes demo data for 2080–2081.</div>
+
+<h3>Creating a custom adapter</h3>
+<p>Implement the <code>BsAdapter</code> interface to provide your own conversion logic:</p>
+
+<pre><code>interface BsAdapter {
+  /** Convert a BS date to ISO AD string (YYYY-MM-DD). */
+  toAD: (date: BsDate) => AdDateIso;
+  /** Convert an ISO AD string to BS date. */
+  toBS: (date: AdDateIso) => BsDate;
+  /** Add days to a BS date and return a new BS date. */
+  addDays: (date: BsDate, days: number) => BsDate;
+  /** Difference in days: date2 - date1. */
+  diffDays: (date1: BsDate, date2: BsDate) => number;
+  /** BS date for today. */
+  today: () => BsDate;
+  /** Optional supported range for validation. */
+  range?: { min?: BsDate; max?: BsDate };
+}</code></pre>
+
+<!-- ── Accessibility ── -->
+<h2 id="accessibility">Accessibility</h2>
+<ul>
+<li><strong>Keyboard:</strong> Escape closes the popover, Tab navigates between controls.</li>
+<li><strong>Click-outside:</strong> Clicking outside the popover closes it.</li>
+<li><strong>ARIA:</strong> Month/year toggles expose <code>aria-haspopup</code> / <code>aria-expanded</code>. Calendar days expose <code>disabled</code> state.</li>
+<li><strong>Input:</strong> Numeric mask enforces <code>YYYY-MM-DD</code> format. Accepts and normalizes Nepali digits.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer>
+<div class="wrapper">
+<p><strong>bos-nepali-date</strong> — MIT · <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a> · <a href="https://www.npmjs.com/package/bos-nepali-date" target="_blank">npm</a> · Built by <a href="https://github.com/prabin194" target="_blank">Prabin Paudel</a></p>
+</div>
+</footer>
+
+<script src="/search.js"></script>
+<script src="/theme.js"></script>
+</body>
+</html>

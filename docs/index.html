@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="bos-nepali-date — A React Nepali (Bikram Sambat) date picker with pluggable conversion adapter.">
+<meta property="og:title" content="bos-nepali-date — Nepali Date Picker for React">
+<meta property="og:description" content="A lightweight Bikram Sambat (BS) date picker for React. Localized to Nepali and English.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="bos-nepali-date — Nepali Date Picker for React">
+<meta name="twitter:description" content="A lightweight Bikram Sambat (BS) date picker for React with pluggable conversion engine.">
+<title>bos-nepali-date — Nepali Date Picker for React</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c026d3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bos-nepali-date@0.1.13/dist/index.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --hue:262;
+  --bg:oklch(0.985 0 0);
+  --bg2:oklch(0.965 0.004 var(--hue));
+  --surface:oklch(1 0 0);
+  --border:oklch(0.91 0.006 var(--hue));
+  --text:oklch(0.13 0.012 var(--hue));
+  --text2:oklch(0.42 0.018 var(--hue));
+  --accent:oklch(0.52 0.19 var(--hue));
+  --accent2:oklch(0.62 0.16 var(--hue));
+  --radius:10px;
+  --radius-sm:8px;
+  --font-sans:'Inter','SF Pro','system-ui',sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono','Fira Code','Consolas',monospace;
+}
+.dark{
+  --bg:oklch(0.1 0.01 var(--hue));
+  --bg2:oklch(0.16 0.015 var(--hue));
+  --surface:oklch(0.13 0.012 var(--hue));
+  --border:oklch(0.25 0.015 var(--hue));
+  --text:oklch(0.9 0.005 var(--hue));
+  --text2:oklch(0.6 0.01 var(--hue));
+  --accent:oklch(0.65 0.2 var(--hue));
+  --accent2:oklch(0.72 0.17 var(--hue));
+}
+.dark header{background:oklch(0.12 0.01 var(--hue) / 0.92)}
+.dark .demo-preview{background:oklch(0.14 0.01 var(--hue))}
+.dark .features .card:hover{border-color:var(--accent);box-shadow:0 2px 12px oklch(1 1 1 / 0.06)}
+.dark .demo-header .controls select{color:var(--text);background:var(--surface)}
+.dark #search-overlay>div>div{background:var(--surface)!important}
+.dark #search-overlay>div>div>div{border-bottom-color:var(--border)!important}
+.dark #search-overlay input{color:var(--text)!important}
+.dark #search-overlay kbd{background:var(--bg2)!important;border-color:var(--border)!important;color:var(--text2)!important}
+.dark #search-overlay .sr-item{border-bottom-color:var(--border)!important}
+.dark #search-overlay .sr-item div:nth-child(1){color:var(--text)!important}
+.dark #search-overlay .sr-item div:nth-child(3){color:var(--text2)!important}
+.dark #search-overlay .sr-item[style*="oklch(0.935"]{background:oklch(0.22 0.02 var(--hue))!important}
+html{font-family:var(--font-sans);color:var(--text);background:var(--bg);scroll-behavior:smooth;line-height:1.6;font-size:16px}
+body{display:flex;flex-direction:column;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+pre,code{font-family:var(--font-mono);font-size:0.875em}
+code{background:var(--bg2);padding:0.15em 0.4em;border-radius:4px}
+pre{background:#1a1b26;color:#c9d1d9;padding:1.25rem 1.5rem;border-radius:var(--radius);overflow-x:auto;line-height:1.5;font-size:0.85rem}
+pre code{background:none;padding:0;color:inherit;font-size:inherit}
+
+.wrapper{max-width:1100px;margin:0 auto;padding:0 1.5rem;width:100%}
+
+/* ── Header ── */
+header{position:sticky;top:0;z-index:50;background:oklch(1 0 0 / 0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+header .inner{display:flex;align-items:center;justify-content:space-between;height:58px}
+header .logo{display:flex;align-items:center;gap:8px;font-weight:650;font-size:0.95rem;color:var(--text)}
+header .logo svg{width:20px;height:20px;color:var(--accent)}
+header nav{display:flex;align-items:center;gap:2px}
+header nav a{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;color:var(--text2);transition:all 0.15s}
+header nav a:hover{background:var(--bg2);color:var(--text);text-decoration:none}
+header nav a.active{background:var(--bg2);color:var(--accent);font-weight:600}
+@media(max-width:560px){header nav a{padding:7px 8px;font-size:0.75rem;gap:3px}}#search-btn:hover{background:var(--bg2)}#search-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+
+/* ── Hero ── */
+.hero{padding:4rem 0 2.5rem;text-align:center}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;letter-spacing:-0.03em;line-height:1.15}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{max-width:560px;margin:0.75rem auto 1.25rem;font-size:1.1rem;color:var(--text2);line-height:1.55}
+.hero .badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.hero .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:999px;font-size:0.8rem;font-weight:500;background:var(--bg2);color:var(--text2);border:1px solid var(--border);transition:all 0.15s}
+.hero .badge:hover{background:var(--border);text-decoration:none}
+.hero .install-code{display:inline-flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface);margin-top:1.5rem}
+.hero .install-code code{padding:0.7rem 1.1rem;font-size:0.9rem;background:none;border:none}
+.hero .install-code button{padding:0.7rem 1.1rem;border:none;border-left:1px solid var(--border);background:var(--bg2);font-family:inherit;font-size:0.8rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s}
+.hero .install-code button:hover{background:var(--border);color:var(--text)}
+
+/* ── Demo ── */
+.demo-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:3rem}
+.demo-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.demo-header h2{font-size:0.95rem;font-weight:600}
+.demo-header .controls{display:flex;gap:8px;flex-wrap:wrap}
+.demo-header .controls label{display:inline-flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:500;color:var(--text2);cursor:pointer}
+.demo-header .controls input[type="checkbox"]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.demo-header .controls select{font-size:0.8rem;padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer}
+.demo-body{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:320px}
+@media(max-width:700px){.demo-body{grid-template-columns:1fr}}
+.demo-preview{display:flex;align-items:center;justify-content:center;padding:2rem;background:oklch(0.99 0.002 var(--hue))}
+.demo-preview .np-picker{max-width:280px}
+.demo-loading{font-size:0.85rem;color:var(--text2);padding:2rem;text-align:center}
+.demo-output{display:flex;flex-direction:column;justify-content:center;padding:2rem;background:var(--bg2);border-left:1px solid var(--border);font-size:0.85rem;gap:12px}
+@media(max-width:700px){.demo-output{border-left:none;border-top:1px solid var(--border)}}
+.demo-output .row{display:flex;justify-content:space-between;gap:10px}
+.demo-output .row .lbl{color:var(--text2);font-weight:500}
+.demo-output .row .val{font-family:var(--font-mono);font-size:0.8rem;color:var(--accent)}
+
+/* ── Sections ── */
+section{padding:2.5rem 0}
+section + section{border-top:1px solid var(--border)}
+section h2{font-size:1.5rem;font-weight:650;letter-spacing:-0.02em;margin-bottom:0.5rem;text-align:center}
+section > p{color:var(--text2);margin-bottom:1.5rem;max-width:600px;margin-left:auto;margin-right:auto;text-align:center}
+
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.features .card{padding:1.2rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:all 0.2s}
+.features .card:hover{border-color:var(--accent);box-shadow:0 2px 12px oklch(0 0 0 / 0.06)}
+.features .card .icon{font-size:1.3rem;margin-bottom:5px}
+.features .card h4{font-size:0.9rem;font-weight:600;margin-bottom:3px}
+.features .card p{font-size:0.81rem;color:var(--text2);line-height:1.4}
+
+.quick-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:2rem 0 0}
+.quick-links a{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:var(--radius);font-size:0.9rem;font-weight:500;transition:all 0.2s}
+.quick-links .primary{background:var(--accent);color:#fff}
+.quick-links .primary:hover{opacity:0.9;text-decoration:none}
+.quick-links .secondary{border:1px solid var(--border);color:var(--text)}
+.quick-links .secondary:hover{background:var(--bg2);text-decoration:none}
+
+/* ── Footer ── */
+footer{padding:2rem 0;margin-top:auto;border-top:1px solid var(--border);text-align:center;font-size:0.8rem;color:var(--text2)}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrapper">
+<div class="inner">
+<a href="/" class="logo" style="text-decoration:none;color:inherit">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+bos-nepali-date
+</a>
+<nav>
+<a href="/" class="active">Home</a>
+<a href="/documentation.html">Docs</a>
+<a href="/roadmap.html">Roadmap</a>
+<a href="/changelogs.html">Changelogs</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
+<button id="search-btn" aria-label="Search" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;color:var(--text2);display:flex;align-items:center;gap:4px;transition:all 0.15s;margin-left:4px">🔍 <span style="font-size:0.7rem;opacity:0.5;font-weight:500">⌘K</span></button>
+<button id="theme-btn" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;transition:all 0.15s">🌙</button>
+</nav>
+</div>
+</div>
+</header>
+
+<main>
+<div class="wrapper">
+<section class="hero" style="border:none;padding-bottom:1.5rem">
+<h1><span>Nepali Date Picker</span> for React</h1>
+<p>A lightweight, accessible Bikram Sambat (BS) date picker with a pluggable conversion engine. Localized to Nepali and English.</p>
+<div class="badges">
+<a class="badge" href="https://www.npmjs.com/package/bos-nepali-date" target="_blank">📦 npm bos-nepali-date</a>
+<a class="badge" href="https://github.com/prabin194/bos-nepali-date" target="_blank">🐙 GitHub</a>
+<a class="badge" href="https://github.com/prabin194/bos-nepali-date/blob/main/LICENSE" target="_blank">📄 MIT</a>
+</div>
+<div class="install-code">
+<code>npm install bos-nepali-date</code>
+<button onclick="navigator.clipboard.writeText('npm install bos-nepali-date').then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)})">Copy</button>
+</div>
+</section>
+
+<section id="demo" style="border:none;padding-top:0">
+<div class="demo-section">
+<div class="demo-header">
+<h2>Interactive demo</h2>
+<div class="controls">
+<label><input type="checkbox" id="ctl-lang"> नेपाली (ne)</label>
+<label><input type="checkbox" id="ctl-today"> Disable today</label>
+<label><select id="ctl-weekstart"><option value="0">Sunday start</option><option value="1">Monday start</option></select></label>
+</div>
+</div>
+<div class="demo-body">
+<div class="demo-preview" id="demo-mount"><div class="demo-loading">Loading demo…</div></div>
+<div class="demo-output" id="demo-output">
+<div class="row"><span class="lbl">Selected (BS)</span><span class="val" id="out-bs">—</span></div>
+<div class="row"><span class="lbl">Selected (AD)</span><span class="val" id="out-ad">—</span></div>
+<div class="row"><span class="lbl">Locale</span><span class="val" id="out-locale">en</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<h2>Why this picker?</h2>
+<p>Built for React apps that need genuine Bikram Sambat date handling — not an English calendar with Nepali labels.</p>
+<div class="features">
+<div class="card"><div class="icon">🇳🇵</div><h4>True BS dates</h4><p>Full Bikram Sambat arithmetic, not faked with offsets.</p></div>
+<div class="card"><div class="icon">🔌</div><h4>Pluggable adapter</h4><p>Swap in your own BS↔AD conversion tables.</p></div>
+<div class="card"><div class="icon">🌐</div><h4>Dual language</h4><p>Toggle English / नेपाली month names and digits.</p></div>
+<div class="card"><div class="icon">⛔</div><h4>Disable rules</h4><p>Disable dates, ranges, before/after bounds, or today.</p></div>
+<div class="card"><div class="icon">🎨</div><h4>Custom styling</h4><p>Theme via CSS variables. Everything overrideable.</p></div>
+<div class="card"><div class="icon">♿</div><h4>Accessible</h4><p>Esc to close, Tab to navigate, ARIA throughout.</p></div>
+</div>
+
+<div class="quick-links">
+<a href="/documentation.html" class="primary">📖 Read the docs</a>
+<a href="/roadmap.html" class="secondary">🗺️ Roadmap</a>
+<a href="/changelogs.html" class="secondary">📋 Changelog</a>
+</div>
+</section>
+</div>
+</main>
+
+<footer>
+<div class="wrapper">
+<p><strong>bos-nepali-date</strong> — MIT · <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a> · <a href="https://www.npmjs.com/package/bos-nepali-date" target="_blank">npm</a> · Built by <a href="https://github.com/prabin194" target="_blank">Prabin Paudel</a></p>
+</div>
+</footer>
+
+<script src="/search.js"></script>
+<script src="/theme.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+    "clsx": "https://esm.sh/clsx@2.1.1",
+    "bos-nepali-date": "https://esm.sh/bos-nepali-date@0.1.13?external=react,react-dom,react/jsx-runtime,clsx"
+  }
+}
+</script>
+<script type="module">
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { NepaliDatePicker, defaultAdapter } from 'bos-nepali-date';
+const adapter = defaultAdapter;
+const today = adapter.today();
+const demoDate = { year: today.year, month: today.month, day: 15 };
+function DemoApp() {
+  const [value, setValue] = React.useState(demoDate);
+  const [lang, setLang] = React.useState('en');
+  const [disableToday, setDisableToday] = React.useState(false);
+  const [firstDayOfWeek, setFirstDayOfWeek] = React.useState(0);
+  const [key, setKey] = React.useState(0);
+  React.useEffect(() => {
+    const langCb = document.getElementById('ctl-lang');
+    const todayCb = document.getElementById('ctl-today');
+    const weekSel = document.getElementById('ctl-weekstart');
+    const onChange = () => { setLang(langCb.checked?'ne':'en'); setDisableToday(todayCb.checked); setFirstDayOfWeek(parseInt(weekSel.value,10)); setKey(k=>k+1); };
+    langCb.addEventListener('change', onChange);
+    todayCb.addEventListener('change', onChange);
+    weekSel.addEventListener('change', onChange);
+    return () => { langCb.removeEventListener('change', onChange); todayCb.removeEventListener('change', onChange); weekSel.removeEventListener('change', onChange); };
+  }, []);
+  const outBs = document.getElementById('out-bs');
+  const outAd = document.getElementById('out-ad');
+  const outLocale = document.getElementById('out-locale');
+  const handleChange = (date) => {
+    setValue(date);
+    if (date) {
+      outBs.textContent = `${date.year}-${String(date.month).padStart(2,'0')}-${String(date.day).padStart(2,'0')}`;
+      try { outAd.textContent = adapter.toAD(date); } catch { outAd.textContent = '(out of range)'; }
+    } else { outBs.textContent = '(cleared)'; outAd.textContent = '(cleared)'; }
+    outLocale.textContent = lang;
+  };
+  React.useEffect(() => {
+    if (value) {
+      outBs.textContent = `${value.year}-${String(value.month).padStart(2,'0')}-${String(value.day).padStart(2,'0')}`;
+      try { outAd.textContent = adapter.toAD(value); } catch { outAd.textContent = '(out of range)'; }
+    }
+    outLocale.textContent = lang;
+    // Open the picker popover on load to demonstrate it
+    var openTimer = setTimeout(function() {
+      var toggle = document.querySelector('#demo-mount .np-toggle');
+      if (toggle) toggle.click();
+    }, 600);
+    return function() { clearTimeout(openTimer); };
+  }, []);
+  return React.createElement(NepaliDatePicker, { key, value, onChange: handleChange, adapter, disable: disableToday ? { today: true } : {}, menu: { lang, firstDayOfWeek, showMonth: true, showYear: true } });
+}
+const root = ReactDOM.createRoot(document.getElementById('demo-mount'));
+root.render(React.createElement(DemoApp));
+</script>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useReducer, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { BsAdapter, BsDate } from '../types';
 import { CalendarGrid } from './CalendarGrid';
@@ -11,6 +11,65 @@ import { PickerHeader } from './PickerHeader';
 import { PickerFooter } from './PickerFooter';
 import { formatBs, normalizeDigitsToAscii, parseBs, toNepaliDigits } from './pickerUtils';
 
+export type DisableOptions = {
+  today?: boolean;
+  date?: BsDate;
+  dates?: BsDate[];
+  before?: BsDate;
+  after?: BsDate;
+};
+
+export type MenuOptions = {
+  showMonth?: boolean;
+  showYear?: boolean;
+  firstDayOfWeek?: 0 | 1;
+  lang?: 'en' | 'ne';
+};
+
+const EMPTY_DATES: BsDate[] = [];
+const EMPTY_DISABLE: DisableOptions = {};
+const EMPTY_MENU: MenuOptions = {};
+
+type PickerUIState = {
+  open: boolean;
+  monthOpen: boolean;
+  yearOpen: boolean;
+  viewMonth: BsDate;
+};
+
+type PickerUIAction =
+  | { type: 'OPEN' }
+  | { type: 'CLOSE' }
+  | { type: 'TOGGLE_OPEN' }
+  | { type: 'TOGGLE_MONTH' }
+  | { type: 'TOGGLE_YEAR' }
+  | { type: 'SELECT_MONTH'; month: number }
+  | { type: 'SELECT_YEAR'; year: number }
+  | { type: 'SET_VIEW_MONTH'; viewMonth: BsDate };
+
+function pickerUIReducer(state: PickerUIState, action: PickerUIAction): PickerUIState {
+  switch (action.type) {
+    case 'OPEN':
+      return { ...state, open: true };
+    case 'CLOSE':
+      return { ...state, open: false, monthOpen: false, yearOpen: false };
+    case 'TOGGLE_OPEN':
+      return { ...state, open: !state.open, monthOpen: false, yearOpen: false };
+    case 'TOGGLE_MONTH':
+      return { ...state, monthOpen: !state.monthOpen, yearOpen: false };
+    case 'TOGGLE_YEAR':
+      return { ...state, yearOpen: !state.yearOpen, monthOpen: false };
+    case 'SELECT_MONTH':
+      return { ...state, viewMonth: { ...state.viewMonth, month: action.month, day: 1 }, monthOpen: false };
+    case 'SELECT_YEAR':
+      return { ...state, viewMonth: { ...state.viewMonth, year: action.year, day: 1 }, yearOpen: false };
+    case 'SET_VIEW_MONTH':
+      return { ...state, viewMonth: action.viewMonth };
+    default:
+      return state;
+  }
+}
+
 export type NepaliDatePickerProps = {
   label?: string;
   showLabel?: boolean;
@@ -19,22 +78,15 @@ export type NepaliDatePickerProps = {
   adapter?: BsAdapter;
   minDate?: BsDate;
   maxDate?: BsDate;
-  disableToday?: boolean;
-  disableDate?: BsDate;
-  disableDates?: BsDate[];
-  disableBefore?: BsDate;
-  disableAfter?: BsDate;
+  disable?: DisableOptions;
   placeholder?: string;
-  firstDayOfWeek?: 0 | 1;
   className?: string;
   inputClassName?: string;
   /**
    * Pattern attribute for the native input. Set to `false` to remove the pattern/validation entirely.
    */
   inputPattern?: string | false;
-  showMonth?: boolean;
-  showYear?: boolean;
-  lang?: 'en' | 'ne';
+  menu?: MenuOptions;
 };
 
 export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
@@ -45,29 +97,39 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   adapter = defaultAdapter,
   minDate,
   maxDate,
-  disableToday = false,
-  disableDate,
-  disableDates = [],
-  disableBefore,
-  disableAfter,
+  disable = EMPTY_DISABLE,
   placeholder,
-  firstDayOfWeek = 0,
   className,
   inputClassName,
   inputPattern = '\\d{4}-\\d{2}-\\d{2}',
-  showMonth = true,
-  showYear = true,
-  lang = 'en',
+  menu = EMPTY_MENU,
 }) => {
-  const [open, setOpen] = useState(false);
-  const [input, setInput] = useState(formatBs(value));
-  const initialMonth = value ?? adapter.today();
-  const [viewMonth, setViewMonth] = useState<BsDate>({ ...initialMonth, day: 1 });
+  const {
+    today: disableToday = false,
+    date: disableDate,
+    dates: disableDates = EMPTY_DATES,
+    before: disableBefore,
+    after: disableAfter,
+  } = disable;
+
+  const {
+    showMonth = true,
+    showYear = true,
+    firstDayOfWeek = 0,
+    lang = 'en',
+  } = menu;
+  const [uiState, dispatch] = useReducer(pickerUIReducer, {
+    open: false,
+    monthOpen: false,
+    yearOpen: false,
+    viewMonth: { ...(value ?? adapter.today()), day: 1 },
+  });
+  const { open, monthOpen, yearOpen, viewMonth } = uiState;
+
+  const [input, setInput] = useState(() => formatBs(value));
   const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
-  const [monthOpen, setMonthOpen] = useState(false);
-  const [yearOpen, setYearOpen] = useState(false);
   const monthMenuRef = useRef<HTMLDivElement | null>(null);
   const yearMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -120,7 +182,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     if (parseBs(input)?.year !== value?.year || parseBs(input)?.month !== value?.month || parseBs(input)?.day !== value?.day) {
       setInput(formatted);
     }
-    setViewMonth({ ...(value ?? adapter.today()), day: 1 });
+    dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...(value ?? adapter.today()), day: 1 } });
   }, [value, adapter]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -140,7 +202,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
       const bs = adapter.toBS(iso); // round-trip validation
       if (bs.year === parsed.year && bs.month === parsed.month && bs.day === parsed.day && !disabled(parsed)) {
         onChange?.(parsed);
-        setViewMonth({ ...parsed, day: 1 });
+        dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...parsed, day: 1 } });
       }
     } catch (err) {
       // ignore invalid
@@ -157,24 +219,23 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
       }
       next = shifted;
     }
-    setViewMonth(next);
+    dispatch({ type: 'SET_VIEW_MONTH', viewMonth: next });
   }
 
   function handleSelect(date: BsDate) {
     if (disabled(date)) return;
     onChange?.(date);
     setInput(formatBs(date));
-    setViewMonth({ ...date, day: 1 });
-    setOpen(false);
+    dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...date, day: 1 } });
+    dispatch({ type: 'CLOSE' });
   }
   function handleClear() {
     onChange?.(null);
     setInput('');
-    setOpen(false);
+    dispatch({ type: 'CLOSE' });
   }
   function handleToday() {
     const t = adapter.today();
-    setViewMonth({ year: t.year, month: t.month, day: 1 });
     handleSelect(t);
   }
 
@@ -234,9 +295,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
       const target = e.target as Node;
       if (wrapperRef.current?.contains(target)) return;
       if (popoverRef.current?.contains(target)) return;
-      setOpen(false);
-      setMonthOpen(false);
-      setYearOpen(false);
+      dispatch({ type: 'CLOSE' });
     }
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
@@ -246,9 +305,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     function onKeyDown(e: KeyboardEvent) {
       if (!open) return;
       if (e.key === 'Escape') {
-        setOpen(false);
-        setMonthOpen(false);
-        setYearOpen(false);
+        dispatch({ type: 'CLOSE' });
         return;
       }
       if (e.key === 'Tab' && popoverRef.current) {
@@ -273,7 +330,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
 
     updatePopoverPosition();
@@ -291,19 +348,27 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     };
   }, [open, monthOpen, yearOpen, viewMonth.year, viewMonth.month]);
 
-  useEffect(() => {
-    if (monthOpen) {
-      const active = monthMenuRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
-      active?.scrollIntoView?.({ block: 'center' });
+  function handleToggleMonth() {
+    const wasOpen = monthOpen;
+    dispatch({ type: 'TOGGLE_MONTH' });
+    if (!wasOpen) {
+      requestAnimationFrame(() => {
+        const active = monthMenuRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
+        active?.scrollIntoView?.({ block: 'center' });
+      });
     }
-  }, [monthOpen]);
+  }
 
-  useEffect(() => {
-    if (yearOpen) {
-      const active = yearMenuRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
-      active?.scrollIntoView?.({ block: 'center' });
+  function handleToggleYear() {
+    const wasOpen = yearOpen;
+    dispatch({ type: 'TOGGLE_YEAR' });
+    if (!wasOpen) {
+      requestAnimationFrame(() => {
+        const active = yearMenuRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
+        active?.scrollIntoView?.({ block: 'center' });
+      });
     }
-  }, [yearOpen, viewMonth.year]);
+  }
 
   return (
     <div className={clsx('np-picker', className)} ref={wrapperRef}>
@@ -319,8 +384,8 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
         inputPattern={inputPattern}
         label={label}
         onChange={handleInputChange}
-        onFocus={() => setOpen(true)}
-        onToggle={() => setOpen((v) => !v)}
+        onFocus={() => dispatch({ type: 'OPEN' })}
+        onToggle={() => dispatch({ type: 'TOGGLE_OPEN' })}
       />
 
       {open && typeof document !== 'undefined'
@@ -339,10 +404,11 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                 yearOpen={yearOpen}
                 canMovePrev={canMovePrev}
                 canMoveNext={canMoveNext}
-                onToggleMonth={() => { setMonthOpen((v) => !v); setYearOpen(false); }}
-                onToggleYear={() => { setYearOpen((v) => !v); setMonthOpen(false); }}
-                onSelectMonth={(m) => { setViewMonth({ ...viewMonth, month: m, day: 1 }); setMonthOpen(false); }}
-                onSelectYear={(y) => { setViewMonth({ ...viewMonth, year: y, day: 1 }); setYearOpen(false); }}
+                onToggleMonth={handleToggleMonth}
+                onToggleYear={handleToggleYear}
+                onSelectMonth={(m) => dispatch({ type: 'SELECT_MONTH', month: m })}
+                onSelectYear={(y) => dispatch({ type: 'SELECT_YEAR', year: y })}
+
                 moveMonth={moveMonth}
                 monthMenuRef={monthMenuRef}
                 yearMenuRef={yearMenuRef}

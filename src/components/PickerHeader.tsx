@@ -83,7 +83,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
                   >
                     {m}
                   </button>
-                ))}
+                )                )}
               </div>
             )}
           </div>
@@ -118,7 +118,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
                   >
                     {isNepali ? toNepaliDigits(y) : y}
                   </button>
-                ))}
+                )                )}
               </div>
             )}
           </div>
