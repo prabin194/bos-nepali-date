@@ -48,7 +48,7 @@
 .dark #search-overlay .sr-item div:nth-child(1){color:var(--text)!important}
 .dark #search-overlay .sr-item div:nth-child(3){color:var(--text2)!important}
 .dark #search-overlay .sr-item[style*="oklch(0.935"]{background:oklch(0.22 0.02 var(--hue))!important}
-html{font-family:var(--font-sans);color:var(--text);background:var(--bg);scroll-behavior:smooth;line-height:1.6;font-size:16px}
+html{font-family:var(--font-sans);color:var(--text);background:var(--bg);scroll-behavior:smooth;line-height:1.6;font-size:16px;transition:background 0.3s ease,color 0.3s ease}
 body{display:flex;flex-direction:column;min-height:100vh}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
@@ -56,7 +56,7 @@ a:hover{text-decoration:underline}
 .wrapper{max-width:900px;margin:0 auto;padding:0 1.5rem;width:100%}
 
 /* ── Header ── */
-header{position:sticky;top:0;z-index:50;background:oklch(1 0 0 / 0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+header{position:sticky;top:0;z-index:50;background:oklch(1 0 0 / 0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);transition:background 0.3s ease}
 header .inner{display:flex;align-items:center;justify-content:space-between;height:58px}
 header .logo{display:flex;align-items:center;gap:8px;font-weight:650;font-size:0.95rem;color:var(--text)}
 header .logo svg{width:20px;height:20px;color:var(--accent)}
@@ -116,15 +116,15 @@ footer a{color:var(--accent)}
 <header>
 <div class="wrapper">
 <div class="inner">
-<a href="/" class="logo" style="text-decoration:none;color:inherit">
+<a href="index.html" class="logo" style="text-decoration:none;color:inherit">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
 bos-nepali-date
 </a>
 <nav>
-<a href="/">Home</a>
-<a href="/documentation.html">Docs</a>
-<a href="/roadmap.html" class="active">Roadmap</a>
-<a href="/changelogs.html">Changelogs</a>
+<a href="index.html">Home</a>
+<a href="documentation.html">Docs</a>
+<a href="roadmap.html" class="active">Roadmap</a>
+<a href="changelogs.html">Changelogs</a>
 <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
 <button id="search-btn" aria-label="Search" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;color:var(--text2);display:flex;align-items:center;gap:4px;transition:all 0.15s;margin-left:4px">🔍 <span style="font-size:0.7rem;opacity:0.5;font-weight:500">⌘K</span></button>
 <button id="theme-btn" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;transition:all 0.15s">🌙</button>
@@ -282,7 +282,7 @@ bos-nepali-date
 </div>
 </footer>
 
-<script src="/search.js"></script>
-<script src="/theme.js"></script>
+<script src="search.js"></script>
+<script src="theme.js"></script>
 </body>
 </html>
