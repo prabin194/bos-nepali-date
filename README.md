@@ -7,7 +7,7 @@ React-ready Nepali (Bikram Sambat) date picker packaged for reuse. Ships with a 
 
 ## Live demo
 
-[https://www.prabin194.com.np/projects/bos-nepali-date](https://www.prabin194.com.np/projects/bos-nepali-date)
+[https://prabin194.github.io/bos-nepali-date/](https://prabin194.github.io/bos-nepali-date/)
 
 ## Quick start
 

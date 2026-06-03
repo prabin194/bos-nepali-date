@@ -43,7 +43,13 @@
     "bikram-sambat",
     "date-picker",
     "react",
-    "calendar"
+    "calendar",
+    "nepali-calendar",
+    "datepicker",
+    "component",
+    "ui",
+    "nepal",
+    "bs-date"
   ],
   "sideEffects": [
     "./dist/index.css",
