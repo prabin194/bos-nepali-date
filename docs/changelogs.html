@@ -10,124 +10,91 @@
 <meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/changelogs.html">
 <meta name="twitter:card" content="summary_large_image">
 <title>Changelogs — bos-nepali-date</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c026d3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --hue:262;
-  --bg:oklch(0.985 0 0);
-  --bg2:oklch(0.965 0.004 var(--hue));
-  --surface:oklch(1 0 0);
-  --border:oklch(0.91 0.006 var(--hue));
-  --text:oklch(0.13 0.012 var(--hue));
-  --text2:oklch(0.42 0.018 var(--hue));
-  --accent:oklch(0.52 0.19 var(--hue));
-  --accent2:oklch(0.62 0.16 var(--hue));
-  --radius:10px;
-  --radius-sm:8px;
-  --font-sans:'Inter','SF Pro','system-ui',sans-serif;
-  --font-mono:'JetBrains Mono','SF Mono','Fira Code','Consolas',monospace;
-}
-.dark{
-  --bg:oklch(0.1 0.01 var(--hue));
-  --bg2:oklch(0.16 0.015 var(--hue));
-  --surface:oklch(0.13 0.012 var(--hue));
-  --border:oklch(0.25 0.015 var(--hue));
-  --text:oklch(0.9 0.005 var(--hue));
-  --text2:oklch(0.6 0.01 var(--hue));
-  --accent:oklch(0.65 0.2 var(--hue));
-  --accent2:oklch(0.72 0.17 var(--hue));
-}
-.dark header{background:oklch(0.12 0.01 var(--hue) / 0.92)}
-.dark #search-overlay>div>div{background:var(--surface)!important}
-.dark #search-overlay>div>div>div{border-bottom-color:var(--border)!important}
-.dark #search-overlay input{color:var(--text)!important}
-.dark #search-overlay kbd{background:var(--bg2)!important;border-color:var(--border)!important;color:var(--text2)!important}
-.dark #search-overlay .sr-item{border-bottom-color:var(--border)!important}
-.dark #search-overlay .sr-item div:nth-child(1){color:var(--text)!important}
-.dark #search-overlay .sr-item div:nth-child(3){color:var(--text2)!important}
-.dark #search-overlay .sr-item[style*="oklch(0.935"]{background:oklch(0.22 0.02 var(--hue))!important}
-html{font-family:var(--font-sans);color:var(--text);background:var(--bg);scroll-behavior:smooth;line-height:1.6;font-size:16px;transition:background 0.3s ease,color 0.3s ease}
-body{display:flex;flex-direction:column;min-height:100vh}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:var(--font-mono);font-size:0.875em}
+:root{--bg:#ffffff;--surface:#f8f9fa;--surface2:#f1f3f5;--border:#e2e4e8;--text:#0f1117;--text2:#525866;--text3:#868c98;--accent:#b45309;--accent2:#d97706;--radius:10px;--radius-sm:6px;font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.7;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.dark{--bg:#0b0d10;--surface:#121418;--surface2:#1a1d24;--border:#262a32;--text:#edf0f5;--text2:#9498a3;--text3:#636873}
+html{scroll-behavior:smooth}body{min-height:100vh;display:flex;flex-direction:column}
 
-.wrapper{max-width:900px;margin:0 auto;padding:0 1.5rem;width:100%}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.8);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--border)}
+.dark header{background:rgba(11,13,16,0.8)}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 28px;display:flex;align-items:center;height:56px;gap:6px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--text);text-decoration:none;margin-right:auto;letter-spacing:-0.02em}
+.logo svg{width:22px;height:22px;flex-shrink:0}
+nav{display:flex;align-items:center;gap:2px}
+nav a{padding:6px 14px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s,background 0.15s}
+nav a:hover{color:var(--text);background:var(--surface2)}
+nav a.active{color:var(--accent);background:rgba(180,83,9,0.08)}
+.dark nav a.active{background:rgba(217,119,6,0.15)}
+.nav-btns{display:flex;align-items:center;gap:4px;margin-left:8px}
+.nav-btn{width:34px;height:34px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:color 0.15s,background 0.15s}
+.nav-btn:hover{color:var(--text);background:var(--surface2)}
+main{flex:1;max-width:900px;margin:0 auto;padding:56px 28px 80px;width:100%}
 
-/* ── Header ── */
-header{position:sticky;top:0;z-index:50;background:oklch(1 0 0 / 0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);transition:background 0.3s ease}
-header .inner{display:flex;align-items:center;justify-content:space-between;height:58px}
-header .logo{display:flex;align-items:center;gap:8px;font-weight:650;font-size:0.95rem;color:var(--text)}
-header .logo svg{width:20px;height:20px;color:var(--accent)}
-header nav{display:flex;align-items:center;gap:2px}
-header nav a{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;color:var(--text2);transition:all 0.15s}
-header nav a:hover{background:var(--bg2);color:var(--text);text-decoration:none}
-header nav a.active{background:var(--bg2);color:var(--accent);font-weight:600}
-@media(max-width:560px){header nav a{padding:7px 8px;font-size:0.75rem;gap:3px}}#search-btn:hover{background:var(--bg2)}#search-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.page-header{padding-bottom:32px;border-bottom:1px solid var(--border);margin-bottom:32px}
+.page-header h1{font-size:2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px}
+.page-header p{color:var(--text2);font-size:15px;max-width:600px}
 
-
-/* ── Page header ── */
-.page-header{padding:2.5rem 0 1rem}
-.page-header h1{font-size:1.8rem;font-weight:700;letter-spacing:-0.02em}
-.page-header p{color:var(--text2);margin-top:4px;font-size:0.95rem}
-
-/* ── Changelog timeline ── */
+/* Timeline */
 .changelog{list-style:none;padding:0;position:relative}
 .changelog::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:var(--border)}
 @media(max-width:560px){.changelog::before{left:16px}}
 
-.changelog-entry{position:relative;padding:0 0 2rem 64px}
-.changelog-entry:last-child{padding-bottom:0}
-@media(max-width:560px){.changelog-entry{padding-left:44px}}
+.entry{position:relative;padding:0 0 32px 64px}
+.entry:last-child{padding-bottom:0}
+@media(max-width:560px){.entry{padding-left:44px}}
 
-.changelog-entry .dot{position:absolute;left:16px;top:7px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);z-index:1}
-@media(max-width:560px){.changelog-entry .dot{left:8px;width:18px;height:18px}}
+.entry .dot{position:absolute;left:16px;top:7px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);z-index:1}
+@media(max-width:560px){.entry .dot{left:8px;width:18px;height:18px}}
 
-.changelog-entry .version-header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:2px}
-.changelog-entry .version{font-size:1.2rem;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
-.changelog-entry .tag{display:inline-flex;font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:0.04em}
-.changelog-entry .tag.latest{background:oklch(0.53 0.2 150);color:#fff}
-.changelog-entry .tag.feature{background:oklch(0.9 0.06 var(--hue));color:var(--accent)}
-.changelog-entry .tag.fix{background:oklch(0.93 0.04 var(--hue));color:var(--text2)}
-.changelog-entry .tag.breaking{background:oklch(0.9 0.08 30);color:oklch(0.4 0.12 30)}
+.entry .version-header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:2px}
+.entry .version{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.entry .tag{display:inline-flex;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:0.04em}
+.entry .tag.latest{background:rgba(5,150,105,0.08);color:#059669}
+.entry .tag.feature{background:rgba(217,119,6,0.08);color:#d97706}
+.entry .tag.fix{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.entry .tag.breaking{background:rgba(220,38,38,0.08);color:#dc2626}
 
-.changelog-entry .title{font-size:0.9rem;font-weight:600;color:var(--text2);margin-top:2px;margin-bottom:8px}
+.entry .title{font-size:14px;font-weight:600;color:var(--text2);margin-top:2px;margin-bottom:8px}
 
-.changelog-entry .changes{list-style:none;padding:0}
-.changelog-entry .changes li{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:0.88rem;color:var(--text2);line-height:1.5}
-.changelog-entry .changes li .emoji{flex-shrink:0;width:20px;text-align:center;font-size:0.85rem;margin-top:2px}
-.changelog-entry .changes li .desc{flex:1}
+.entry .changes{list-style:none;padding:0}
+.entry .changes li{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:13.5px;color:var(--text2);line-height:1.5}
+.entry .changes li .emoji{flex-shrink:0;width:20px;text-align:center;font-size:14px;margin-top:2px}
+.entry .changes li .desc{flex:1}
+.entry .changes li code{background:var(--surface2);padding:1px 5px;border-radius:3px;font-family:JetBrains Mono,monospace;font-size:12px}
 
-/* ── Footer ── */
-footer{padding:2rem 0;margin-top:auto;border-top:1px solid var(--border);text-align:center;font-size:0.8rem;color:var(--text2)}
-footer a{color:var(--accent)}
+footer{text-align:center;padding:28px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text3)}
+footer a{color:var(--accent);text-decoration:none}
+
+@media(max-width:640px){
+  nav a{font-size:12px;padding:5px 8px}
+  main{padding:32px 16px 60px}
+}
 </style>
 </head>
 <body>
-
 <header>
-<div class="wrapper">
-<div class="inner">
-<a href="index.html" class="logo" style="text-decoration:none;color:inherit">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+<div class="header-inner">
+<a href="./" class="logo">
+<svg viewBox="0 0 24 24" fill="none" stroke="%23d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
 bos-nepali-date
 </a>
 <nav>
-<a href="index.html">Home</a>
+<a href="./">Home</a>
 <a href="documentation.html">Docs</a>
 <a href="roadmap.html">Roadmap</a>
 <a href="changelogs.html" class="active">Changelogs</a>
 <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
-<button id="search-btn" aria-label="Search" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;color:var(--text2);display:flex;align-items:center;gap:4px;transition:all 0.15s;margin-left:4px">🔍 <span style="font-size:0.7rem;opacity:0.5;font-weight:500">⌘K</span></button>
-<button id="theme-btn" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;transition:all 0.15s">🌙</button>
 </nav>
+<div class="nav-btns">
+<button class="nav-btn" id="theme-btn" aria-label="Toggle theme">🌙</button>
 </div>
 </div>
 </header>
-
 <main>
-<div class="wrapper">
 <div class="page-header">
 <h1>Changelogs</h1>
 <p>All releases, improvements, and fixes for bos-nepali-date.</p>
@@ -135,12 +102,26 @@ bos-nepali-date
 
 <ol class="changelog">
 
-<!-- v0.1.13 -->
-<li class="changelog-entry">
+<li class="entry">
+<div class="dot"></div>
+<div class="version-header">
+<span class="version">v0.1.17</span>
+<span class="tag latest">Latest</span>
+</div>
+<div class="title">Live demo &amp; docs redesign</div>
+<ul class="changes">
+<li><span class="emoji">🎨</span><span class="desc">Redesigned docs site with DM Sans font, amber accent palette, and cleaner layout.</span></li>
+<li><span class="emoji">🖥️</span><span class="desc">Added live interactive demo on the homepage with language toggle and disable rules.</span></li>
+<li><span class="emoji">📦</span><span class="desc">Added UMD bundle for browser usage and live demos.</span></li>
+<li><span class="emoji">🌙</span><span class="desc">Dark mode toggle across all docs pages with system preference detection.</span></li>
+</ul>
+</li>
+
+<li class="entry">
 <div class="dot"></div>
 <div class="version-header">
 <span class="version">v0.1.13</span>
-<span class="tag latest">Latest</span>
+<span class="tag">—</span>
 </div>
 <div class="title">Overflow-safe popover</div>
 <ul class="changes">
@@ -151,14 +132,13 @@ bos-nepali-date
 </ul>
 </li>
 
-<!-- v0.1.11 -->
-<li class="changelog-entry">
+<li class="entry">
 <div class="dot"></div>
 <div class="version-header">
 <span class="version">v0.1.11</span>
 <span class="tag fix">Fix</span>
 </div>
-<div class="title">Font & popover sizing</div>
+<div class="title">Font &amp; popover sizing</div>
 <ul class="changes">
 <li><span class="emoji">🔤</span><span class="desc">Stop forcing <code>Inter/system-ui</code> as the default picker font — controls now inherit the host app font.</span></li>
 <li><span class="emoji">✅</span><span class="desc">Fix incorrect Nepali glyph rendering on systems with problematic fallback fonts.</span></li>
@@ -166,8 +146,7 @@ bos-nepali-date
 </ul>
 </li>
 
-<!-- v0.1.9 -->
-<li class="changelog-entry">
+<li class="entry">
 <div class="dot"></div>
 <div class="version-header">
 <span class="version">v0.1.9</span>
@@ -178,8 +157,7 @@ bos-nepali-date
 </ul>
 </li>
 
-<!-- v0.1.8 -->
-<li class="changelog-entry">
+<li class="entry">
 <div class="dot"></div>
 <div class="version-header">
 <span class="version">v0.1.8</span>
@@ -190,13 +168,12 @@ bos-nepali-date
 </ul>
 </li>
 
-<!-- v0.1.7 -->
-<li class="changelog-entry">
+<li class="entry">
 <div class="dot"></div>
 <div class="version-header">
 <span class="version">v0.1.7</span>
 </div>
-<div class="title">Input styling & icon refresh</div>
+<div class="title">Input styling &amp; icon refresh</div>
 <ul class="changes">
 <li><span class="emoji">➕</span><span class="desc">Added <code>inputClassName</code> for custom input styling.</span></li>
 <li><span class="emoji">🔄</span><span class="desc">Swapped caret for a calendar icon on the trigger button.</span></li>
@@ -204,8 +181,7 @@ bos-nepali-date
 </ul>
 </li>
 
-<!-- v0.1.6 -->
-<li class="changelog-entry">
+<li class="entry">
 <div class="dot"></div>
 <div class="version-header">
 <span class="version">v0.1.6</span>
@@ -218,35 +194,26 @@ bos-nepali-date
 </ul>
 </li>
 
-<!-- v0.1.1 -->
-<li class="changelog-entry">
+<li class="entry">
 <div class="dot"></div>
 <div class="version-header">
 <span class="version">v0.1.1</span>
 <span class="tag feature">Feature</span>
 </div>
-<div class="title">Localization & disable rules</div>
+<div class="title">Localization &amp; disable rules</div>
 <ul class="changes">
 <li><span class="emoji">🌐</span><span class="desc">Added localization (<code>lang: 'en' | 'ne'</code>) with Nepali digits and labels.</span></li>
 <li><span class="emoji">⛔</span><span class="desc">Added disable rules — single date, date list, today, before/after.</span></li>
 <li><span class="emoji">⌨️</span><span class="desc">Input mask now normalizes Nepali digits and blocks non-numeric input.</span></li>
 <li><span class="emoji">👁️</span><span class="desc">Month/year selectors can be hidden while static labels still render.</span></li>
-<li><span class="emoji">✅</span><span class="desc">Added Vitest + jsdom test suite with edge-case coverage at dataset boundaries.</span></li>
-<li><span class="emoji">📦</span><span class="desc">Marked package as ESM tooling (<code>type: module</code>) and side-effect free.</span></li>
+<li><span class="emoji">✅</span><span class="desc">Added Vitest + jsdom test suite with edge-case coverage.</span></li>
 </ul>
 </li>
 </ol>
-
-</div>
 </main>
-
 <footer>
-<div class="wrapper">
-<p><strong>bos-nepali-date</strong> — MIT · <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a> · <a href="https://www.npmjs.com/package/bos-nepali-date" target="_blank">npm</a> · Built by <a href="https://github.com/prabin194" target="_blank">Prabin Paudel</a></p>
-</div>
+<p>bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; <a href="https://github.com/prabin194/bos-nepali-date">GitHub</a> &bull; <a href="https://www.npmjs.com/package/bos-nepali-date">npm</a></p>
 </footer>
-
-<script src="search.js"></script>
 <script src="theme.js"></script>
 </body>
 </html>

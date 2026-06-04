@@ -3,240 +3,221 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="bos-nepali-date documentation — installation, props, localization, styling, and adapter guide.">
+<meta name="description" content="bos-nepali-date documentation — full API reference, props table, usage guides, localization, and adapter guide.">
 <meta property="og:title" content="bos-nepali-date — Documentation">
 <meta property="og:description" content="Learn how to install, configure, and customize the Nepali date picker for React.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/documentation.html">
 <meta name="twitter:card" content="summary_large_image">
 <title>Documentation — bos-nepali-date</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c026d3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bos-nepali-date@0.1.13/dist/index.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --hue:262;
-  --bg:oklch(0.985 0 0);
-  --bg2:oklch(0.965 0.004 var(--hue));
-  --surface:oklch(1 0 0);
-  --border:oklch(0.91 0.006 var(--hue));
-  --text:oklch(0.13 0.012 var(--hue));
-  --text2:oklch(0.42 0.018 var(--hue));
-  --accent:oklch(0.52 0.19 var(--hue));
-  --accent2:oklch(0.62 0.16 var(--hue));
-  --radius:10px;
-  --radius-sm:8px;
-  --font-sans:'Inter','SF Pro','system-ui',sans-serif;
-  --font-mono:'JetBrains Mono','SF Mono','Fira Code','Consolas',monospace;
+:root{--bg:#ffffff;--surface:#f8f9fa;--surface2:#f1f3f5;--border:#e2e4e8;--text:#0f1117;--text2:#525866;--text3:#868c98;--accent:#b45309;--accent2:#d97706;--radius:10px;--radius-sm:6px;font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.7;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.dark{--bg:#0b0d10;--surface:#121418;--surface2:#1a1d24;--border:#262a32;--text:#edf0f5;--text2:#9498a3;--text3:#636873}
+html{scroll-behavior:smooth}body{min-height:100vh;display:flex;flex-direction:column}
+
+/* Header */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.8);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--border)}
+.dark header{background:rgba(11,13,16,0.8)}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 28px;display:flex;align-items:center;height:56px;gap:6px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--text);text-decoration:none;margin-right:auto;letter-spacing:-0.02em}
+.logo svg{width:22px;height:22px;flex-shrink:0}
+nav{display:flex;align-items:center;gap:2px}
+nav a{padding:6px 14px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s,background 0.15s}
+nav a:hover{color:var(--text);background:var(--surface2)}
+nav a.active{color:var(--accent);background:rgba(180,83,9,0.08)}
+.dark nav a.active{background:rgba(217,119,6,0.15)}
+.nav-btns{display:flex;align-items:center;gap:4px;margin-left:8px}
+.nav-btn{width:34px;height:34px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:color 0.15s,background 0.15s}
+.nav-btn:hover{color:var(--text);background:var(--surface2)}
+
+/* Main layout — sidebar + content */
+.docs-layout{flex:1;display:grid;grid-template-columns:220px 1fr;max-width:1100px;margin:0 auto;padding:48px 28px 80px;gap:48px}
+
+/* Table of contents sidebar */
+.toc{position:sticky;top:80px;max-height:calc(100vh-96px);overflow-y:auto;padding:0 0 24px;align-self:start}
+.toc-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.toc-list{list-style:none;padding:0;margin:0}
+.toc-list li{margin-bottom:2px}
+.toc-link{display:block;padding:5px 10px;border-radius:4px;font-size:12.5px;font-weight:450;color:var(--text3);text-decoration:none;transition:color 0.15s,background 0.15s;line-height:1.35;border-left:3px solid transparent}
+.toc-link:hover{color:var(--text);background:var(--surface2)}
+.toc-link.active{color:#b45309;font-weight:600;background:rgba(180,83,9,0.08);border-left-color:#b45309}
+.dark .toc-link.active{color:#d97706;background:rgba(217,119,6,0.12);border-left-color:#d97706}
+.toc-link.sub{padding-left:20px;font-size:12px;font-weight:400}
+
+/* Content area */
+.content{width:100%;min-width:0;max-width:800px}
+.content h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;line-height:1.15}
+.content h2{font-size:1.3rem;font-weight:700;margin:56px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--border);scroll-margin-top:72px;letter-spacing:-0.01em}
+.content h3{font-size:1.05rem;font-weight:600;margin:32px 0 10px;scroll-margin-top:72px}
+.content p,.content li{font-size:14px;color:var(--text2);line-height:1.8}
+.content p{margin-bottom:18px}
+.content ul,.content ol{padding-left:22px;margin-bottom:20px}
+.content li{margin-bottom:6px}
+.content strong{color:var(--text);font-weight:600}
+.content a{color:var(--accent);text-decoration:none}
+.content a:hover{text-decoration:underline}
+.content code{background:var(--surface2);padding:2px 7px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:12.5px;color:var(--text)}
+
+/* Code blocks */
+.content pre{background:var(--surface2);border-radius:var(--radius);padding:24px 28px;margin:18px 0 28px;overflow-x:auto;font-family:JetBrains Mono,monospace;font-size:13px;line-height:1.6;color:var(--text);border:1px solid var(--border)}
+.content pre .comment{color:var(--text3)}
+.content pre .keyword{color:var(--accent)}
+.content pre .string{color:#059669}.dark .content pre .string{color:#34d399}
+.content pre .function{color:#2563eb}.dark .content pre .function{color:#60a5fa}
+.content pre .tag{color:var(--accent)}
+.content pre .builtin{color:#0891b2}.dark .content pre .builtin{color:#22d3ee}
+.content pre .number{color:#2563eb}.dark .content pre .number{color:#60a5fa}
+.content pre .operator{color:var(--text2)}
+
+/* Tables */
+.content table{width:100%;border-collapse:collapse;margin:16px 0 28px;font-size:13.5px}
+.content th,.content td{text-align:left;padding:12px 18px;border-bottom:1px solid var(--border);vertical-align:top}
+.content th{font-weight:600;color:var(--text);background:var(--surface);font-size:12px;text-transform:uppercase;letter-spacing:0.04em}
+.content td{color:var(--text2)}
+.content td:first-child{font-weight:500;color:var(--text);font-family:JetBrains Mono,monospace;font-size:12.5px;white-space:nowrap}
+
+/* Tag pills */
+.tag-pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600;margin-left:4px}
+.tag-required{background:#fef2f2;color:#dc2626}.dark .tag-required{background:rgba(220,38,38,0.12);color:#f87171}
+.tag-optional{background:rgba(5,150,105,0.08);color:#059669}.dark .tag-optional{background:rgba(52,211,153,0.1);color:#34d399}
+
+/* Callout */
+.callout{padding:18px 24px;border-radius:var(--radius);margin:20px 0;font-size:13.5px;border-left:3px solid var(--accent);background:rgba(180,83,9,0.04);color:var(--text2)}
+.dark .callout{background:rgba(217,119,6,0.08)}
+.callout strong{color:var(--accent)}
+
+/* Interface box */
+.interface-box{padding:24px 28px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);margin:16px 0 24px;font-family:JetBrains Mono,monospace;font-size:13px;line-height:1.65;color:var(--text)}
+.interface-box .comment{color:var(--text3)}
+.interface-box .keyword{color:var(--accent)}
+.interface-box .string{color:#059669}.dark .interface-box .string{color:#34d399}
+.interface-box .function{color:#2563eb}.dark .interface-box .function{color:#60a5fa}
+.interface-box .tag{color:var(--accent)}
+.interface-box .number{color:#b45309}
+
+/* Footer */
+footer{text-align:center;padding:28px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text3)}
+footer a{color:var(--accent);text-decoration:none}
+
+/* Responsive */
+@media(max-width:1000px){
+  .docs-layout{grid-template-columns:1fr;padding:40px 24px 60px;gap:0}
+  .toc{display:none}
 }
-.dark{
-  --bg:oklch(0.1 0.01 var(--hue));
-  --bg2:oklch(0.16 0.015 var(--hue));
-  --surface:oklch(0.13 0.012 var(--hue));
-  --border:oklch(0.25 0.015 var(--hue));
-  --text:oklch(0.9 0.005 var(--hue));
-  --text2:oklch(0.6 0.01 var(--hue));
-  --accent:oklch(0.65 0.2 var(--hue));
-  --accent2:oklch(0.72 0.17 var(--hue));
+@media(max-width:768px){
+  nav a{font-size:12px;padding:5px 8px}
+  .header-inner{padding:0 16px}
+  .docs-layout{padding:32px 16px 60px}
+  .content h1{font-size:1.7rem}
+  .content h2{font-size:1.15rem}
+  .content pre{padding:18px 18px;font-size:12px}
 }
-.dark header{background:oklch(0.12 0.01 var(--hue) / 0.92)}
-.dark .doc .note{background:oklch(0.2 0.02 var(--hue))}
-.dark #search-overlay>div>div{background:var(--surface)!important}
-.dark #search-overlay>div>div>div{border-bottom-color:var(--border)!important}
-.dark #search-overlay input{color:var(--text)!important}
-.dark #search-overlay kbd{background:var(--bg2)!important;border-color:var(--border)!important;color:var(--text2)!important}
-.dark #search-overlay .sr-item{border-bottom-color:var(--border)!important}
-.dark #search-overlay .sr-item div:nth-child(1){color:var(--text)!important}
-.dark #search-overlay .sr-item div:nth-child(3){color:var(--text2)!important}
-.dark #search-overlay .sr-item[style*="oklch(0.935"]{background:oklch(0.22 0.02 var(--hue))!important}
-html{font-family:var(--font-sans);color:var(--text);background:var(--bg);scroll-behavior:smooth;line-height:1.6;font-size:16px;transition:background 0.3s ease,color 0.3s ease}
-body{display:flex;flex-direction:column;min-height:100vh}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:var(--font-mono);font-size:0.875em}
-code{background:var(--bg2);padding:0.15em 0.4em;border-radius:4px}
-pre{background:#1a1b26;color:#c9d1d9;padding:1.25rem 1.5rem;border-radius:var(--radius);overflow-x:auto;line-height:1.5;font-size:0.85rem}
-pre code{background:none;padding:0;color:inherit;font-size:inherit}
-
-.wrapper{max-width:1100px;margin:0 auto;padding:0 1.5rem;width:100%}
-
-/* ── Header ── */
-header{position:sticky;top:0;z-index:50;background:oklch(1 0 0 / 0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);transition:background 0.3s ease}
-header .inner{display:flex;align-items:center;justify-content:space-between;height:58px}
-header .logo{display:flex;align-items:center;gap:8px;font-weight:650;font-size:0.95rem;color:var(--text)}
-header .logo svg{width:20px;height:20px;color:var(--accent)}
-header nav{display:flex;align-items:center;gap:2px}
-header nav a{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;color:var(--text2);transition:all 0.15s}
-header nav a:hover{background:var(--bg2);color:var(--text);text-decoration:none}
-header nav a.active{background:var(--bg2);color:var(--accent);font-weight:600}
-@media(max-width:560px){header nav a{padding:7px 8px;font-size:0.75rem;gap:3px}}#search-btn:hover{background:var(--bg2)}#search-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-
-/* ── Page header ── */
-.page-header{padding:2.5rem 0 1.5rem;border-bottom:1px solid var(--border);margin-bottom:2rem}
-.page-header h1{font-size:1.8rem;font-weight:700;letter-spacing:-0.02em}
-.page-header p{color:var(--text2);margin-top:4px;font-size:0.95rem}
-
-/* ── Content layout ── */
-.content-wrapper{display:grid;grid-template-columns:220px 1fr;gap:2.5rem;padding-bottom:3rem}
-@media(max-width:780px){.content-wrapper{grid-template-columns:1fr}}
-
-/* ── Sidebar ── */
-.sidebar{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 90px);overflow-y:auto;padding:0 0 1rem}
-@media(max-width:780px){.sidebar{display:none}}
-.sidebar h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text2);font-weight:600;margin-bottom:8px}
-.sidebar nav{display:flex;flex-direction:column;gap:2px}
-.sidebar nav a{display:block;padding:5px 0;font-size:0.85rem;font-weight:500;color:var(--text2);transition:color 0.15s}
-.sidebar nav a:hover{color:var(--accent);text-decoration:none}
-.sidebar nav .group-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--text2);font-weight:600;padding:10px 0 3px;opacity:0.7}
-
-/* ── Doc content ── */
-.doc h2{font-size:1.4rem;font-weight:650;letter-spacing:-0.02em;margin:2.5rem 0 0.75rem;padding-bottom:6px;border-bottom:1px solid var(--border)}
-.doc h2:first-child{margin-top:0}
-.doc h3{font-size:1.1rem;font-weight:600;margin:1.8rem 0 0.5rem}
-.doc h4{font-size:0.95rem;font-weight:600;margin:1.2rem 0 0.3rem;color:var(--text)}
-.doc p,.doc li{font-size:0.93rem;color:var(--text2);line-height:1.65;margin-bottom:0.5rem}
-.doc ul,.doc ol{padding-left:1.25rem;margin-bottom:0.75rem}
-.doc li{margin-bottom:0.25rem}
-.doc strong{color:var(--text);font-weight:600}
-
-/* ── Tables ── */
-.doc .table-wrap{overflow-x:auto;margin:1rem 0 1.5rem;border:1px solid var(--border);border-radius:var(--radius)}
-.doc table{width:100%;border-collapse:collapse;font-size:0.85rem;min-width:560px}
-.doc th,.doc td{padding:0.6rem 0.85rem;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
-.doc th{background:var(--bg2);font-weight:600;font-size:0.82rem;color:var(--text2)}
-.doc td{font-size:0.82rem;color:var(--text2)}
-.doc td:first-child{font-family:var(--font-mono);color:var(--accent);font-weight:500;white-space:nowrap}
-.doc tr:last-child td{border-bottom:none}
-.doc table .mono{font-family:var(--font-mono);font-size:0.78rem}
-
-/* ── Code blocks ── */
-.doc .code-label{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.03em;color:var(--text2);margin-top:0.75rem;margin-bottom:4px}
-
-/* ── Note / Tip boxes ── */
-.doc .note{padding:0.75rem 1rem;background:oklch(0.96 0.02 var(--hue));border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin:1rem 0;font-size:0.85rem;color:var(--text2)}
-.doc .note strong{color:var(--text)}
-
-/* ── Footer ── */
-footer{padding:2rem 0;margin-top:auto;border-top:1px solid var(--border);text-align:center;font-size:0.8rem;color:var(--text2)}
-footer a{color:var(--accent)}
+@media(max-width:480px){
+  nav a:nth-child(4),nav a:nth-child(5){display:none}
+}
 </style>
 </head>
 <body>
-
 <header>
-<div class="wrapper">
-<div class="inner">
-<a href="index.html" class="logo" style="text-decoration:none;color:inherit">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+<div class="header-inner">
+<a href="./" class="logo">
+<svg viewBox="0 0 24 24" fill="none" stroke="%23d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
 bos-nepali-date
 </a>
 <nav>
-<a href="index.html">Home</a>
+<a href="./">Home</a>
 <a href="documentation.html" class="active">Docs</a>
 <a href="roadmap.html">Roadmap</a>
 <a href="changelogs.html">Changelogs</a>
 <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
-<button id="search-btn" aria-label="Search" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;color:var(--text2);display:flex;align-items:center;gap:4px;transition:all 0.15s;margin-left:4px">🔍 <span style="font-size:0.7rem;opacity:0.5;font-weight:500">⌘K</span></button>
-<button id="theme-btn" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;transition:all 0.15s">🌙</button>
 </nav>
+<div class="nav-btns">
+<button class="nav-btn" id="theme-btn" aria-label="Toggle theme">🌙</button>
 </div>
 </div>
 </header>
-
-<main>
-<div class="wrapper">
-<div class="page-header">
-<h1>Documentation</h1>
-<p>Everything you need to integrate and customize the Nepali date picker.</p>
-</div>
-
-<div class="content-wrapper">
-<aside class="sidebar">
-<h4>On this page</h4>
-<nav>
-<a href="#getting-started">Getting started</a>
-<a href="#basic-usage">Basic usage</a>
-<div class="group-label">Props</div>
-<a href="#core-props">Core props</a>
-<a href="#disable-options">Disable options</a>
-<a href="#menu-options">Menu / Display options</a>
-<a href="#styling-props">Styling props</a>
-<div class="group-label">Guides</div>
-<a href="#localization">Localization</a>
-<a href="#styling">Styling</a>
-<a href="#adapter">Adapter</a>
-<a href="#accessibility">Accessibility</a>
+<main class="docs-layout">
+<nav class="toc" aria-label="Table of contents">
+<div class="toc-label">On this page</div>
+<ul class="toc-list">
+<li><a class="toc-link" href="#getting-started">Getting started</a></li>
+<li><a class="toc-link" href="#basic-usage">Basic usage</a></li>
+<li><a class="toc-link" href="#core-props">Core props</a></li>
+<li><a class="toc-link" href="#disable-options">Disable options</a></li>
+<li><a class="toc-link" href="#menu-options">Menu / Display options</a></li>
+<li><a class="toc-link" href="#styling-props">Styling props</a></li>
+<li><a class="toc-link" href="#localization">Localization</a></li>
+<li><a class="toc-link" href="#styling">Styling</a></li>
+<li><a class="toc-link" href="#adapter">Adapter</a></li>
+<li><a class="toc-link" href="#accessibility">Accessibility</a></li>
+</ul>
 </nav>
-</aside>
+<div class="content">
+<h1>Documentation</h1>
+<p>Complete API reference and usage guide for bos-nepali-date — a React component for selecting Bikram Sambat (Nepali) dates with a pluggable conversion engine.</p>
 
-<div class="doc">
-
-<!-- ── Getting Started ── -->
 <h2 id="getting-started">Getting started</h2>
 <p><strong>bos-nepali-date</strong> is a React component for selecting Bikram Sambat (BS) dates. It ships with a pluggable conversion adapter so you can use the built-in tables or bring your own.</p>
 
-<div class="code-label">Install</div>
-<pre><code>npm install bos-nepali-date</code></pre>
+<div class="callout"><strong>Styles are auto-imported</strong> — the component imports its CSS as a side effect. If your bundler strips CSS side effects, import styles explicitly: <code>import 'bos-nepali-date/style'</code>.</div>
 
-<div class="note"><strong>Styles are auto-imported</strong> — the component imports its CSS as a side effect. If your bundler strips CSS side effects, import styles explicitly: <code>import 'bos-nepali-date/style'</code>.</div>
+<pre><span class="comment">// Install</span>
+<span class="keyword">$</span> npm install bos-nepali-date</pre>
 
-<!-- ── Basic Usage ── -->
 <h2 id="basic-usage">Basic usage</h2>
 <p>Wire up the component with a controlled value and an <code>onChange</code> handler. The <code>defaultAdapter</code> includes demo data for 2080–2081 BS.</p>
 
-<pre><code>import { useState } from 'react';
-import { NepaliDatePicker, defaultAdapter } from 'bos-nepali-date';
+<pre><span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">"react"</span>
+<span class="keyword">import</span> { <span class="function">NepaliDatePicker</span>, <span class="function">defaultAdapter</span> } <span class="keyword">from</span> <span class="string">"bos-nepali-date"</span>
 
-function Demo() {
-  const [value, setValue] = useState(null);
+<span class="keyword">function</span> <span class="function">Demo</span>() {
+  <span class="keyword">const</span> [value, setValue] = <span class="function">useState</span>(<span class="keyword">null</span>)
 
-  return (
-    &lt;NepaliDatePicker
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;NepaliDatePicker</span>
       value={value}
       onChange={setValue}
       adapter={defaultAdapter}
-    /&gt;
-  );
-}</code></pre>
+    <span class="tag">/&gt;</span>
+  )
+}</pre>
 
 <p>The <code>onChange</code> callback receives a <code>BsDate</code> object or <code>null</code> (when cleared).</p>
 
-<pre><code>// BsDate shape:
-{
-  year: number,  // e.g. 2080
-  month: number, // 1–12
-  day: number    // 1–32
-}</code></pre>
+<div class="interface-box">
+<span class="comment">// BsDate shape</span><br>
+{<br>
+&nbsp;&nbsp;year: <span class="keyword">number</span>,  <span class="comment">// e.g. 2080</span><br>
+&nbsp;&nbsp;month: <span class="keyword">number</span>, <span class="comment">// 1–12</span><br>
+&nbsp;&nbsp;day: <span class="keyword">number</span>    <span class="comment">// 1–32</span><br>
+}
+</div>
 
-<!-- ── Core Props ── -->
 <h2 id="core-props">Core props</h2>
-
-<div class="table-wrap">
 <table>
 <thead>
 <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>value</td><td><code>BsDate | null</code></td><td><code>null</code></td><td>Controlled BS date value.</td></tr>
-<tr><td>onChange</td><td><code>(date: BsDate | null) => void</code></td><td>—</td><td>Fired on selection or clear.</td></tr>
-<tr><td>adapter</td><td><code>BsAdapter</code></td><td><code>defaultAdapter</code></td><td>Conversion engine for BS↔AD arithmetic.</td></tr>
-<tr><td>minDate</td><td><code>BsDate</code></td><td>—</td><td>Earliest selectable date.</td></tr>
-<tr><td>maxDate</td><td><code>BsDate</code></td><td>—</td><td>Latest selectable date.</td></tr>
-<tr><td>showLabel</td><td><code>boolean</code></td><td><code>false</code></td><td>Render a visible label above the input.</td></tr>
-<tr><td>placeholder</td><td><code>string</code></td><td><code>"YYYY-MM-DD (BS)"</code></td><td>Placeholder text for the input.</td></tr>
-<tr><td>className</td><td><code>string</code></td><td>—</td><td>Extra class for the root wrapper.</td></tr>
+<tr><td>value <span class="tag-pill tag-required">required</span></td><td><code>BsDate | null</code></td><td><code>null</code></td><td>Controlled BS date value.</td></tr>
+<tr><td>onChange <span class="tag-pill tag-required">required</span></td><td><code>(date: BsDate | null) => void</code></td><td>—</td><td>Fired on selection or clear.</td></tr>
+<tr><td>adapter <span class="tag-pill tag-optional">optional</span></td><td><code>BsAdapter</code></td><td><code>defaultAdapter</code></td><td>Conversion engine for BS↔AD arithmetic.</td></tr>
+<tr><td>minDate <span class="tag-pill tag-optional">optional</span></td><td><code>BsDate</code></td><td>—</td><td>Earliest selectable date.</td></tr>
+<tr><td>maxDate <span class="tag-pill tag-optional">optional</span></td><td><code>BsDate</code></td><td>—</td><td>Latest selectable date.</td></tr>
+<tr><td>showLabel <span class="tag-pill tag-optional">optional</span></td><td><code>boolean</code></td><td><code>false</code></td><td>Render a visible label above the input.</td></tr>
+<tr><td>placeholder <span class="tag-pill tag-optional">optional</span></td><td><code>string</code></td><td><code>"YYYY-MM-DD (BS)"</code></td><td>Placeholder text for the input.</td></tr>
+<tr><td>className <span class="tag-pill tag-optional">optional</span></td><td><code>string</code></td><td>—</td><td>Extra class for the root wrapper.</td></tr>
 </tbody>
 </table>
-</div>
 
-<div class="note"><strong>Note:</strong> <code>minDate</code> and <code>maxDate</code> clamp the selectable range. They combine with disable rules — if any rule matches, the date is not selectable.</div>
+<div class="callout"><strong>Note:</strong> <code>minDate</code> and <code>maxDate</code> clamp the selectable range. They combine with disable rules — if any rule matches, the date is not selectable.</div>
 
-<!-- ── Disable Options ── -->
 <h2 id="disable-options">Disable options</h2>
 <p>Pass a <code>disable</code> object to control which dates cannot be selected.</p>
-
-<div class="table-wrap">
 <table>
 <thead>
 <tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr>
@@ -249,24 +230,20 @@ function Demo() {
 <tr><td>disable.after</td><td><code>BsDate</code></td><td>—</td><td>Disable all dates after this.</td></tr>
 </tbody>
 </table>
-</div>
 
-<pre><code>// Example: disable today + block weekends manually
-&lt;NepaliDatePicker
+<pre><span class="comment">// Example: disable today + block specific dates</span>
+<span class="tag">&lt;NepaliDatePicker</span>
   disable={{
-    today: true,
+    today: <span class="keyword">true</span>,
     dates: [
-      { year: 2081, month: 1, day: 1 },
-      { year: 2081, month: 1, day: 15 },
+      { year: <span class="number">2081</span>, month: <span class="number">1</span>, day: <span class="number">1</span> },
+      { year: <span class="number">2081</span>, month: <span class="number">1</span>, day: <span class="number">15</span> },
     ]
   }}
-/&gt;</code></pre>
+<span class="tag">/&gt;</span></pre>
 
-<!-- ── Menu / Display Options ── -->
 <h2 id="menu-options">Menu / Display options</h2>
 <p>Pass a <code>menu</code> object to control locale, calendar layout, and visibility of controls.</p>
-
-<div class="table-wrap">
 <table>
 <thead>
 <tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr>
@@ -278,38 +255,31 @@ function Demo() {
 <tr><td>menu.firstDayOfWeek</td><td><code>0 | 1</code></td><td><code>0</code></td><td>Start the week on Sunday (<code>0</code>) or Monday (<code>1</code>).</td></tr>
 </tbody>
 </table>
-</div>
 
-<pre><code>// Example: Nepali locale with Monday start
-&lt;NepaliDatePicker
+<pre><span class="comment">// Example: Nepali locale with Monday start</span>
+<span class="tag">&lt;NepaliDatePicker</span>
   menu={{
-    lang: 'ne',
-    firstDayOfWeek: 1,
-    showMonth: true,
-    showYear: true,
+    lang: <span class="string">"ne"</span>,
+    firstDayOfWeek: <span class="number">1</span>,
+    showMonth: <span class="keyword">true</span>,
+    showYear: <span class="keyword">true</span>,
   }}
-/&gt;</code></pre>
+<span class="tag">/&gt;</span></pre>
 
-<!-- ── Styling Props ── -->
 <h2 id="styling-props">Styling props</h2>
-
-<div class="table-wrap">
 <table>
 <thead>
 <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>inputClassName</td><td><code>string</code></td><td>—</td><td>Extra class for the input element.</td></tr>
-<tr><td>inputPattern</td><td><code>string | false</code></td><td><code>\d{4}-\d{2}-\d{2}</code></td><td>Native <code>pattern</code> attribute. Set <code>false</code> to remove.</td></tr>
+<tr><td>inputClassName <span class="tag-pill tag-optional">optional</span></td><td><code>string</code></td><td>—</td><td>Extra class for the input element.</td></tr>
+<tr><td>inputPattern <span class="tag-pill tag-optional">optional</span></td><td><code>string | false</code></td><td><code>\d{4}-\d{2}-\d{2}</code></td><td>Native <code>pattern</code> attribute. Set <code>false</code> to remove.</td></tr>
 </tbody>
 </table>
-</div>
 
-<!-- ── Localization ── -->
 <h2 id="localization">Localization</h2>
 <p>Set <code>menu.lang="ne"</code> to render month names, weekday abbreviations, and calendar digits in <strong>Nepali (नेपाली)</strong>. The <code>onChange</code> value still returns the date in ASCII BS <code>YYYY-MM-DD</code> format.</p>
 
-<div class="table-wrap">
 <table>
 <thead>
 <tr><th>Option</th><th>Labels</th><th>Digits</th><th>Value format</th></tr>
@@ -319,17 +289,13 @@ function Demo() {
 <tr><td><code>menu.lang="ne"</code></td><td>नेपाली month/day names</td><td>०-९</td><td><code>२०८१-०१-१५</code> (display) / <code>2081-01-15</code> (value)</td></tr>
 </tbody>
 </table>
-</div>
 
-<div class="note"><strong>Note:</strong> The input accepts Nepali digits (०-९) and normalizes them to ASCII automatically.</div>
+<div class="callout"><strong>Note:</strong> The input accepts Nepali digits (०-९) and normalizes them to ASCII automatically.</div>
 
-<!-- ── Styling Guide ── -->
 <h2 id="styling">Styling</h2>
 <p>The picker's base styles are imported automatically from the component. Override these CSS variables to theme the component to match your application.</p>
 
 <h3>CSS Variables</h3>
-
-<div class="table-wrap">
 <table>
 <thead>
 <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
@@ -340,18 +306,16 @@ function Demo() {
 <tr><td><code>--np-popover-max-width</code></td><td><code>320px</code></td><td>Maximum calendar popover width.</td></tr>
 </tbody>
 </table>
-</div>
 
-<pre><code>/* Example: custom theme */
+<pre><span class="comment">/* Example: custom theme */</span>
 .np-picker {
-  --np-font: 'Noto Sans', sans-serif;
-  --np-popover-min-width: 300px;
-  --np-popover-max-width: 360px;
-}</code></pre>
+  --np-font: <span class="string">"Noto Sans", sans-serif</span>;
+  --np-popover-min-width: <span class="number">300px</span>;
+  --np-popover-max-width: <span class="number">360px</span>;
+}</pre>
 
-<div class="note"><strong>Inherited font:</strong> The picker inherits the host app's font family. If you need to force a specific font (e.g., a Nepali-capable font), set <code>--np-font</code> on the wrapper or <code>.np-picker</code> class.</div>
+<div class="callout"><strong>Inherited font:</strong> The picker inherits the host app's font family. If you need to force a specific font (e.g., a Nepali-capable font), set <code>--np-font</code> on the wrapper or <code>.np-picker</code> class.</div>
 
-<!-- ── Adapter Guide ── -->
 <h2 id="adapter">Adapter</h2>
 <p>The <strong>adapter</strong> is the conversion engine that translates between Bikram Sambat (BS) and Gregorian (AD) dates. The library ships with a <code>defaultAdapter</code> and a <code>MemoryBsAdapter</code> for custom year tables.</p>
 
@@ -361,59 +325,91 @@ function Demo() {
 <h3>MemoryBsAdapter</h3>
 <p>Create a custom adapter with your own complete year table.</p>
 
-<pre><code>import { MemoryBsAdapter } from 'bos-nepali-date';
+<pre><span class="keyword">import</span> { <span class="function">MemoryBsAdapter</span> } <span class="keyword">from</span> <span class="string">"bos-nepali-date"</span>
 
-const adapter = new MemoryBsAdapter({
-  anchorBs: { year: 2000, month: 1, day: 1 },
-  anchorAdIso: '1943-04-14',
+<span class="keyword">const</span> adapter = <span class="function">new</span> <span class="function">MemoryBsAdapter</span>({
+  anchorBs: { year: <span class="number">2000</span>, month: <span class="number">1</span>, day: <span class="number">1</span> },
+  anchorAdIso: <span class="string">"1943-04-14"</span>,
   yearTable: {
-    2080: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
-    2081: [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
-    // ... your full table
+    <span class="number">2080</span>: [<span class="number">31</span>, <span class="number">32</span>, <span class="number">31</span>, <span class="number">32</span>, <span class="number">31</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">29</span>, <span class="number">30</span>, <span class="number">29</span>, <span class="number">31</span>],
+    <span class="number">2081</span>: [<span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">32</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">30</span>, <span class="number">29</span>, <span class="number">30</span>, <span class="number">29</span>, <span class="number">30</span>, <span class="number">30</span>],
   },
-});</code></pre>
+})</pre>
 
-<div class="note"><strong>Note:</strong> To use in production, you'll need to provide a complete BS year table (2000–2100 recommended). The published NPM package only includes demo data for 2080–2081.</div>
+<div class="callout"><strong>Note:</strong> To use in production, you'll need to provide a complete BS year table (2000–2100 recommended). The published NPM package only includes demo data for 2080–2081.</div>
 
 <h3>Creating a custom adapter</h3>
 <p>Implement the <code>BsAdapter</code> interface to provide your own conversion logic:</p>
 
-<pre><code>interface BsAdapter {
-  /** Convert a BS date to ISO AD string (YYYY-MM-DD). */
-  toAD: (date: BsDate) => AdDateIso;
-  /** Convert an ISO AD string to BS date. */
-  toBS: (date: AdDateIso) => BsDate;
-  /** Add days to a BS date and return a new BS date. */
-  addDays: (date: BsDate, days: number) => BsDate;
-  /** Difference in days: date2 - date1. */
-  diffDays: (date1: BsDate, date2: BsDate) => number;
-  /** BS date for today. */
-  today: () => BsDate;
-  /** Optional supported range for validation. */
-  range?: { min?: BsDate; max?: BsDate };
-}</code></pre>
+<div class="interface-box">
+<span class="comment">// BsAdapter interface</span><br>
+{<br>
+&nbsp;&nbsp;toAD: (date: BsDate) => AdDateIso<br>
+&nbsp;&nbsp;toBS: (date: AdDateIso) => BsDate<br>
+&nbsp;&nbsp;addDays: (date: BsDate, days: <span class="keyword">number</span>) => BsDate<br>
+&nbsp;&nbsp;diffDays: (date1: BsDate, date2: BsDate) => <span class="keyword">number</span><br>
+&nbsp;&nbsp;today: () => BsDate<br>
+&nbsp;&nbsp;range?: { min?: BsDate; max?: BsDate }<br>
+}
+</div>
 
-<!-- ── Accessibility ── -->
 <h2 id="accessibility">Accessibility</h2>
 <ul>
 <li><strong>Keyboard:</strong> Escape closes the popover, Tab navigates between controls.</li>
-<li><strong>Click-outside:</strong> Clicking outside the popover closes it.</li>
-<li><strong>ARIA:</strong> Month/year toggles expose <code>aria-haspopup</code> / <code>aria-expanded</code>. Calendar days expose <code>disabled</code> state.</li>
-<li><strong>Input:</strong> Numeric mask enforces <code>YYYY-MM-DD</code> format. Accepts and normalizes Nepali digits.</li>
+<li><strong>Click-outside:</strong> Clicking outside the popover closes it automatically.</li>
+<li><strong>ARIA:</strong> Month/year toggles expose <code>aria-haspopup</code> and <code>aria-expanded</code>. Calendar days expose <code>disabled</code> state.</li>
+<li><strong>Input:</strong> Numeric mask enforces <code>YYYY-MM-DD</code> format. Accepts and normalizes Nepali digits automatically.</li>
 </ul>
 
 </div>
-</div>
-</div>
 </main>
-
 <footer>
-<div class="wrapper">
-<p><strong>bos-nepali-date</strong> — MIT · <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a> · <a href="https://www.npmjs.com/package/bos-nepali-date" target="_blank">npm</a> · Built by <a href="https://github.com/prabin194" target="_blank">Prabin Paudel</a></p>
-</div>
+<p>bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; <a href="https://github.com/prabin194/bos-nepali-date">GitHub</a> &bull; <a href="https://www.npmjs.com/package/bos-nepali-date">npm</a></p>
 </footer>
-
-<script src="search.js"></script>
 <script src="theme.js"></script>
+<script>
+// Table of contents — highlight active section on scroll
+(function(){
+  var tocLinks = document.querySelectorAll('.toc-link:not(.sub)');
+  var headings = [];
+  var headerH = 72;
+
+  tocLinks.forEach(function(link) {
+    var id = link.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) headings.push({ el: el, link: link, top: 0, bottom: 0 });
+  });
+  if (!headings.length) return;
+
+  function updateActive() {
+    var scrollY = window.scrollY;
+    var active = null;
+
+    for (var i = 0; i < headings.length; i++) {
+      var h = headings[i];
+      var rect = h.el.getBoundingClientRect();
+      h.top = rect.top + scrollY;
+      h.bottom = rect.bottom + scrollY;
+    }
+
+    for (var i = headings.length - 1; i >= 0; i--) {
+      if (headings[i].top <= scrollY + headerH) {
+        active = headings[i];
+        break;
+      }
+    }
+
+    if (!active && headings.length) active = headings[0];
+
+    headings.forEach(function(h) {
+      h.link.classList.toggle('active', h === active);
+    });
+  }
+
+  updateActive();
+  window.addEventListener('scroll', updateActive, { passive: true });
+  window.addEventListener('resize', updateActive, { passive: true });
+})();
+</script>
 </body>
 </html>

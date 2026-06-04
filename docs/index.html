@@ -3,288 +3,317 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="bos-nepali-date — A React Nepali (Bikram Sambat) date picker with pluggable conversion adapter.">
+<meta name="description" content="bos-nepali-date — React Bikram Sambat (Nepali) date picker with pluggable conversion engine. Localization, disable rules, accessible.">
 <meta property="og:title" content="bos-nepali-date — Nepali Date Picker for React">
-<meta property="og:description" content="A lightweight Bikram Sambat (BS) date picker for React. Localized to Nepali and English.">
+<meta property="og:description" content="A lightweight, accessible React component for selecting true Bikram Sambat (BS) dates with a pluggable conversion engine.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="bos-nepali-date — Nepali Date Picker for React">
-<meta name="twitter:description" content="A lightweight Bikram Sambat (BS) date picker for React with pluggable conversion engine.">
 <title>bos-nepali-date — Nepali Date Picker for React</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c026d3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bos-nepali-date@0.1.13/dist/index.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --hue:262;
-  --bg:oklch(0.992 0.002 60);
-  --bg2:oklch(0.97 0.003 60);
-  --surface:oklch(1 0 0);
-  --border:oklch(0.91 0.004 60);
-  --text:oklch(0.12 0.012 var(--hue));
-  --text2:oklch(0.48 0.015 var(--hue));
-  --accent:oklch(0.52 0.19 var(--hue));
-  --accent2:oklch(0.62 0.16 var(--hue));
-  --radius:12px;
-  --radius-sm:8px;
-  --font-sans:'Inter','SF Pro','system-ui',sans-serif;
-  --font-mono:'JetBrains Mono','SF Mono','Fira Code','Consolas',monospace;
-}
-.dark{
-  --bg:oklch(0.1 0.01 var(--hue));
-  --bg2:oklch(0.16 0.015 var(--hue));
-  --surface:oklch(0.13 0.012 var(--hue));
-  --border:oklch(0.25 0.015 var(--hue));
-  --text:oklch(0.9 0.005 var(--hue));
-  --text2:oklch(0.6 0.01 var(--hue));
-  --accent:oklch(0.65 0.2 var(--hue));
-  --accent2:oklch(0.72 0.17 var(--hue));
-}
-.dark header{background:oklch(0.12 0.01 var(--hue) / 0.92)}
-.dark .hero .badge{background:oklch(0.18 0.01 var(--hue));border-color:oklch(0.28 0.01 var(--hue))}
-.dark .card{background:var(--surface)}
-.dark .card:hover{box-shadow:0 4px 24px oklch(0 0 0 / 0.3)}
-.dark .demo-preview{background:oklch(0.14 0.01 var(--hue))}
-.dark .demo-header .controls select{color:var(--text);background:var(--surface)}
-.dark .demo-section{background:var(--surface)}
-.dark #search-overlay>div>div{background:var(--surface)!important}
-.dark #search-overlay>div>div>div{border-bottom-color:var(--border)!important}
-.dark #search-overlay input{color:var(--text)!important}
-.dark #search-overlay kbd{background:var(--bg2)!important;border-color:var(--border)!important;color:var(--text2)!important}
-.dark #search-overlay .sr-item{border-bottom-color:var(--border)!important}
-.dark #search-overlay .sr-item div:nth-child(1){color:var(--text)!important}
-.dark #search-overlay .sr-item div:nth-child(3){color:var(--text2)!important}
-.dark #search-overlay .sr-item[style*="oklch(0.935"]{background:oklch(0.22 0.02 var(--hue))!important}
-html{font-family:var(--font-sans);color:var(--text);background:var(--bg);scroll-behavior:smooth;line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background 0.3s ease,color 0.3s ease}
-body{display:flex;flex-direction:column;min-height:100vh}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:var(--font-mono);font-size:0.875em}
-code{background:var(--bg2);padding:0.15em 0.4em;border-radius:4px}
-pre{background:#1a1b26;color:#c9d1d9;padding:1.25rem 1.5rem;border-radius:var(--radius);overflow-x:auto;line-height:1.5;font-size:0.85rem}
-pre code{background:none;padding:0;color:inherit;font-size:inherit}
+:root{--bg:#ffffff;--surface:#f8f9fa;--surface2:#f1f3f5;--border:#e2e4e8;--text:#0f1117;--text2:#525866;--text3:#868c98;--accent:#b45309;--accent2:#d97706;--radius:10px;--radius-sm:6px;font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.7;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.dark{--bg:#0b0d10;--surface:#121418;--surface2:#1a1d24;--border:#262a32;--text:#edf0f5;--text2:#9498a3;--text3:#636873}
+html{scroll-behavior:smooth}body{min-height:100vh;display:flex;flex-direction:column}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.8);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--border)}
+.dark header{background:rgba(11,13,16,0.8)}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 28px;display:flex;align-items:center;height:56px;gap:6px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--text);text-decoration:none;margin-right:auto;letter-spacing:-0.02em}
+.logo svg{width:22px;height:22px;flex-shrink:0}
+nav{display:flex;align-items:center;gap:2px}
+nav a{padding:6px 14px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s,background 0.15s}
+nav a:hover{color:var(--text);background:var(--surface2)}
+nav a.active{color:var(--accent);background:rgba(180,83,9,0.08)}
+.dark nav a.active{background:rgba(217,119,6,0.15)}
+.nav-btns{display:flex;align-items:center;gap:4px;margin-left:8px}
+.nav-btn{width:34px;height:34px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:color 0.15s,background 0.15s}
+.nav-btn:hover{color:var(--text);background:var(--surface2)}
+main{flex:1}
 
-.wrapper{max-width:1100px;margin:0 auto;padding:0 1.5rem;width:100%}
-
-/* ── Header ── */
-header{position:sticky;top:0;z-index:50;background:oklch(1 0 0 / 0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);transition:background 0.3s ease}
-header .inner{display:flex;align-items:center;justify-content:space-between;height:58px}
-header .logo{display:flex;align-items:center;gap:8px;font-weight:650;font-size:0.9rem;color:var(--text);letter-spacing:-0.01em}
-header .logo svg{width:18px;height:18px;color:var(--accent)}
-header nav{display:flex;align-items:center;gap:2px}
-header nav a{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--radius-sm);font-size:0.82rem;font-weight:500;color:var(--text2);transition:all 0.15s}
-header nav a:hover{background:var(--bg2);color:var(--text);text-decoration:none}
-header nav a.active{background:var(--bg2);color:var(--accent);font-weight:600}
-@media(max-width:560px){header nav a{padding:7px 8px;font-size:0.72rem;gap:3px}}#search-btn:hover{background:var(--bg2)}#search-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-/* ── Hero ── */
-.hero{padding:5rem 0 3rem;text-align:center}
-.hero .eyebrow{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;background:var(--bg2);color:var(--accent);border:1px solid var(--border);margin-bottom:1.25rem}
-.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:650;letter-spacing:-0.035em;line-height:1.12}
+.hero{text-align:center;padding:100px 24px 72px;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:12.5px;font-weight:600;background:rgba(180,83,9,0.08);color:var(--accent);margin-bottom:24px}
+.hero h1{font-size:clamp(2.4rem,5.5vw,3.6rem);font-weight:800;line-height:1.12;letter-spacing:-0.03em;margin-bottom:20px}
 .hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero p{max-width:540px;margin:0.9rem auto 1.5rem;font-size:1.05rem;color:var(--text2);line-height:1.55}
-.hero .badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.hero .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 13px;border-radius:999px;font-size:0.78rem;font-weight:500;background:var(--surface);color:var(--text2);border:1px solid var(--border);transition:all 0.15s;box-shadow:0 1px 2px oklch(0 0 0 / 0.03)}
-.hero .badge:hover{background:var(--bg2);text-decoration:none;border-color:var(--accent)}
-.hero .install-code{display:inline-flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface);margin-top:1.5rem;box-shadow:0 1px 3px oklch(0 0 0 / 0.04)}
-.hero .install-code code{padding:0.65rem 1rem;font-size:0.85rem;background:none;border:none}
-.hero .install-code button{padding:0.65rem 1rem;border:none;border-left:1px solid var(--border);background:var(--bg2);font-family:inherit;font-size:0.78rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s}
-.hero .install-code button:hover{background:var(--border);color:var(--text)}
+.hero p{font-size:clamp(1.05rem,2vw,1.2rem);color:var(--text2);max-width:600px;margin:0 auto 36px;line-height:1.75}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 28px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;text-decoration:none;transition:all 0.15s;cursor:pointer;border:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.hero-install{margin-top:20px;display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 20px;font-family:JetBrains Mono,monospace;font-size:14px;color:var(--text2);cursor:pointer;transition:all 0.15s}
+.hero-install:hover{background:var(--border);color:var(--text)}
+.hero-install .prompt{color:var(--text3)}
+.hero-install .cmd{color:var(--accent)}
+.hero-stats{display:flex;justify-content:center;gap:40px;margin-top:48px;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat-num{font-size:1.6rem;font-weight:800;color:var(--accent)}
+.hero-stat-label{font-size:12px;color:var(--text3);margin-top:2px}
 
-/* ── Demo ── */
-.demo-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:3rem;box-shadow:0 1px 4px oklch(0 0 0 / 0.04)}
-.demo-header{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
-.demo-header h2{font-size:0.88rem;font-weight:600;color:var(--text2)}
-.demo-header .controls{display:flex;gap:8px;flex-wrap:wrap}
-.demo-header .controls label{display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;font-weight:500;color:var(--text2);cursor:pointer}
-.demo-header .controls input[type="checkbox"]{width:14px;height:14px;accent-color:var(--accent);cursor:pointer}
-.demo-header .controls select{font-size:0.78rem;padding:2px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer}
-.demo-body{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:320px}
-@media(max-width:700px){.demo-body{grid-template-columns:1fr}}
-.demo-preview{display:flex;align-items:center;justify-content:center;padding:2rem;background:oklch(0.992 0.002 var(--hue))}
-.demo-preview .np-picker{max-width:280px}
-.demo-loading{font-size:0.82rem;color:var(--text2);padding:2rem;text-align:center}
-.demo-output{display:flex;flex-direction:column;justify-content:center;padding:1.5rem 1.75rem;background:var(--bg2);border-left:1px solid var(--border);font-size:0.85rem;gap:12px}
-@media(max-width:700px){.demo-output{border-left:none;border-top:1px solid var(--border)}}
-.demo-output .row{display:flex;justify-content:space-between;gap:10px;padding:4px 0}
-.demo-output .row .lbl{color:var(--text2);font-weight:500;font-size:0.82rem}
-.demo-output .row .val{font-family:var(--font-mono);font-size:0.8rem;color:var(--accent);font-weight:500}
+.section{padding:80px 24px;max-width:1100px;margin:0 auto}
+.section-title{text-align:center;font-size:1.7rem;font-weight:700;margin-bottom:10px;letter-spacing:-0.02em}
+.section-sub{text-align:center;color:var(--text2);font-size:15px;margin-bottom:52px}
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+.feature-card{padding:32px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);transition:transform 0.2s}
+.feature-card:hover{transform:translateY(-3px)}
+.feature-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px;background:rgba(180,83,9,0.08);color:var(--accent)}
+.dark .feature-icon{background:rgba(217,119,6,0.15)}
+.feature-card h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.feature-card p{font-size:13.5px;color:var(--text2);line-height:1.65}
 
-/* ── Sections ── */
-section{padding:3rem 0}
-section + section{border-top:1px solid var(--border)}
-section h2{font-size:1.4rem;font-weight:650;letter-spacing:-0.025em;margin-bottom:0.5rem;text-align:center}
-section > p{color:var(--text2);margin-bottom:1.75rem;max-width:560px;margin-left:auto;margin-right:auto;text-align:center;font-size:0.92rem}
+.demo-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:72px 24px}
+.demo-section .section-inner{max-width:800px;margin:0 auto;text-align:center}
+.demo-section .section-inner h2{font-size:1.7rem;font-weight:700;margin-bottom:10px;letter-spacing:-0.02em}
+.demo-section .section-inner .sub{color:var(--text2);font-size:15px;margin-bottom:40px}
+#demo-root{min-height:320px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:32px;text-align:left;overflow:hidden}
+.demo-error{display:none;padding:14px 18px;border-radius:var(--radius);background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.15);color:#dc2626;font-size:13.5px;margin:16px 0}
+.demo-loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:60px 24px;color:var(--text3);font-size:14px}
+.demo-loading .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:demoSpin 0.6s linear infinite}
+@keyframes demoSpin{to{transform:rotate(360deg)}}
+.demo-controls{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.demo-controls label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer}
+.demo-controls input[type=checkbox]{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);accent-color:var(--accent);cursor:pointer}
+.demo-controls select{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;cursor:pointer}
+.demo-result{margin-top:20px;padding:14px 18px;background:var(--surface2);border-radius:var(--radius-sm);font-size:13px;color:var(--text2);font-family:JetBrains Mono,monospace;line-height:1.6}
+.demo-result strong{color:var(--text);font-weight:600}
 
-.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
-.card{padding:1.35rem 1.4rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:all 0.25s;box-shadow:0 1px 3px oklch(0 0 0 / 0.04)}
-.card:hover{border-color:var(--accent);box-shadow:0 4px 20px oklch(0 0 0 / 0.07);transform:translateY(-2px)}
-.card .icon{font-size:1.3rem;margin-bottom:6px;display:block}
-.card h4{font-size:0.88rem;font-weight:600;margin-bottom:3px;color:var(--text)}
-.card p{font-size:0.8rem;color:var(--text2);line-height:1.45}
+.steps{max-width:620px;margin:0 auto;counter-reset:step}
+.step{display:flex;gap:22px;margin-bottom:32px}
+.step-num{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.step-body{flex:1;padding-top:4px}
+.step-body h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-body p{font-size:13.5px;color:var(--text2);line-height:1.65}
+.step-body code{background:var(--surface2);padding:2px 7px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:12.5px;color:var(--text)}
+.step-body pre{background:var(--surface2);border-radius:var(--radius-sm);padding:18px 20px;margin-top:12px;overflow-x:auto;font-family:JetBrains Mono,monospace;font-size:13px;line-height:1.55;color:var(--text)}
 
-.quick-links{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:2rem 0 0}
-.quick-links a{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;transition:all 0.2s}
-.quick-links .primary{background:var(--accent);color:#fff;box-shadow:0 1px 3px oklch(0 0 0 / 0.15)}
-.quick-links .primary:hover{opacity:0.92;text-decoration:none;transform:translateY(-1px);box-shadow:0 2px 6px oklch(0 0 0 / 0.2)}
-.quick-links .secondary{border:1px solid var(--border);color:var(--text);background:var(--surface)}
-.quick-links .secondary:hover{background:var(--bg2);text-decoration:none;border-color:var(--accent)}
+footer{text-align:center;padding:32px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text3);margin-top:auto}
+footer a{color:var(--accent);text-decoration:none}
 
-/* ── Footer ── */
-footer{padding:2rem 0;margin-top:auto;border-top:1px solid var(--border);text-align:center;font-size:0.78rem;color:var(--text2)}
-footer a{color:var(--accent)}
+@media(max-width:640px){
+  nav a{font-size:12px;padding:5px 8px}
+  .hero{padding:64px 20px 48px}
+  .hero h1{font-size:clamp(1.8rem,7vw,2.4rem)}
+  .section{padding:48px 20px}
+  .features{grid-template-columns:1fr}
+  #demo-root{padding:16px}
+}
 </style>
 </head>
 <body>
-
 <header>
-<div class="wrapper">
-<div class="inner">
-<a href="index.html" class="logo" style="text-decoration:none;color:inherit">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+<div class="header-inner">
+<a href="./" class="logo">
+<svg viewBox="0 0 24 24" fill="none" stroke="%23d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
 bos-nepali-date
 </a>
 <nav>
-<a href="index.html" class="active">Home</a>
+<a href="./" class="active">Home</a>
 <a href="documentation.html">Docs</a>
 <a href="roadmap.html">Roadmap</a>
 <a href="changelogs.html">Changelogs</a>
 <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
-<button id="search-btn" aria-label="Search" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;color:var(--text2);display:flex;align-items:center;gap:4px;transition:all 0.15s;margin-left:4px">🔍 <span style="font-size:0.7rem;opacity:0.5;font-weight:500">⌘K</span></button>
-<button id="theme-btn" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;font-size:0.85rem;transition:all 0.15s">🌙</button>
 </nav>
+<div class="nav-btns">
+<button class="nav-btn" id="theme-btn" aria-label="Toggle theme">🌙</button>
 </div>
 </div>
 </header>
-
 <main>
-<div class="wrapper">
-<section class="hero" style="border:none;padding-bottom:1.5rem">
-<div class="eyebrow">v0.1.13 — Latest release</div>
-<h1><span>Nepali Date Picker</span> for React</h1>
-<p>A lightweight, accessible Bikram Sambat (BS) date picker with a pluggable conversion engine. Localized to Nepali and English.</p>
-<div class="badges">
-<a class="badge" href="https://www.npmjs.com/package/bos-nepali-date" target="_blank">📦 npm</a>
-<a class="badge" href="https://github.com/prabin194/bos-nepali-date" target="_blank">🐙 GitHub</a>
-<a class="badge" href="https://github.com/prabin194/bos-nepali-date/blob/main/LICENSE" target="_blank">📄 MIT</a>
+<section class="hero">
+<div class="hero-badge">📅 v0.1.17 — Nepali date picker</div>
+<h1>Bikram Sambat dates<br>for <span>React apps</span></h1>
+<p>A lightweight, accessible React component for selecting true Bikram Sambat (BS) dates. Pluggable conversion engine, dual-language support, and full keyboard navigation.</p>
+<div class="hero-actions">
+<a href="documentation.html" class="btn btn-primary">Get started →</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank" class="btn btn-secondary">View on GitHub</a>
 </div>
-<div class="install-code">
-<code>npm install bos-nepali-date</code>
-<button onclick="navigator.clipboard.writeText('npm install bos-nepali-date').then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)})">Copy</button>
+<div class="hero-install" onclick="navigator.clipboard.writeText('npm install bos-nepali-date');this.querySelector('.cmd').textContent='Copied!'" title="Click to copy">
+<span class="prompt">$</span>
+<span class="cmd">npm install bos-nepali-date</span>
+</div>
+<div class="hero-stats">
+<div class="hero-stat"><div class="hero-stat-num">1</div><div class="hero-stat-label">Runtime dep</div></div>
+<div class="hero-stat"><div class="hero-stat-num">2</div><div class="hero-stat-label">Locales</div></div>
+<div class="hero-stat"><div class="hero-stat-num">100</div><div class="hero-stat-label">BS years</div></div>
+<div class="hero-stat"><div class="hero-stat-num">♿</div><div class="hero-stat-label">Accessible</div></div>
 </div>
 </section>
 
-<section id="demo" style="border:none;padding-top:0">
-<div class="demo-section">
-<div class="demo-header">
-<h2>Interactive demo</h2>
-<div class="controls">
-<label><input type="checkbox" id="ctl-lang"> नेपाली (ne)</label>
-<label><input type="checkbox" id="ctl-today"> Disable today</label>
-<span style="font-size:0.72rem;color:var(--text2);opacity:0.6;padding:2px 6px">Week starts Sunday</span>
+<section class="demo-section">
+<div class="section-inner">
+<h2>Try it live</h2>
+<p class="sub">Pick a Nepali date, switch languages, and test disable rules in real time.</p>
+<div id="demo-root">
+<div class="demo-loading"><div class="spinner"></div><span>Loading demo...</span></div>
 </div>
-</div>
-<div class="demo-body">
-<div class="demo-preview" id="demo-mount"><div class="demo-loading">Loading demo…</div></div>
-<div class="demo-output" id="demo-output">
-<div class="row"><span class="lbl">Selected (BS)</span><span class="val" id="out-bs">—</span></div>
-<div class="row"><span class="lbl">Selected (AD)</span><span class="val" id="out-ad">—</span></div>
-<div class="row"><span class="lbl">Locale</span><span class="val" id="out-locale">en</span></div>
-</div>
+<div class="demo-error" id="demo-error">
+<p>⚠️ Demo could not load. Make sure JavaScript is enabled.</p>
 </div>
 </div>
 </section>
 
-<section>
-<h2>Why this picker?</h2>
-<p>Built for React apps that need genuine Bikram Sambat date handling — not an English calendar with Nepali labels.</p>
+<section class="section">
+<h2 class="section-title">Everything you need</h2>
+<p class="section-sub">A complete BS date picker experience with zero configuration required</p>
 <div class="features">
-<div class="card"><span class="icon">🇳🇵</span><h4>True BS dates</h4><p>Full Bikram Sambat arithmetic, not faked with offsets.</p></div>
-<div class="card"><span class="icon">🔌</span><h4>Pluggable adapter</h4><p>Swap in your own BS↔AD conversion tables.</p></div>
-<div class="card"><span class="icon">🌐</span><h4>Dual language</h4><p>Toggle English / नेपाली month names and digits.</p></div>
-<div class="card"><span class="icon">⛔</span><h4>Disable rules</h4><p>Disable dates, ranges, before/after bounds, or today.</p></div>
-<div class="card"><span class="icon">🎨</span><h4>Custom styling</h4><p>Theme via CSS variables. Everything overrideable.</p></div>
-<div class="card"><span class="icon">♿</span><h4>Accessible</h4><p>Esc to close, Tab to navigate, ARIA throughout.</p></div>
+<div class="feature-card">
+<div class="feature-icon">📅</div>
+<h3>True BS dates</h3>
+<p>Real Bikram Sambat arithmetic, not Gregorian approximations. Uses an authoritative day-by-day conversion table.</p>
 </div>
-
-<div class="quick-links">
-<a href="documentation.html" class="primary">📖 Read the docs</a>
-<a href="roadmap.html" class="secondary">🗺️ Roadmap</a>
-<a href="changelogs.html" class="secondary">📋 Changelog</a>
+<div class="feature-card">
+<div class="feature-icon">🔌</div>
+<h3>Pluggable adapter</h3>
+<p>Swap in custom conversion tables via the <code>BsAdapter</code> interface. Built-in <code>MemoryBsAdapter</code> for full control.</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🌐</div>
+<h3>Dual language</h3>
+<p>Toggle between English and Nepali (नेपाली) — labels, month names, weekday abbreviations, and digit display.</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">⛔</div>
+<h3>Disable rules</h3>
+<p>Disable specific dates, ranges, today, or before/after boundaries. Combine <code>minDate</code>/<code>maxDate</code> with disable options.</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">⌨️</div>
+<h3>Keyboard accessible</h3>
+<p>Escape to close, Tab to navigate, ARIA attributes, input masking, and automatic Nepali digit normalization.</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🎨</div>
+<h3>Themable</h3>
+<p>Override every visual aspect via CSS variables. Font, sizing, colors — match your application's design system.</p>
+</div>
 </div>
 </section>
+
+<section class="section">
+<h2 class="section-title">Getting started</h2>
+<p class="section-sub">Install, import, and use in minutes</p>
+<div class="steps">
+<div class="step">
+<div class="step-num">1</div>
+<div class="step-body">
+<h3>Install</h3>
+<p>Add the package to your React project:</p>
+<pre><span style="color:var(--text3)">$</span> npm install bos-nepali-date</pre>
 </div>
+</div>
+<div class="step">
+<div class="step-num">2</div>
+<div class="step-body">
+<h3>Import the component</h3>
+<p>Import <code>NepaliDatePicker</code> and the <code>defaultAdapter</code>:</p>
+<pre><span style="color:var(--text3)">import</span> { useState } <span style="color:var(--text3)">from</span> <span style="color:#059669">"react"</span>
+<span style="color:var(--text3)">import</span> { NepaliDatePicker, defaultAdapter } <span style="color:var(--text3)">from</span> <span style="color:#059669">"bos-nepali-date"</span></pre>
+</div>
+</div>
+<div class="step">
+<div class="step-num">3</div>
+<div class="step-body">
+<h3>Render &amp; control</h3>
+<p>Wire up <code>value</code> and <code>onChange</code>, pass the adapter:</p>
+<pre><span style="color:var(--text3)">&lt;NepaliDatePicker</span>
+  value={value}
+  onChange={setValue}
+  adapter={defaultAdapter}
+<span style="color:var(--text3)">/&gt;</span></pre>
+</div>
+</div>
+</div>
+<div style="text-align:center;margin-top:20px">
+<a href="documentation.html" class="btn btn-primary">Read full documentation →</a>
+</div>
+</section>
 </main>
-
 <footer>
-<div class="wrapper">
-<p><strong>bos-nepali-date</strong> — MIT · <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a> · <a href="https://www.npmjs.com/package/bos-nepali-date" target="_blank">npm</a> · Built by <a href="https://github.com/prabin194" target="_blank">Prabin Paudel</a></p>
-</div>
+<p>bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; <a href="https://github.com/prabin194/bos-nepali-date">GitHub</a> &bull; <a href="https://www.npmjs.com/package/bos-nepali-date">npm</a></p>
 </footer>
-
-<script src="search.js"></script>
 <script src="theme.js"></script>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.3.1",
-    "react-dom": "https://esm.sh/react-dom@18.3.1",
-    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
-    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
-    "clsx": "https://esm.sh/clsx@2.1.1",
-    "bos-nepali-date": "https://esm.sh/bos-nepali-date@0.1.13?external=react,react-dom,react/jsx-runtime,clsx"
-  }
-}
-</script>
-<script type="module">
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { NepaliDatePicker, defaultAdapter } from 'bos-nepali-date';
-const adapter = defaultAdapter;
-const today = adapter.today();
-const demoDate = { year: today.year, month: today.month, day: 15 };
-function DemoApp() {
-  const [value, setValue] = React.useState(demoDate);
-  const [lang, setLang] = React.useState('en');
-  const [disableToday, setDisableToday] = React.useState(false);
-  const [key, setKey] = React.useState(0);
-  React.useEffect(() => {
-    const langCb = document.getElementById('ctl-lang');
-    const todayCb = document.getElementById('ctl-today');
-    const onChange = function() { setLang(langCb.checked?'ne':'en'); setDisableToday(todayCb.checked); setKey(function(k){return k+1;}); };
-    langCb.addEventListener('change', onChange);
-    todayCb.addEventListener('change', onChange);
-    return function() { langCb.removeEventListener('change', onChange); todayCb.removeEventListener('change', onChange); };
-  }, []);
-  const outBs = document.getElementById('out-bs');
-  const outAd = document.getElementById('out-ad');
-  const outLocale = document.getElementById('out-locale');
-  const handleChange = (date) => {
-    setValue(date);
-    if (date) {
-      outBs.textContent = `${date.year}-${String(date.month).padStart(2,'0')}-${String(date.day).padStart(2,'0')}`;
-      try { outAd.textContent = adapter.toAD(date); } catch { outAd.textContent = '(out of range)'; }
-    } else { outBs.textContent = '(cleared)'; outAd.textContent = '(cleared)'; }
-    outLocale.textContent = lang;
-  };
-  React.useEffect(() => {
-    if (value) {
-      outBs.textContent = `${value.year}-${String(value.month).padStart(2,'0')}-${String(value.day).padStart(2,'0')}`;
-      try { outAd.textContent = adapter.toAD(value); } catch { outAd.textContent = '(out of range)'; }
-    }
-    outLocale.textContent = lang;
-    var openTimer = setTimeout(function() {
-      var toggle = document.querySelector('#demo-mount .np-toggle');
-      if (toggle) toggle.click();
-    }, 600);
-    return function() { clearTimeout(openTimer); };
-  }, [key]);
-  return React.createElement(NepaliDatePicker, { key, value, onChange: handleChange, adapter, disable: disableToday ? { today: true } : {}, menu: { lang, firstDayOfWeek: 0, showMonth: true, showYear: true } });
-}
-const root = ReactDOM.createRoot(document.getElementById('demo-mount'));
-root.render(React.createElement(DemoApp));
-</script>
+<script>
+// Live demo bootstrap
+(function(){
+  var root = document.getElementById('demo-root');
+  var errorEl = document.getElementById('demo-error');
+  if (!root) return;
 
+  function loadScript(src, cb) {
+    var s = document.createElement('script');
+    s.src = src; s.onload = cb; s.onerror = cb;
+    document.body.appendChild(s);
+  }
+
+  // Load chain: React -> ReactDOM -> UMD bundle -> bootstrap
+  loadScript('https://unpkg.com/react@18/umd/react.production.min.js', function() {
+    loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', function() {
+      loadScript('bos-nepali-date.umd.js', function() {
+        try {
+          bootstrapDemo();
+        } catch(e) {
+          root.innerHTML = '';
+          errorEl.style.display = 'block';
+          errorEl.innerHTML = '<p>\u26A0\uFE0F Demo error: ' + e.message + '</p>';
+        }
+      });
+    });
+  });
+
+  function bootstrapDemo() {
+    var R = window.React, RD = window.ReactDOM;
+    var ND = window.BosNepaliDate;
+    if (!R || !RD || !ND) {
+      root.innerHTML = '';
+      errorEl.style.display = 'block';
+      errorEl.innerHTML = '<p>\u26A0\uFE0F Failed to load demo dependencies.</p>';
+      return;
+    }
+
+    var h = R.createElement, useState = R.useState;
+    var Picker = ND.NepaliDatePicker;
+    var adapter = ND.defaultAdapter;
+
+    function DemoApp() {
+      var _val = useState(null), value = _val[0], setValue = _val[1];
+      var _lang = useState('en'), lang = _lang[0], setLang = _lang[1];
+      var _disableToday = useState(false), disableToday = _disableToday[0], setDisableToday = _disableToday[1];
+
+      var disableOpt = {};
+      if (disableToday) disableOpt.today = true;
+
+      return h('div', null,
+        h('div', { className: 'demo-controls' },
+          h('label', null,
+            h('input', { type: 'checkbox', checked: disableToday, onChange: function(e) { setDisableToday(e.target.checked); } }),
+            'Disable today'
+          ),
+          h('select', { value: lang, onChange: function(e) { setLang(e.target.value); } },
+            h('option', { value: 'en' }, 'English'),
+            h('option', { value: 'ne' }, '\u0928\u0947\u092A\u093E\u0932\u0940')
+          )
+        ),
+        h(Picker, {
+          value: value,
+          onChange: setValue,
+          adapter: adapter,
+          menu: { lang: lang, showMonth: true, showYear: true },
+          disable: Object.keys(disableOpt).length ? disableOpt : undefined,
+          style: { width: '100%', maxWidth: '320px' }
+        }),
+        value ? h('div', { className: 'demo-result' },
+          h('strong', null, 'Selected: '),
+          'BS ' + value.year + '-' + String(value.month).padStart(2, '0') + '-' + String(value.day).padStart(2, '0') + ' (' + adapter.toAD(value) + ' AD)'
+        ) : h('div', { className: 'demo-result', style: { color: 'var(--text3)' } }, 'Pick a date to see the conversion')
+      );
+    }
+
+    RD.createRoot(root).render(h(DemoApp));
+  }
+})();
+</script>
 </body>
 </html>
