@@ -11,7 +11,34 @@
   --np-font: inherit;
   --np-popover-min-width: 280px;
   --np-popover-max-width: 320px;
+
+  /* Size */
+  --np-sm-height: 24px;
+  --np-sm-padding: 4px 8px;
+  --np-sm-font: 12px;
+  --np-sm-popover-font: 12px;
+  --np-md-height: 32px;
+  --np-md-padding: 8px 10px;
+  --np-md-font: 14px;
+  --np-md-popover-font: 14px;
+  --np-lg-height: 40px;
+  --np-lg-padding: 10px 14px;
+  --np-lg-font: 16px;
+  --np-lg-popover-font: 15px;
+
+  /* Status */
+  --np-color-error: #ef4444;
+  --np-color-warning: #f59e0b;
+  --np-error-bg: #fef2f2;
+  --np-warning-bg: #fffbeb;
+
+  /* Variants */
+  --np-underline-color: var(--np-primary);
+  --np-underline-border: var(--np-border);
+  --np-filled-bg: #f8f9fa;
 }
+
+/* ── Base ── */
 
 .np-picker {
   position: relative;
@@ -26,12 +53,18 @@
   align-items: center;
   width: 100%;
   min-width: 0;
-  gap: 10px;
+  gap: 6px;
   background: var(--np-bg);
   border: 1px solid var(--np-border);
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: var(--np-md-padding);
   cursor: text;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.np-input-wrapper:focus-within {
+  border-color: var(--np-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 
 .np-input {
@@ -39,7 +72,7 @@
   min-width: 0;
   border: none;
   outline: none;
-  font-size: 14px;
+  font-size: var(--np-md-font);
   font: inherit;
   background: transparent;
   color: var(--np-text);
@@ -49,6 +82,167 @@
   color: var(--np-muted);
 }
 
+/* ── Size variants ── */
+
+.np-picker--small .np-input-wrapper {
+  padding: var(--np-sm-padding);
+}
+.np-picker--small .np-input {
+  font-size: var(--np-sm-font);
+}
+.np-picker--small .np-toggle__icon {
+  width: 14px;
+  height: 14px;
+}
+.np-picker--small .np-popover {
+  font-size: var(--np-sm-popover-font);
+}
+
+.np-picker--large .np-input-wrapper {
+  padding: var(--np-lg-padding);
+}
+.np-picker--large .np-input {
+  font-size: var(--np-lg-font);
+}
+.np-picker--large .np-toggle__icon {
+  width: 18px;
+  height: 18px;
+}
+.np-picker--large .np-popover {
+  font-size: var(--np-lg-popover-font);
+}
+
+/* ── Variant styles ── */
+
+.np-picker--filled .np-input-wrapper {
+  background: var(--np-filled-bg);
+  border-color: transparent;
+}
+.np-picker--filled .np-input-wrapper:focus-within {
+  border-color: var(--np-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.np-picker--borderless .np-input-wrapper {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.np-picker--borderless .np-input-wrapper:focus-within {
+  border-color: var(--np-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.np-picker--underlined .np-input-wrapper {
+  border: none;
+  border-bottom: 1px solid var(--np-underline-border);
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+  background: transparent;
+}
+.np-picker--underlined .np-input-wrapper:focus-within {
+  border-bottom-color: var(--np-underline-color);
+  box-shadow: 0 1px 0 0 var(--np-underline-color);
+}
+
+/* Variant + range picker */
+.np-picker--filled .np-range-inputs {
+  background: var(--np-filled-bg);
+  border-color: transparent;
+}
+.np-picker--filled .np-range-inputs:focus-within {
+  border-color: var(--np-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.np-picker--borderless .np-range-inputs {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.np-picker--borderless .np-range-inputs:focus-within {
+  border-color: var(--np-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.np-picker--underlined .np-range-inputs {
+  border: none;
+  border-bottom: 1px solid var(--np-underline-border);
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+  background: transparent;
+}
+.np-picker--underlined .np-range-inputs:focus-within {
+  border-bottom-color: var(--np-underline-color);
+  box-shadow: 0 1px 0 0 var(--np-underline-color);
+}
+
+/* ── Status variants ── */
+
+.np-picker--error .np-input-wrapper {
+  border-color: var(--np-color-error);
+  background: var(--np-error-bg);
+}
+.np-picker--error .np-input-wrapper:focus-within {
+  border-color: var(--np-color-error);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+}
+
+.np-picker--warning .np-input-wrapper {
+  border-color: var(--np-color-warning);
+  background: var(--np-warning-bg);
+}
+.np-picker--warning .np-input-wrapper:focus-within {
+  border-color: var(--np-color-warning);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+}
+
+/* ── Disabled state ── */
+
+.np-picker--disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.np-picker--disabled .np-input-wrapper {
+  background: #f9fafb;
+  cursor: not-allowed;
+}
+.np-picker--disabled .np-input {
+  cursor: not-allowed;
+}
+.np-picker--disabled .np-toggle {
+  cursor: not-allowed;
+}
+
+/* ── Clear button ── */
+
+.np-clear-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--np-muted);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.np-clear-btn:hover {
+  background: #e5e7eb;
+  color: var(--np-text);
+}
+
+/* ── Toggle ── */
+
 .np-toggle {
   flex-shrink: 0;
   border: none;
@@ -57,7 +251,16 @@
   font: inherit;
   font-size: 14px;
   color: var(--np-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.np-toggle:hover {
+  color: var(--np-text);
+}
+
+/* ── Popover ── */
 
 .np-popover {
   position: fixed;
@@ -69,6 +272,7 @@
   width: var(--np-popover-min-width);
   max-width: calc(100vw - 24px);
   z-index: 9999;
+  font-size: var(--np-md-popover-font);
 }
 
 .np-popover__header {
@@ -212,10 +416,30 @@
   font-weight: 500;
 }
 
+/* ── Screen-reader-only utility ── */
+
+.np-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Calendar grid ── */
+
 .np-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
+}
+
+.np-cal-grid__row {
+  display: contents;
 }
 
 .np-cal-dow {
@@ -271,6 +495,182 @@
   font-size: 13px;
 }
 
+/* ── Range picker ── */
+
+.np-range-picker .np-range-inputs {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  gap: 4px;
+  background: var(--np-bg);
+  border: 1px solid var(--np-border);
+  border-radius: 8px;
+  padding: var(--np-md-padding);
+  cursor: text;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.np-range-picker .np-range-inputs:focus-within {
+  border-color: var(--np-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.np-range-input {
+  flex: 1;
+  min-width: 40px;
+  width: 0;
+  border: none;
+  outline: none;
+  font-size: var(--np-md-font);
+  font: inherit;
+  background: transparent;
+  color: var(--np-text);
+  text-align: center;
+}
+
+.np-range-input::placeholder {
+  color: var(--np-muted);
+}
+
+.np-range-separator {
+  flex-shrink: 0;
+  color: var(--np-muted);
+  font-size: var(--np-md-font);
+  user-select: none;
+  padding: 0 2px;
+}
+
+/* Size variants for range picker */
+.np-picker--small .np-range-inputs {
+  padding: var(--np-sm-padding);
+}
+.np-picker--small .np-range-input {
+  font-size: var(--np-sm-font);
+}
+.np-picker--small .np-range-separator {
+  font-size: var(--np-sm-font);
+}
+.np-picker--small .np-range-inputs .np-toggle__icon {
+  width: 14px;
+  height: 14px;
+}
+
+.np-picker--large .np-range-inputs {
+  padding: var(--np-lg-padding);
+}
+.np-picker--large .np-range-input {
+  font-size: var(--np-lg-font);
+}
+.np-picker--large .np-range-separator {
+  font-size: var(--np-lg-font);
+}
+.np-picker--large .np-range-inputs .np-toggle__icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Status variants for range picker */
+.np-picker--error .np-range-inputs {
+  border-color: var(--np-color-error);
+  background: var(--np-error-bg);
+}
+.np-picker--error .np-range-inputs:focus-within {
+  border-color: var(--np-color-error);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+}
+
+.np-picker--warning .np-range-inputs {
+  border-color: var(--np-color-warning);
+  background: var(--np-warning-bg);
+}
+.np-picker--warning .np-range-inputs:focus-within {
+  border-color: var(--np-color-warning);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+}
+
+/* Disabled range picker */
+.np-picker--disabled .np-range-inputs {
+  background: #f9fafb;
+  cursor: not-allowed;
+}
+
+/* Dual-month range layout */
+.np-popover--range {
+  width: 580px;
+}
+
+.np-dual-header {
+  margin-bottom: 6px;
+}
+
+.np-dual-header__months {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.np-dual-header__item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.np-dual-header__sep {
+  color: var(--np-muted);
+  user-select: none;
+}
+
+.np-dual-month {
+  display: flex;
+  gap: 20px;
+}
+
+.np-dual-month__col {
+  flex: 1;
+  min-width: 260px;
+}
+
+@media (max-width: 700px) {
+  .np-dual-month {
+    flex-wrap: wrap;
+  }
+  .np-popover--range {
+    width: 320px;
+  }
+}
+
+/* ── Presets ── */
+
+.np-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--np-border);
+}
+
+.np-preset-btn {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--np-border);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  color: var(--np-text);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.np-preset-btn:hover {
+  background: var(--np-primary-soft);
+  border-color: var(--np-primary);
+  color: var(--np-primary);
+}
+
+/* ── Footer ── */
+
 .np-footer {
   display: flex;
   justify-content: flex-start;
@@ -298,4 +698,13 @@
 
 .np-footer__btn--primary {
   font-weight: 500;
+}
+
+/* ── Extra footer ── */
+
+.np-extra-footer,
+.np-footer__extra {
+  border-top: 1px solid var(--np-border);
+  margin-top: 8px;
+  padding-top: 8px;
 }

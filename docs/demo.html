@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="bos-nepali-date interactive demo — try all props: variant, placement, size, status, disabledDate, cellRender, and more for single and range pickers.">
+<meta property="og:title" content="Interactive Demo — bos-nepali-date">
+<meta property="og:description" content="Live playground for NepaliDatePicker and NepaliDateRangePicker with all customization props.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/demo.html">
+<meta name="twitter:card" content="summary_large_image">
+<title>Interactive Demo — bos-nepali-date</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#ffffff;--surface:#f8f9fa;--surface2:#f1f3f5;--border:#e2e4e8;--text:#0f1117;--text2:#525866;--text3:#868c98;--accent:#b45309;--accent2:#d97706;--radius:10px;--radius-sm:6px;font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.7;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.dark{--bg:#0b0d10;--surface:#121418;--surface2:#1a1d24;--border:#262a32;--text:#edf0f5;--text2:#9498a3;--text3:#636873}
+html{scroll-behavior:smooth}body{min-height:100vh;display:flex;flex-direction:column}
+
+/* Header */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.8);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--border)}
+.dark header{background:rgba(11,13,16,0.8)}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 28px;display:flex;align-items:center;height:56px;gap:6px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--text);text-decoration:none;margin-right:auto;letter-spacing:-0.02em}
+.logo svg{width:22px;height:22px;flex-shrink:0}
+nav{display:flex;align-items:center;gap:2px}
+nav a{padding:6px 14px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--text2);text-decoration:none;transition:color 0.15s,background 0.15s}
+nav a:hover{color:var(--text);background:var(--surface2)}
+nav a.active{color:var(--accent);background:rgba(180,83,9,0.08)}
+.dark nav a.active{background:rgba(217,119,6,0.15)}
+.nav-btns{display:flex;align-items:center;gap:4px;margin-left:8px}
+.nav-btn{width:34px;height:34px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:color 0.15s,background 0.15s}
+.nav-btn:hover{color:var(--text);background:var(--surface2)}
+
+/* Hero */
+.hero{text-align:center;padding:64px 24px 48px;max-width:800px;margin:0 auto}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;line-height:1.12;letter-spacing:-0.03em;margin-bottom:14px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:15px;color:var(--text2);max-width:560px;margin:0 auto}
+.hero-actions{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:600;text-decoration:none;transition:all 0.15s;cursor:pointer;border:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+
+/* Main demo layout */
+.page{padding:0 24px 80px}
+.page-inner{max-width:1100px;margin:0 auto}
+
+.demo-section{margin-bottom:56px}
+.demo-section h2{font-size:1.3rem;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em}
+.demo-section .desc{font-size:14px;color:var(--text2);margin-bottom:24px}
+
+/* Control panel */
+.controls{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.controls label{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--text2);cursor:pointer;padding:4px 8px;border-radius:4px;transition:background 0.15s}
+.controls label:hover{background:var(--surface2)}
+.controls input[type=checkbox]{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border);accent-color:var(--accent);cursor:pointer}
+.controls select{padding:5px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+.controls .ctrl-group{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:5px;background:var(--surface2);border:1px solid var(--border)}
+.controls .ctrl-group .ctrl-label{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:var(--text3)}
+.controls .ctrl-divider{width:1px;height:22px;background:var(--border);margin:0 4px}
+
+/* Demo playground */
+.playground{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;min-height:120px;display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.playground.single{flex-direction:column;max-width:420px}
+.playground .demo-picker{width:100%;max-width:320px}
+.playground .demo-range{width:100%;max-width:440px}
+.playground .demo-picker.loading,.playground .demo-range.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text3);font-size:14px;gap:8px}
+.playground .demo-picker.loading .spinner,.playground .demo-range.loading .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{display:none;padding:14px 18px;border-radius:var(--radius);background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.15);color:#dc2626;font-size:13px;margin:12px 0}
+.playground .result{margin-top:16px;padding:12px 16px;background:var(--surface2);border-radius:var(--radius-sm);font-size:12.5px;color:var(--text2);font-family:JetBrains Mono,monospace;line-height:1.6;width:100%}
+.playground .result strong{color:var(--text);font-weight:600}
+.playground .result .dim{color:var(--text3)}
+
+/* Picker pair layout (range demo shows both side by side) */
+.picker-pair{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+
+/* Code output */
+.code-output{background:var(--surface2);border-radius:var(--radius);padding:20px 24px;margin-top:20px;overflow-x:auto;font-family:JetBrains Mono,monospace;font-size:12.5px;line-height:1.6;color:var(--text);border:1px solid var(--border)}
+.code-output .comment{color:var(--text3)}
+.code-output .keyword{color:var(--accent)}
+.code-output .string{color:#059669}.dark .code-output .string{color:#34d399}
+.code-output .number{color:#2563eb}.dark .code-output .number{color:#60a5fa}
+.code-output .tag{color:var(--accent)}
+
+/* Responsive grid for side-by-side pickers */
+.demo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+
+/* Footer */
+footer{text-align:center;padding:28px 24px;border-top:1px solid var(--border);font-size:13px;color:var(--text3);margin-top:auto}
+footer a{color:var(--accent);text-decoration:none}
+
+@media(max-width:640px){
+  nav a{font-size:12px;padding:5px 8px}
+  .hero{padding:40px 20px 32px}
+  .hero h1{font-size:1.5rem}
+  .page{padding:0 16px 60px}
+  .playground{padding:20px}
+  .controls{padding:16px}
+}
+
+/* Picker styles loaded from external CSS file (bos-nepali-date.css). */
+</style>
+<link rel="stylesheet" href="bos-nepali-date.css">
+</head>
+<body>
+<header>
+<div class="header-inner">
+<a href="./" class="logo">
+<svg viewBox="0 0 24 24" fill="none" stroke="%23d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+bos-nepali-date
+</a>
+<nav>
+<a href="./">Home</a>
+<a href="documentation.html">Docs</a>
+<a href="demo.html" class="active">Demo</a>
+<a href="roadmap.html">Roadmap</a>
+<a href="changelogs.html">Changelogs</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
+</nav>
+<div class="nav-btns">
+<button class="nav-btn" id="theme-btn" aria-label="Toggle theme">🌙</button>
+</div>
+</div>
+</header>
+
+<section class="hero">
+<h1>Interactive <span>Demo</span></h1>
+<p>Play with all props in real time — variant, placement, size, status, disabledDate, cellRender, and more. Both single picker and range picker.</p>
+<div class="hero-actions">
+<a href="documentation.html" class="btn btn-secondary">📖 Documentation</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank" class="btn btn-secondary">GitHub</a>
+</div>
+</section>
+
+<main class="page">
+<div class="page-inner">
+
+<!-- ─── SINGLE PICKER ─── -->
+<section class="demo-section">
+<h2>📅 Single picker</h2>
+<p class="desc">Configure variant, placement, size, status, disabledDate callback, cellRender, and all interactivity props.</p>
+
+<div class="controls" id="single-controls">
+  <div class="ctrl-group">
+    <span class="ctrl-label">Variant</span>
+    <select id="s-variant">
+      <option value="outlined">Outlined</option>
+      <option value="filled">Filled</option>
+      <option value="borderless">Borderless</option>
+      <option value="underlined">Underlined</option>
+    </select>
+  </div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Size</span>
+    <select id="s-size">
+      <option value="small">Small</option>
+      <option value="middle" selected>Middle</option>
+      <option value="large">Large</option>
+    </select>
+  </div>
+  <div class="ctrl-divider"></div>
+  <label><input type="checkbox" id="s-error"> status="error"</label>
+  <label><input type="checkbox" id="s-warning"> status="warning"</label>
+  <label><input type="checkbox" id="s-allowclear"> allowClear</label>
+  <label><input type="checkbox" id="s-disabled"> disabled</label>
+  <label><input type="checkbox" id="s-readonly"> readOnly</label>
+  <div class="ctrl-divider"></div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Placement</span>
+    <select id="s-placement">
+      <option value="bottomLeft" selected>bottomLeft</option>
+      <option value="bottomRight">bottomRight</option>
+      <option value="topLeft">topLeft</option>
+      <option value="topRight">topRight</option>
+    </select>
+  </div>
+  <div class="ctrl-divider"></div>
+  <label><input type="checkbox" id="s-disable5th"> disable 5th</label>
+  <label><input type="checkbox" id="s-celldots"> dot markers</label>
+  <label><input type="checkbox" id="s-extrafooter"> extra footer</label>
+</div>
+
+<div class="playground single" id="single-picker-root">
+  <div class="demo-picker loading"><div class="spinner"></div><span>Loading single picker...</span></div>
+</div>
+<div class="error" id="single-error"><p>⚠️ Failed to render single picker. See console for details.</p></div>
+<div class="code-output" id="single-code"><span class="comment">// Props will appear here as you interact</span></div>
+</section>
+
+<!-- ─── RANGE PICKER ─── -->
+<section class="demo-section">
+<h2>🔁 Range picker</h2>
+<p class="desc">Same props applied to NepaliDateRangePicker — try them all.</p>
+
+<div class="controls" id="range-controls">
+  <div class="ctrl-group">
+    <span class="ctrl-label">Variant</span>
+    <select id="r-variant">
+      <option value="outlined">Outlined</option>
+      <option value="filled">Filled</option>
+      <option value="borderless">Borderless</option>
+      <option value="underlined">Underlined</option>
+    </select>
+  </div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Size</span>
+    <select id="r-size">
+      <option value="small">Small</option>
+      <option value="middle" selected>Middle</option>
+      <option value="large">Large</option>
+    </select>
+  </div>
+  <div class="ctrl-divider"></div>
+  <label><input type="checkbox" id="r-error"> status="error"</label>
+  <label><input type="checkbox" id="r-warning"> status="warning"</label>
+  <label><input type="checkbox" id="r-allowclear"> allowClear</label>
+  <label><input type="checkbox" id="r-disabled"> disabled</label>
+  <div class="ctrl-divider"></div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Placement</span>
+    <select id="r-placement">
+      <option value="bottomLeft" selected>bottomLeft</option>
+      <option value="bottomRight">bottomRight</option>
+      <option value="topLeft">topLeft</option>
+      <option value="topRight">topRight</option>
+    </select>
+  </div>
+  <div class="ctrl-divider"></div>
+  <label><input type="checkbox" id="r-extrafooter"> extra footer</label>
+</div>
+
+<div class="playground" id="range-picker-root">
+  <div class="demo-range loading"><div class="spinner"></div><span>Loading range picker...</span></div>
+</div>  <div class="error" id="range-error"><p>⚠️ Failed to render range picker. See console for details.</p></div>
+<div class="code-output" id="range-code"><span class="comment">// Props will appear here as you interact</span></div>
+</section>
+
+</div>
+</main>
+
+<footer>
+<p>bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; <a href="https://github.com/prabin194/bos-nepali-date">GitHub</a> &bull; <a href="https://www.npmjs.com/package/bos-nepali-date">npm</a></p>
+</footer>
+
+<script src="theme.js"></script>
+
+<script>
+// ── Load chain ────────────────────────────────────────────────────
+(function(){
+  var root0 = document.getElementById('single-picker-root');
+  var root1 = document.getElementById('range-picker-root');
+
+  function loadScript(src, cb) {
+    var s = document.createElement('script');
+    s.src = src; s.onload = cb; s.onerror = cb;
+    document.body.appendChild(s);
+  }
+
+  loadScript('https://unpkg.com/react@18/umd/react.production.min.js', function() {
+    loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', function() {
+      loadScript('bos-nepali-date.umd.js', function() {
+        try {
+          bootstrap();
+        } catch(e) {
+          console.error('Demo bootstrap error:', e);
+          if (root0) root0.innerHTML = '<div class="error" style="display:block"><p>⚠️ ' + e.message + '</p></div>';
+          if (root1) root1.innerHTML = '<div class="error" style="display:block"><p>⚠️ ' + e.message + '</p></div>';
+        }
+      });
+    });
+  });
+
+  function bootstrap() {
+    var R = window.React, RD = window.ReactDOM;
+    var Lib = window.BosNepaliDate;
+    if (!R || !RD || !Lib) {
+      document.getElementById('single-error').style.display = 'block';
+      document.getElementById('range-error').style.display = 'block';
+      return;
+    }
+
+    var h = R.createElement, useState = R.useState, useEffect = R.useEffect, useCallback = R.useCallback;
+    var Picker = Lib.NepaliDatePicker;
+    var RangePicker = Lib.NepaliDateRangePicker;
+    var adapter = Lib.defaultAdapter;
+
+    // ── Theme toggle ──
+    document.getElementById('theme-btn').addEventListener('click', function() {
+      document.documentElement.classList.toggle('dark');
+      this.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    // ── Helper: read control values ──
+    function getCtrl(prefix) {
+      return {
+        variant: document.getElementById(prefix + '-variant').value,
+        size: document.getElementById(prefix + '-size').value,
+        placement: document.getElementById(prefix + '-placement').value,
+        status: document.getElementById(prefix + '-error').checked
+          ? 'error'
+          : document.getElementById(prefix + '-warning').checked
+          ? 'warning'
+          : undefined,
+        allowClear: document.getElementById(prefix + '-allowclear').checked,
+        disabled: document.getElementById(prefix + '-disabled').checked,
+        extraFooter: document.getElementById(prefix + '-extrafooter').checked,
+      };
+    }
+
+    function getSingleExtras() {
+      return {
+        readOnly: document.getElementById('s-readonly').checked,
+        disable5th: document.getElementById('s-disable5th').checked,
+        cellDots: document.getElementById('s-celldots').checked,
+      };
+    }
+
+    // ── Build props from controls ──
+    function buildSingleProps() {
+      var c = getCtrl('s');
+      var e = getSingleExtras();
+      var props = {
+        adapter: adapter,
+        onChange: function() {},
+        variant: c.variant,
+        size: c.size,
+        placement: c.placement,
+        allowClear: c.allowClear,
+        disabled: c.disabled,
+        inputReadOnly: e.readOnly,
+      };
+      if (c.status) props.status = c.status;
+      if (e.disable5th) {
+        props.disabledDate = function(date) { return date.day === 5; };
+      }
+      if (e.cellDots) {
+        props.cellRender = function(date, info) {
+          var dot = '';
+          if (date.day === 1 || date.day === 15) dot = '●';
+          else if (date.day % 7 === 0) dot = '○';
+          return h('span', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px' } },
+            dot ? h('span', { style: { fontSize: '6px', color: '#b45309' } }, dot) : null,
+            h('span', null, String(date.day))
+          );
+        };
+      }
+      if (c.extraFooter) {
+        props.renderExtraFooter = function() {
+          return h('div', { style: { padding: '6px 0', fontSize: '11px', color: 'var(--text3)', textAlign: 'center', borderTop: '1px solid var(--border)', marginTop: '4px' } },
+            '⚡ Quick actions appear here'
+          );
+        };
+      }
+      return props;
+    }
+
+    function buildRangeProps() {
+      var c = getCtrl('r');
+      var props = {
+        adapter: adapter,
+        onChange: function() {},
+        variant: c.variant,
+        size: c.size,
+        placement: c.placement,
+        allowClear: c.allowClear,
+        disabled: c.disabled,
+      };
+      if (c.status) props.status = c.status;
+      if (c.extraFooter) {
+        props.renderExtraFooter = function() {
+          return h('div', { style: { padding: '6px 0', fontSize: '11px', color: 'var(--text3)', textAlign: 'center', borderTop: '1px solid var(--border)', marginTop: '4px' } },
+            '📅 Range presets: This Week | This Month'
+          );
+        };
+      }
+      return props;
+    }
+
+    // ── Code preview ──
+    function renderCodePreview(props) {
+      var el = document.getElementById('single-code');
+      if (!el) return;
+      var lines = ['<span class="comment">// Active props</span>'];
+      lines.push('&lt;NepaliDatePicker');
+      lines.push('  variant=<span class="string">"' + props.variant + '"</span>');
+      lines.push('  size=<span class="string">"' + props.size + '"</span>');
+      lines.push('  placement=<span class="string">"' + (props.placement || 'bottomLeft') + '"</span>');
+      if (props.status) lines.push('  status=<span class="string">"' + props.status + '"</span>');
+      if (props.allowClear) lines.push('  allowClear');
+      if (props.disabled) lines.push('  disabled');
+      if (props.inputReadOnly) lines.push('  inputReadOnly');
+      if (props.disabledDate) lines.push('  disabledDate=&#123;/* disables 5th */&#125;');
+      if (props.cellRender) lines.push('  cellRender=&#123;/* dot markers */&#125;');
+      if (props.renderExtraFooter) lines.push('  renderExtraFooter=&#123;/* quick actions */&#125;');
+      lines.push('/&gt;');
+      el.innerHTML = lines.join('<br>');
+    }
+
+    // ── Render single picker ──
+    var singleRoot = document.getElementById('single-picker-root');
+    var singleReactRoot = null;
+
+    function renderSingle() {
+      if (!singleReactRoot) {
+        singleReactRoot = RD.createRoot(singleRoot);
+      }
+      var props = buildSingleProps();
+      renderCodePreview(props);
+      singleReactRoot.render(h(Picker, props));
+    }
+
+    // ── Range code preview ──
+    function renderRangeCodePreview(props) {
+      var el = document.getElementById('range-code');
+      if (!el) return;
+      var lines = ['<span class="comment">// Active props</span>'];
+      lines.push('&lt;NepaliDateRangePicker');
+      lines.push('  variant=<span class="string">"' + props.variant + '"</span>');
+      lines.push('  size=<span class="string">"' + props.size + '"</span>');
+      lines.push('  placement=<span class="string">"' + (props.placement || 'bottomLeft') + '"</span>');
+      if (props.status) lines.push('  status=<span class="string">"' + props.status + '"</span>');
+      if (props.allowClear) lines.push('  allowClear');
+      if (props.disabled) lines.push('  disabled');
+      if (props.renderExtraFooter) lines.push('  renderExtraFooter=&#123;/* presets */&#125;');
+      lines.push('/&gt;');
+      el.innerHTML = lines.join('<br>');
+    }
+
+    // ── Render range picker ──
+    var rangeRoot = document.getElementById('range-picker-root');
+    var rangeReactRoot = null;
+
+    function renderRange() {
+      if (!rangeReactRoot) {
+        rangeReactRoot = RD.createRoot(rangeRoot);
+      }
+      var props = buildRangeProps();
+      renderRangeCodePreview(props);
+      rangeReactRoot.render(h(RangePicker, props));
+    }
+
+    // ── Event listeners ──
+    var singleIds = ['s-variant','s-size','s-placement','s-error','s-warning','s-allowclear','s-disabled','s-readonly','s-disable5th','s-celldots','s-extrafooter'];
+    var rangeIds = ['r-variant','r-size','r-placement','r-error','r-warning','r-allowclear','r-disabled','r-extrafooter'];
+
+    singleIds.forEach(function(id) {
+      document.getElementById(id).addEventListener('change', renderSingle);
+      document.getElementById(id).addEventListener('input', renderSingle);
+    });
+    rangeIds.forEach(function(id) {
+      document.getElementById(id).addEventListener('change', renderRange);
+      document.getElementById(id).addEventListener('input', renderRange);
+    });
+
+    // ── Initial render ──
+    renderSingle();
+    renderRange();
+  }
+})();
+</script>
+</body>
+</html>

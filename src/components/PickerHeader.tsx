@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../utils/classnames';
 import { toNepaliDigits } from './pickerUtils';
 
 type PickerHeaderProps = {
@@ -22,6 +22,8 @@ type PickerHeaderProps = {
   moveMonth: (delta: number) => void;
   monthMenuRef: React.RefObject<HTMLDivElement>;
   yearMenuRef: React.RefObject<HTMLDivElement>;
+  className?: string;
+  style?: React.CSSProperties;
 };
 
 export const PickerHeader: React.FC<PickerHeaderProps> = ({
@@ -44,8 +46,10 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
   moveMonth,
   monthMenuRef,
   yearMenuRef,
+  className,
+  style,
 }) => (
-  <div className="np-popover__header">
+  <div className={cn('np-popover__header', className)} style={style}>
     <button
       type="button"
       className="np-popover__nav-btn"
@@ -75,7 +79,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
                   <button
                     key={m}
                     type="button"
-                    className={clsx('np-popover__menu-item', idx + 1 === viewMonth && 'np-popover__menu-item--active')}
+                    className={cn('np-popover__menu-item', idx + 1 === viewMonth && 'np-popover__menu-item--active')}
                     data-active={idx + 1 === viewMonth}
                     role="option"
                     aria-selected={idx + 1 === viewMonth}
@@ -110,7 +114,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
                   <button
                     key={y}
                     type="button"
-                    className={clsx('np-popover__menu-item', y === viewYear && 'np-popover__menu-item--active')}
+                    className={cn('np-popover__menu-item', y === viewYear && 'np-popover__menu-item--active')}
                     data-active={y === viewYear}
                     role="option"
                     aria-selected={y === viewYear}

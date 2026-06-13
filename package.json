@@ -1,6 +1,6 @@
 {
   "name": "bos-nepali-date",
-  "version": "0.1.17",
+  "version": "0.2.0",
   "type": "module",
   "description": "Reusable React Bikram Sambat (Nepali) date picker with pluggable conversion engine.",
   "license": "MIT",
@@ -36,7 +36,9 @@
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "prepublishOnly": "npm run lint && npm run typecheck && npm test -- --run && npm run build"
+    "prepublishOnly": "npm run lint && npm run typecheck && npm test -- --run && npm run build",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "keywords": [
     "nepali",
@@ -59,9 +61,6 @@
     "react": ">=18.2.0",
     "react-dom": ">=18.2.0"
   },
-  "dependencies": {
-    "clsx": "^2.1.1"
-  },
   "devDependencies": {
     "@rollup/plugin-replace": "^6.0.3",
     "@testing-library/jest-dom": "^6.4.2",
@@ -80,7 +79,18 @@
     "tsup": "^8.0.1",
     "typescript": "5.3.3",
     "vite": "^5.4.21",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "storybook": "^10.4.4",
+    "@storybook/react-vite": "^10.4.4",
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-vitest": "^10.4.4",
+    "@storybook/addon-a11y": "^10.4.4",
+    "@storybook/addon-docs": "^10.4.4",
+    "@storybook/addon-mcp": "^0.6.0",
+    "eslint-plugin-storybook": "^10.4.4",
+    "playwright": "^1.60.0",
+    "@vitest/browser": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0"
   },
   "overrides": {
     "esbuild": "0.27.3"

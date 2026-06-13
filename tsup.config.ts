@@ -10,6 +10,5 @@ export default defineConfig({
   loader: {
     '.css': 'css',
   },
-  injectStyle: true,
   treeshake: true,
 });

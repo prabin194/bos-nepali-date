@@ -46,7 +46,7 @@ describe('MemoryBsAdapter', () => {
     expect(adapter.addDays(start, 1)).toEqual({ year: 2000, month: 2, day: 1 });
     expect(adapter.addDays(start, 5)).toEqual({ year: 2000, month: 2, day: 5 });
 
-    const endOfYear = { year: 2000, month: 12, day: bsMonthData[2000][11] } as const;
+    const endOfYear = { year: 2000, month: 12, day: bsMonthData[11] } as const;
     expect(adapter.addDays(endOfYear, 1)).toEqual({ year: 2001, month: 1, day: 1 });
   });
 
@@ -74,7 +74,7 @@ describe('MemoryBsAdapter', () => {
       expect(adapter.today()).toEqual({
         year: bsRange.maxYear,
         month: 12,
-        day: bsMonthData[bsRange.maxYear][11],
+        day: bsMonthData[(bsRange.maxYear - 2000) * 12 + 11],
       });
     });
 
@@ -88,7 +88,7 @@ describe('MemoryBsAdapter', () => {
     const adapterLimited = new MemoryBsAdapter({
       anchorBs: { year: 2080, month: 1, day: 1 },
       anchorAdIso: '2023-04-14',
-      yearTable: { 2080: bsMonthData[2080] },
+      yearTable: { 2080: bsMonthData.slice(960, 972) },
     });
     expect(() => adapterLimited.toAD({ year: 2079, month: 12, day: 30 })).toThrow(/not supported/);
     expect(() => adapterLimited.addDays({ year: 2080, month: 1, day: 1 }, -1)).toThrow(/not supported/);

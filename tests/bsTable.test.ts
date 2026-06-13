@@ -4,20 +4,20 @@ import { defaultAdapter } from '../src/adapter/memoryAdapter';
 import { isoToEpochDay } from '../src/utils/dateMath';
 
 describe('bsMonthData shape and continuity', () => {
-  const years = Object.keys(bsMonthData).map(Number).sort((a, b) => a - b);
+  const totalYears = bsMonthData.length / 12;
+  const minYear = bsRange.minYear;
+  const maxYear = bsRange.maxYear;
 
   it('covers a contiguous range matching bsRange', () => {
-    expect(years[0]).toBe(bsRange.minYear);
-    expect(years[years.length - 1]).toBe(bsRange.maxYear);
-    years.forEach((y, idx) => {
-      if (idx === 0) return;
-      expect(y).toBe(years[idx - 1] + 1);
-    });
+    expect(totalYears).toBe(100);
+    expect(minYear).toBe(2000);
+    expect(maxYear).toBe(2099);
   });
 
   it('has 12 months with plausible lengths for every year', () => {
-    years.forEach((y) => {
-      const months = bsMonthData[y];
+    for (let y = 0; y < totalYears; y++) {
+      const start = y * 12;
+      const months = bsMonthData.slice(start, start + 12);
       expect(months.length).toBe(12);
       months.forEach((len) => {
         expect(len).toBeGreaterThanOrEqual(28);
@@ -26,7 +26,7 @@ describe('bsMonthData shape and continuity', () => {
       const total = months.reduce((a, b) => a + b, 0);
       expect(total).toBeGreaterThanOrEqual(354);
       expect(total).toBeLessThanOrEqual(367);
-    });
+    }
   });
 });
 
@@ -37,7 +37,7 @@ describe('defaultAdapter coverage', () => {
   for (let y = bsRange.minYear; y <= bsRange.maxYear; y++) {
     samples.push({ year: y, month: 1, day: 1 });
     samples.push({ year: y, month: 6, day: 15 });
-    samples.push({ year: y, month: 12, day: bsMonthData[y][11] });
+    samples.push({ year: y, month: 12, day: bsMonthData[(y - 2000) * 12 + 11] });
   }
 
   it('round-trips sampled BS -> AD -> BS', () => {

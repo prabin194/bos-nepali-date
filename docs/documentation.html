@@ -34,10 +34,10 @@ nav a.active{color:var(--accent);background:rgba(180,83,9,0.08)}
 .nav-btn{width:34px;height:34px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:color 0.15s,background 0.15s}
 .nav-btn:hover{color:var(--text);background:var(--surface2)}
 
-/* Main layout — sidebar + content */
+/* Docs layout */
 .docs-layout{flex:1;display:grid;grid-template-columns:220px 1fr;max-width:1100px;margin:0 auto;padding:48px 28px 80px;gap:48px}
 
-/* Table of contents sidebar */
+/* TOC sidebar */
 .toc{position:sticky;top:80px;max-height:calc(100vh-96px);overflow-y:auto;padding:0 0 24px;align-self:start}
 .toc-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 .toc-list{list-style:none;padding:0;margin:0}
@@ -48,11 +48,12 @@ nav a.active{color:var(--accent);background:rgba(180,83,9,0.08)}
 .dark .toc-link.active{color:#d97706;background:rgba(217,119,6,0.12);border-left-color:#d97706}
 .toc-link.sub{padding-left:20px;font-size:12px;font-weight:400}
 
-/* Content area */
+/* Content */
 .content{width:100%;min-width:0;max-width:800px}
 .content h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px;line-height:1.15}
 .content h2{font-size:1.3rem;font-weight:700;margin:56px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--border);scroll-margin-top:72px;letter-spacing:-0.01em}
 .content h3{font-size:1.05rem;font-weight:600;margin:32px 0 10px;scroll-margin-top:72px}
+.content h4{font-size:0.95rem;font-weight:600;margin:24px 0 8px;color:var(--text2)}
 .content p,.content li{font-size:14px;color:var(--text2);line-height:1.8}
 .content p{margin-bottom:18px}
 .content ul,.content ol{padding-left:22px;margin-bottom:20px}
@@ -79,11 +80,41 @@ nav a.active{color:var(--accent);background:rgba(180,83,9,0.08)}
 .content th{font-weight:600;color:var(--text);background:var(--surface);font-size:12px;text-transform:uppercase;letter-spacing:0.04em}
 .content td{color:var(--text2)}
 .content td:first-child{font-weight:500;color:var(--text);font-family:JetBrains Mono,monospace;font-size:12.5px;white-space:nowrap}
+.content td:nth-child(2){font-family:JetBrains Mono,monospace;font-size:12px}
 
 /* Tag pills */
-.tag-pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600;margin-left:4px}
+.tag-pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:10.5px;font-weight:600;margin-left:6px;vertical-align:middle}
 .tag-required{background:#fef2f2;color:#dc2626}.dark .tag-required{background:rgba(220,38,38,0.12);color:#f87171}
 .tag-optional{background:rgba(5,150,105,0.08);color:#059669}.dark .tag-optional{background:rgba(52,211,153,0.1);color:#34d399}
+
+/* Live example blocks */
+.live-example{margin:20px 0 28px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.live-example .example-preview{padding:28px 32px;background:var(--bg);display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;min-height:80px}
+.live-example .example-preview.loading{justify-content:center;align-items:center;color:var(--text3);font-size:13px;gap:8px}
+.live-example .example-preview.loading .spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp 0.6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.live-example .example-toolbar{display:flex;align-items:center;gap:4px;padding:10px 16px;background:var(--surface);border-top:1px solid var(--border);font-size:11.5px;flex-wrap:wrap}
+.live-example .example-toolbar .example-label{font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-right:8px}
+.live-example .example-toolbar select{padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:11.5px;font-family:inherit;cursor:pointer}
+.live-example .example-toolbar label{display:flex;align-items:center;gap:4px;color:var(--text2);cursor:pointer;padding:3px 8px;border-radius:4px;transition:background 0.15s}
+.live-example .example-toolbar label:hover{background:var(--surface2)}
+.live-example .example-toolbar input[type=checkbox]{width:13px;height:13px;accent-color:var(--accent);cursor:pointer}
+.live-example .example-toolbar .tb-divider{width:1px;height:18px;background:var(--border);margin:0 4px}
+.live-example .example-code{padding:16px 20px;background:var(--surface2);border-top:1px solid var(--border);font-family:JetBrains Mono,monospace;font-size:12px;line-height:1.55;color:var(--text);overflow-x:auto;position:relative}
+.live-example .example-code .copy-btn{position:absolute;top:8px;right:8px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:10.5px;font-weight:500;cursor:pointer;transition:all 0.15s;opacity:0;font-family:inherit}
+.live-example:hover .example-code .copy-btn{opacity:1}
+.live-example .example-code .copy-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.live-example .demo-link{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;background:rgba(180,83,9,0.06);color:var(--accent);font-size:11px;font-weight:500;text-decoration:none;margin-left:auto;transition:background 0.15s}
+.live-example .demo-link:hover{background:rgba(180,83,9,0.12)}
+
+/* Error state for examples */
+.live-example .example-error{display:none;padding:16px 20px;background:rgba(220,38,38,0.06);border-top:1px solid rgba(220,38,38,0.15);color:#dc2626;font-size:12.5px}
+
+/* Copy button for standalone code blocks */
+.content pre{position:relative}
+.content pre .copy-code-btn{position:absolute;top:8px;right:8px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:10.5px;font-weight:500;cursor:pointer;transition:all 0.15s;opacity:0;font-family:inherit;z-index:1}
+.content pre:hover .copy-code-btn{opacity:1}
+.content pre .copy-code-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 
 /* Callout */
 .callout{padding:18px 24px;border-radius:var(--radius);margin:20px 0;font-size:13.5px;border-left:3px solid var(--accent);background:rgba(180,83,9,0.04);color:var(--text2)}
@@ -117,7 +148,7 @@ footer a{color:var(--accent);text-decoration:none}
   .content pre{padding:18px 18px;font-size:12px}
 }
 @media(max-width:480px){
-  nav a:nth-child(4),nav a:nth-child(5){display:none}
+  nav a:nth-child(5),nav a:nth-child(6){display:none}
 }
 </style>
 </head>
@@ -131,6 +162,7 @@ bos-nepali-date
 <nav>
 <a href="./">Home</a>
 <a href="documentation.html" class="active">Docs</a>
+<a href="demo.html">Demo</a>
 <a href="roadmap.html">Roadmap</a>
 <a href="changelogs.html">Changelogs</a>
 <a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
@@ -146,37 +178,42 @@ bos-nepali-date
 <ul class="toc-list">
 <li><a class="toc-link" href="#getting-started">Getting started</a></li>
 <li><a class="toc-link" href="#basic-usage">Basic usage</a></li>
-<li><a class="toc-link" href="#core-props">Core props</a></li>
+<li><a class="toc-link" href="#common-props">Common props</a></li>
+<li><a class="toc-link sub" href="#basic">Basic</a></li>
+<li><a class="toc-link sub" href="#date-control">Date control</a></li>
+<li><a class="toc-link sub" href="#display">Display</a></li>
+<li><a class="toc-link sub" href="#localization">Localization</a></li>
+<li><a class="toc-link sub" href="#customization">Customization</a></li>
+<li><a class="toc-link sub" href="#popover-control">Popover control</a></li>
+<li><a class="toc-link sub" href="#events">Events</a></li>
+<li><a class="toc-link" href="#nepali-date-picker">NepaliDatePicker</a></li>
+<li><a class="toc-link" href="#range-picker">NepaliDateRangePicker</a></li>
+<li><a class="toc-link sub" href="#range-behavior">Range selection behavior</a></li>
 <li><a class="toc-link" href="#disable-options">Disable options</a></li>
-<li><a class="toc-link" href="#menu-options">Menu / Display options</a></li>
-<li><a class="toc-link" href="#styling-props">Styling props</a></li>
-<li><a class="toc-link" href="#localization">Localization</a></li>
+<li><a class="toc-link" href="#menu-options">Menu options</a></li>
+<li><a class="toc-link" href="#classnames-and-styles">classNames &amp; styles</a></li>
 <li><a class="toc-link" href="#styling">Styling</a></li>
 <li><a class="toc-link" href="#adapter">Adapter</a></li>
+<li><a class="toc-link" href="#typescript">TypeScript</a></li>
 <li><a class="toc-link" href="#accessibility">Accessibility</a></li>
 </ul>
 </nav>
 <div class="content">
 <h1>Documentation</h1>
-<p>Complete API reference and usage guide for bos-nepali-date — a React component for selecting Bikram Sambat (Nepali) dates with a pluggable conversion engine.</p>
+<p>Complete API reference and usage guide for <strong>bos-nepali-date</strong> — a React component for selecting Bikram Sambat (Nepali) dates with a pluggable conversion engine. API design follows <a href="https://ant.design/components/date-picker" target="_blank">Ant Design DatePicker</a> conventions.</p>
 
+<div class="callout"><strong>CSS must be imported separately</strong> — the npm package does not auto-inject styles. Add one of the following to your app:<br><br><code class="comment">// Option 1 (recommended)</code><br><code><span class="keyword">import</span> <span class="string">'bos-nepali-date/style'</span>;</code><br><br><code class="comment">// Option 2</code><br><code><span class="keyword">import</span> <span class="string">'bos-nepali-date/index.css'</span>;</code><br><br>For the UMD build (docs site), include the CSS file directly:</div>
+
+<!-- ====== Getting Started ====== -->
 <h2 id="getting-started">Getting started</h2>
-<p><strong>bos-nepali-date</strong> is a React component for selecting Bikram Sambat (BS) dates. It ships with a pluggable conversion adapter so you can use the built-in tables or bring your own.</p>
 
-<div class="callout"><strong>Styles are auto-imported</strong> — the component imports its CSS as a side effect. If your bundler strips CSS side effects, import styles explicitly: <code>import 'bos-nepali-date/style'</code>.</div>
-
-<pre><span class="comment">// Install</span>
-<span class="keyword">$</span> npm install bos-nepali-date</pre>
-
-<h2 id="basic-usage">Basic usage</h2>
-<p>Wire up the component with a controlled value and an <code>onChange</code> handler. The <code>defaultAdapter</code> includes demo data for 2080–2081 BS.</p>
+<pre><span class="keyword">$</span> npm install bos-nepali-date</pre>
 
 <pre><span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">"react"</span>
 <span class="keyword">import</span> { <span class="function">NepaliDatePicker</span>, <span class="function">defaultAdapter</span> } <span class="keyword">from</span> <span class="string">"bos-nepali-date"</span>
 
 <span class="keyword">function</span> <span class="function">Demo</span>() {
   <span class="keyword">const</span> [value, setValue] = <span class="function">useState</span>(<span class="keyword">null</span>)
-
   <span class="keyword">return</span> (
     <span class="tag">&lt;NepaliDatePicker</span>
       value={value}
@@ -184,102 +221,548 @@ bos-nepali-date
       adapter={defaultAdapter}
     <span class="tag">/&gt;</span>
   )
-}</pre>
+} <button class="copy-code-btn" onclick="copyCode(this)">Copy</button></pre>
 
+<div class="live-example" id="ex-basic">
+  <div class="example-preview loading" id="ex-basic-preview"><div class="spinner"></div><span>Loading live example...</span></div>
+  <div class="example-code"><span class="comment">// Renders: <NepaliDatePicker adapter={defaultAdapter} /></span></div>
+  <div class="example-error" id="ex-basic-error"></div>
+</div>
+
+<h2 id="basic-usage">Basic usage</h2>
 <p>The <code>onChange</code> callback receives a <code>BsDate</code> object or <code>null</code> (when cleared).</p>
 
 <div class="interface-box">
 <span class="comment">// BsDate shape</span><br>
 {<br>
 &nbsp;&nbsp;year: <span class="keyword">number</span>,  <span class="comment">// e.g. 2080</span><br>
-&nbsp;&nbsp;month: <span class="keyword">number</span>, <span class="comment">// 1–12</span><br>
+&nbsp;&nbsp;month: <span class="keyword">number</span>, <span class="comment">// 1–12 (Baishak–Chaitra)</span><br>
 &nbsp;&nbsp;day: <span class="keyword">number</span>    <span class="comment">// 1–32</span><br>
-}
+}</div>
+
+<pre><span class="comment">// Range picker usage</span>
+<span class="keyword">import</span> { <span class="function">NepaliDateRangePicker</span> } <span class="keyword">from</span> <span class="string">"bos-nepali-date"</span>
+
+<span class="keyword">function</span> <span class="function">RangeDemo</span>() {
+  <span class="keyword">const</span> [range, setRange] = <span class="function">useState</span>([<span class="keyword">null</span>, <span class="keyword">null</span>])
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;NepaliDateRangePicker</span>
+      value={range}
+      onChange={setRange}
+      adapter={defaultAdapter}
+    <span class="tag">/&gt;</span>
+  )
+} <button class="copy-code-btn" onclick="copyCode(this)">Copy</button></pre>
+
+<div class="live-example" id="ex-range">
+  <div class="example-preview loading" id="ex-range-preview"><div class="spinner"></div><span>Loading live example...</span></div>
+  <div class="example-toolbar">
+    <span class="example-label">⏎ Live</span>
+    <span style="font-size:12px;color:var(--text3)">Select start and end dates — the range highlights inline.</span>
+    <a href="demo.html" class="demo-link">Open full demo →</a>
+  </div>
+  <div class="example-error" id="ex-range-error"></div>
 </div>
 
-<h2 id="core-props">Core props</h2>
+<!-- ====== Common Props ====== -->
+<h2 id="common-props">Common props</h2>
+<p>These props are shared by both <code>NepaliDatePicker</code> and <code>NepaliDateRangePicker</code>.</p>
+
+<h3 id="basic">Basic</h3>
 <table>
 <thead>
 <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>value <span class="tag-pill tag-required">required</span></td><td><code>BsDate | null</code></td><td><code>null</code></td><td>Controlled BS date value.</td></tr>
-<tr><td>onChange <span class="tag-pill tag-required">required</span></td><td><code>(date: BsDate | null) => void</code></td><td>—</td><td>Fired on selection or clear.</td></tr>
-<tr><td>adapter <span class="tag-pill tag-optional">optional</span></td><td><code>BsAdapter</code></td><td><code>defaultAdapter</code></td><td>Conversion engine for BS↔AD arithmetic.</td></tr>
-<tr><td>minDate <span class="tag-pill tag-optional">optional</span></td><td><code>BsDate</code></td><td>—</td><td>Earliest selectable date.</td></tr>
-<tr><td>maxDate <span class="tag-pill tag-optional">optional</span></td><td><code>BsDate</code></td><td>—</td><td>Latest selectable date.</td></tr>
-<tr><td>showLabel <span class="tag-pill tag-optional">optional</span></td><td><code>boolean</code></td><td><code>false</code></td><td>Render a visible label above the input.</td></tr>
-<tr><td>placeholder <span class="tag-pill tag-optional">optional</span></td><td><code>string</code></td><td><code>"YYYY-MM-DD (BS)"</code></td><td>Placeholder text for the input.</td></tr>
-<tr><td>className <span class="tag-pill tag-optional">optional</span></td><td><code>string</code></td><td>—</td><td>Extra class for the root wrapper.</td></tr>
+<tr>
+  <td>value</td>
+  <td><code>BsDate | null</code> / <code>[BsDate|null, BsDate|null]</code></td>
+  <td>—</td>
+  <td>Controlled value. Single picker: <code>BsDate | null</code>. Range picker: tuple <code>[start, end]</code>. Use <code>undefined</code> (omit) for uncontrolled mode.</td>
+</tr>
+<tr>
+  <td>defaultValue</td>
+  <td><code>BsDate | null</code> / <code>[BsDate|null, BsDate|null]</code></td>
+  <td><code>null</code></td>
+  <td>Default value for uncontrolled mode. Only used when <code>value</code> is not provided. Single: <code>BsDate | null</code>. Range: tuple <code>[start, end]</code>.</td>
+</tr>
+<tr>
+  <td>onChange</td>
+  <td><code>(date: BsDate|null) => void</code> / <code>([BsDate|null, BsDate|null]) => void</code></td>
+  <td>—</td>
+  <td>Callback when selection changes. Single: receives date or null. Range: receives <code>[start, end]</code> tuple.</td>
+</tr>
+<tr>
+  <td>adapter</td>
+  <td><code>BsAdapter</code></td>
+  <td><code>defaultAdapter</code></td>
+  <td>Conversion engine for BS↔AD arithmetic. Ships with <code>defaultAdapter</code> (includes full BS year data for 2000–2099) and <code>MemoryBsAdapter</code> (custom year tables).</td>
+</tr>
+<tr>
+  <td>placeholder</td>
+  <td><code>string</code></td>
+  <td><code>"YYYY-MM-DD (BS)"</code></td>
+  <td>Placeholder text for the input field(s).</td>
+</tr>
+<tr>
+  <td>disabled</td>
+  <td><code>boolean</code></td>
+  <td><code>false</code></td>
+  <td>Disable the entire picker. No interaction, input is grayed out.</td>
+</tr>
 </tbody>
 </table>
 
-<div class="callout"><strong>Note:</strong> <code>minDate</code> and <code>maxDate</code> clamp the selectable range. They combine with disable rules — if any rule matches, the date is not selectable.</div>
+<h3 id="date-control">Date control</h3>
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>minDate</td>
+  <td><code>BsDate</code></td>
+  <td>—</td>
+  <td>Earliest selectable date. Dates before this are disabled. Combines with other disable rules.</td>
+</tr>
+<tr>
+  <td>maxDate</td>
+  <td><code>BsDate</code></td>
+  <td>—</td>
+  <td>Latest selectable date. Dates after this are disabled. Combines with other disable rules.</td>
+</tr>
+<tr>
+  <td>disabledDate</td>
+  <td><code>(date: BsDate) => boolean</code></td>
+  <td>—</td>
+  <td>Callback to dynamically disable individual dates. Called per calendar cell. Return <code>true</code> to prevent selection.</td>
+</tr>
+</tbody>
+</table>
 
+<h3 id="display">Display</h3>
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>variant</td>
+  <td><code>'outlined' | 'filled' | 'borderless' | 'underlined'</code></td>
+  <td><code>'outlined'</code></td>
+  <td>Visual style of the picker input. <code>outlined</code> has border, <code>filled</code> has background fill, <code>borderless</code> has no border, <code>underlined</code> shows only a bottom border.</td>
+</tr>
+<tr>
+  <td>size</td>
+  <td><code>'small' | 'middle' | 'large'</code></td>
+  <td><code>'middle'</code></td>
+  <td>Adjusts input height, font size, and popover sizing.</td>
+</tr>
+<tr>
+  <td>status</td>
+  <td><code>'error' | 'warning'</code></td>
+  <td>—</td>
+  <td>Applies validation state colors to the input border and background.</td>
+</tr>
+<tr>
+  <td>placement</td>
+  <td><code>'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'</code></td>
+  <td><code>'bottomLeft'</code></td>
+  <td>Popover placement relative to the trigger input. Automatically flips to opposite side when insufficient space.</td>
+</tr>
+<tr>
+  <td>allowClear</td>
+  <td><code>boolean</code></td>
+  <td><code>false</code></td>
+  <td>Show a × clear button inside the input when a value is selected.</td>
+</tr>
+<tr>
+  <td>inputReadOnly</td>
+  <td><code>boolean</code></td>
+  <td><code>false</code></td>
+  <td>Set the input to read-only. Calendar selection via popover still works.</td>
+</tr>
+<tr>
+  <td>autoFocus</td>
+  <td><code>boolean</code></td>
+  <td><code>false</code></td>
+  <td>Auto-focus the trigger input on mount.</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="localization">Localization</h3>
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>menu</td>
+  <td><code>MenuOptions</code></td>
+  <td><code>{}</code></td>
+  <td>Localization and display options. See <a href="#menu-options">Menu options</a> for details.</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="customization">Customization</h3>
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>className</td>
+  <td><code>string</code></td>
+  <td>—</td>
+  <td>Extra CSS class for the root wrapper element.</td>
+</tr>
+<tr>
+  <td>classNames</td>
+  <td><code>PickerClassNames</code></td>
+  <td><code>{}</code></td>
+  <td>Semantic class names for sub-elements. See <a href="#classnames-and-styles">classNames &amp; styles</a>.</td>
+</tr>
+<tr>
+  <td>styles</td>
+  <td><code>PickerStyles</code></td>
+  <td><code>{}</code></td>
+  <td>Semantic inline styles for sub-elements. See <a href="#classnames-and-styles">classNames &amp; styles</a>.</td>
+</tr>
+<tr>
+  <td>cellRender</td>
+  <td><code>(date: BsDate, info: CellRenderInfo) => React.ReactNode</code></td>
+  <td>—</td>
+  <td>Custom render function for date cells. Receives the date and a <code>CellRenderInfo</code> object with status flags.</td>
+</tr>
+<tr>
+  <td>renderExtraFooter</td>
+  <td><code>() => React.ReactNode</code></td>
+  <td>—</td>
+  <td>Custom React node rendered at the bottom of the popover, above the Clear/Today footer buttons.</td>
+</tr>
+<tr>
+  <td>inputPattern</td>
+  <td><code>string | false</code></td>
+  <td><code>\d{4}-\d{2}-\d{2}</code></td>
+  <td>Native HTML <code>pattern</code> attribute on the input. Set <code>false</code> to remove.</td>
+</tr>
+</tbody>
+</table>
+
+<div class="live-example" id="ex-display">
+  <div class="example-preview loading" id="ex-display-preview"><div class="spinner"></div><span>Loading live example...</span></div>
+  <div class="example-toolbar">
+    <span class="example-label">⏎ Live</span>
+    <select id="ex-display-size">
+      <option value="small">Small</option>
+      <option value="middle" selected>Middle</option>
+      <option value="large">Large</option>
+    </select>
+    <div class="tb-divider"></div>
+    <label><input type="checkbox" id="ex-display-error"> status="error"</label>
+    <label><input type="checkbox" id="ex-display-warning"> status="warning"</label>
+    <a href="demo.html" class="demo-link">Open full demo →</a>
+  </div>
+  <div class="example-error" id="ex-display-error"></div>
+</div>
+
+<h3 id="popover-control">Popover control</h3>
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>open</td>
+  <td><code>boolean</code></td>
+  <td>—</td>
+  <td>Controlled popover visibility. When provided, the parent controls open/close state.</td>
+</tr>
+<tr>
+  <td>onOpenChange</td>
+  <td><code>(open: boolean) => void</code></td>
+  <td>—</td>
+  <td>Callback when popover opens or closes. Required with <code>open</code> for controlled mode.</td>
+</tr>
+<tr>
+  <td>getPopupContainer</td>
+  <td><code>(trigger: HTMLElement) => HTMLElement</code></td>
+  <td><code>document.body</code></td>
+  <td>Custom DOM container for the popover portal. Useful for containing within a scrollable parent.</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="events">Events</h3>
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>onFocus</td>
+  <td><code>() => void</code></td>
+  <td>—</td>
+  <td>Called when the trigger input gains focus.</td>
+</tr>
+<tr>
+  <td>onBlur</td>
+  <td><code>() => void</code></td>
+  <td>—</td>
+  <td>Called when the trigger input loses focus.</td>
+</tr>
+<tr>
+  <td>onKeyDown</td>
+  <td><code>(e: React.KeyboardEvent&lt;HTMLInputElement&gt;) => void</code></td>
+  <td>—</td>
+  <td>Called on keydown on the trigger input.</td>
+</tr>
+<tr>
+  <td>onPanelChange</td>
+  <td><code>(date: BsDate) => void</code></td>
+  <td>—</td>
+  <td>Called when the calendar panel navigates to a different month/year via the header controls or arrow buttons.</td>
+</tr>
+<tr>
+  <td>name</td>
+  <td><code>string</code></td>
+  <td>—</td>
+  <td>Native <code>name</code> attribute for the input element. Use with form libraries like React Hook Form.</td>
+</tr>
+</tbody>
+</table>
+
+<!-- ====== NepaliDatePicker ====== -->
+<h2 id="nepali-date-picker">NepaliDatePicker</h2>
+<p>The single date picker component. Accepts all <a href="#common-props">common props</a> plus the following:</p>
+
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>label</td>
+  <td><code>string</code></td>
+  <td><code>"Select date"</code></td>
+  <td>Visible label text when <code>showLabel</code> is enabled. Also used as <code>aria-label</code> on the input.</td>
+</tr>
+<tr>
+  <td>showLabel</td>
+  <td><code>boolean</code></td>
+  <td><code>false</code></td>
+  <td>Render a visible label above the input. The label uses <code>htmlFor</code>/<code>id</code> association with the input.</td>
+</tr>
+<tr>
+  <td>disable</td>
+  <td><code>DisableOptions</code></td>
+  <td><code>{}</code></td>
+  <td>Static disable rules. See <a href="#disable-options">Disable options</a>.</td>
+</tr>
+<tr>
+  <td>inputClassName</td>
+  <td><code>string</code></td>
+  <td>—</td>
+  <td>Extra CSS class for the <code>&lt;input&gt;</code> element. Alternative to <code>classNames.input</code>.</td>
+</tr>
+</tbody>
+</table>
+
+<pre><span class="comment">// Full featured single picker</span>
+<span class="tag">&lt;NepaliDatePicker</span>
+  value={value}
+  onChange={setValue}
+  adapter={adapter}
+  variant=<span class="string">"outlined"</span>
+  size=<span class="string">"middle"</span>
+  status=<span class="string">"error"</span>
+  placement=<span class="string">"bottomLeft"</span>
+  allowClear
+  inputReadOnly
+  disabledDate={(d) => d.day === <span class="number">5</span>}
+  menu={{ lang: <span class="string">"en"</span> }}
+  classNames={{ popup: <span class="string">"my-popup"</span> }}
+  renderExtraFooter={() => <span class="tag">&lt;span&gt;</span>Custom footer<span class="tag">&lt;/span&gt;</span>}
+<span class="tag">/&gt;</span> <button class="copy-code-btn" onclick="copyCode(this)">Copy</button></pre>
+
+<div class="live-example" id="ex-featured">
+  <div class="example-preview loading" id="ex-featured-preview"><div class="spinner"></div><span>Loading live example...</span></div>
+  <div class="example-toolbar">
+    <span class="example-label">⏎ Live</span>
+    <select id="ex-featured-size">
+      <option value="small">Small</option>
+      <option value="middle" selected>Middle</option>
+      <option value="large">Large</option>
+    </select>
+    <select id="ex-featured-variant">
+      <option value="outlined">Outlined</option>
+      <option value="filled">Filled</option>
+      <option value="borderless">Borderless</option>
+      <option value="underlined">Underlined</option>
+    </select>
+    <div class="tb-divider"></div>
+    <label><input type="checkbox" id="ex-featured-status"> status="error"</label>
+    <label><input type="checkbox" id="ex-featured-allowclear" checked> allowClear</label>
+    <label><input type="checkbox" id="ex-featured-readonly"> inputReadOnly</label>
+    <label><input type="checkbox" id="ex-featured-disable5th"> disable 5th</label>
+    <a href="demo.html" class="demo-link">Open full demo →</a>
+  </div>
+  <div class="example-error" id="ex-featured-error"></div>
+</div>
+
+<!-- ====== NepaliDateRangePicker ====== -->
+<h2 id="range-picker">NepaliDateRangePicker</h2>
+<p>The range date picker component for selecting start and end dates. Accepts all <a href="#common-props">common props</a> plus the following:</p>
+
+<table>
+<thead>
+<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>value</td>
+  <td><code>[BsDate | null, BsDate | null]</code></td>
+  <td>—</td>
+  <td>Controlled range value as <code>[start, end]</code>. Both can be <code>null</code>.</td>
+</tr>
+<tr>
+  <td>onChange</td>
+  <td><code>(dates: [BsDate | null, BsDate | null]) => void</code></td>
+  <td>—</td>
+  <td>Fired when the range changes via selection, input typing, or clear.</td>
+</tr>
+<tr>
+  <td>label</td>
+  <td><code>string</code></td>
+  <td><code>"Select date range"</code></td>
+  <td>Visible label text when <code>showLabel</code> is enabled.</td>
+</tr>
+<tr>
+  <td>showLabel</td>
+  <td><code>boolean</code></td>
+  <td><code>false</code></td>
+  <td>Render a visible label above the range inputs.</td>
+</tr>
+<tr>
+  <td>separator</td>
+  <td><code>string</code></td>
+  <td><code>"→"</code></td>
+  <td>Separator displayed between the start and end inputs.</td>
+</tr>
+<tr>
+  <td>endPlaceholder</td>
+  <td><code>string</code></td>
+  <td>—</td>
+  <td>Placeholder for the end input. Falls back to <code>placeholder</code>.</td>
+</tr>
+<tr>
+  <td>disable</td>
+  <td><code>DisableOptions</code></td>
+  <td><code>{}</code></td>
+  <td>Static disable rules applied to both dates. See <a href="#disable-options">Disable options</a>.</td>
+</tr>
+<tr>
+  <td>presets</td>
+  <td><code>Preset[]</code></td>
+  <td><code>[]</code></td>
+  <td>Quick-select preset ranges displayed as buttons above the footer. Each preset: <code>{ label: string, value: [BsDate, BsDate] }</code>.</td>
+</tr>
+<tr>
+  <td>name / nameEnd</td>
+  <td><code>string</code></td>
+  <td>—</td>
+  <td>Native <code>name</code> attributes for the start and end inputs. <code>name</code> for start, <code>nameEnd</code> for end.</td>
+</tr>
+</tbody>
+</table>
+
+<pre><span class="comment">// Range picker with all options</span>
+<span class="tag">&lt;NepaliDateRangePicker</span>
+  value={[start, end]}
+  onChange={setRange}
+  adapter={fullAdapter}
+  minDate={{ year: <span class="number">2080</span>, month: <span class="number">1</span>, day: <span class="number">1</span> }}
+  maxDate={{ year: <span class="number">2085</span>, month: <span class="number">12</span>, day: <span class="number">30</span> }}
+  separator=<span class="string">"to"</span>
+  size=<span class="string">"small"</span>
+  variant=<span class="string">"filled"</span>
+  allowClear
+  menu={{ lang: <span class="string">"ne"</span> }}
+<span class="tag">/&gt;</span></pre>
+
+<h3 id="range-behavior">Range selection behavior</h3>
+<ul>
+  <li><strong>First click:</strong> selects the start date — the popover stays open and highlights the start cell.</li>
+  <li><strong>Second click:</strong> selects the end date — the popover closes and <code>onChange</code> fires with the full range. Dates between start and end are highlighted.</li>
+  <li><strong>Auto-swap:</strong> If the second click lands before the start date, the range is automatically reversed so <code>start ≤ end</code>.</li>
+  <li><strong>Hover preview:</strong> While selecting the end date, hovering over dates shows a visual preview of the in-progress range.</li>
+  <li><strong>Third click:</strong> Clicking when both dates are already set restarts the selection with the clicked date as the new start.</li>
+  <li><strong>Input typing:</strong> Both input fields accept typed BS dates in <code>YYYY-MM-DD</code> format (supports Nepali digits).</li>
+  <li><strong>Clear button:</strong> Clears both start and end values (when <code>allowClear</code> is enabled).</li>
+</ul>
+
+<!-- ====== Disable Options ====== -->
 <h2 id="disable-options">Disable options</h2>
-<p>Pass a <code>disable</code> object to control which dates cannot be selected.</p>
+<p>Pass a <code>disable</code> object to control which dates cannot be selected. These static rules combine with the <code>disabledDate</code> callback — if any rule marks a date as disabled, it will be unselectable.</p>
+
 <table>
 <thead>
 <tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>disable.today</td><td><code>boolean</code></td><td><code>false</code></td><td>Prevent selecting today's date.</td></tr>
-<tr><td>disable.date</td><td><code>BsDate</code></td><td>—</td><td>Disable a single specific date.</td></tr>
-<tr><td>disable.dates</td><td><code>BsDate[]</code></td><td><code>[]</code></td><td>Disable a list of dates.</td></tr>
-<tr><td>disable.before</td><td><code>BsDate</code></td><td>—</td><td>Disable all dates before this.</td></tr>
-<tr><td>disable.after</td><td><code>BsDate</code></td><td>—</td><td>Disable all dates after this.</td></tr>
+<tr><td><code>disable.today</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Prevent selecting today's date.</td></tr>
+<tr><td><code>disable.date</code></td><td><code>BsDate</code></td><td>—</td><td>Disable a single specific date.</td></tr>
+<tr><td><code>disable.dates</code></td><td><code>BsDate[]</code></td><td><code>[]</code></td><td>Disable a list of specific dates.</td></tr>
+<tr><td><code>disable.before</code></td><td><code>BsDate</code></td><td>—</td><td>Disable all dates before this date (exclusive).</td></tr>
+<tr><td><code>disable.after</code></td><td><code>BsDate</code></td><td>—</td><td>Disable all dates after this date (exclusive).</td></tr>
 </tbody>
 </table>
 
-<pre><span class="comment">// Example: disable today + block specific dates</span>
+<pre><span class="comment">// Disable today + block specific dates + block past dates</span>
 <span class="tag">&lt;NepaliDatePicker</span>
   disable={{
     today: <span class="keyword">true</span>,
     dates: [
       { year: <span class="number">2081</span>, month: <span class="number">1</span>, day: <span class="number">1</span> },
       { year: <span class="number">2081</span>, month: <span class="number">1</span>, day: <span class="number">15</span> },
-    ]
+    ],
+    before: { year: <span class="number">2081</span>, month: <span class="number">1</span>, day: <span class="number">10</span> },
   }}
-<span class="tag">/&gt;</span></pre>
+  disabledDate={(d) => d.day === <span class="number">5</span>} <span class="comment">// also disable every 5th</span>
+<span class="tag">/&gt;</span> <button class="copy-code-btn" onclick="copyCode(this)">Copy</button></pre>
 
-<h2 id="menu-options">Menu / Display options</h2>
-<p>Pass a <code>menu</code> object to control locale, calendar layout, and visibility of controls.</p>
+<div class="callout"><strong>Combines with <code>disabledDate</code>:</strong> Both the static <code>disable</code> object and the <code>disabledDate</code> callback are evaluated independently. A date is disabled if <em>any</em> rule applies. Use <code>minDate</code>/<code>maxDate</code> for simple ranged clamping instead of <code>disable.before</code>/<code>disable.after</code>.</div>
+
+<!-- ====== Menu Options ====== -->
+<h2 id="menu-options">Menu options</h2>
+<p>The <code>menu</code> prop controls localization, calendar layout, and visibility of navigation controls.</p>
+
 <table>
 <thead>
 <tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>menu.lang</td><td><code>'en' | 'ne'</code></td><td><code>'en'</code></td><td>Localize month/day labels and digits.</td></tr>
-<tr><td>menu.showMonth</td><td><code>boolean</code></td><td><code>true</code></td><td>Show/hide the month selector dropdown.</td></tr>
-<tr><td>menu.showYear</td><td><code>boolean</code></td><td><code>true</code></td><td>Show/hide the year selector dropdown.</td></tr>
-<tr><td>menu.firstDayOfWeek</td><td><code>0 | 1</code></td><td><code>0</code></td><td>Start the week on Sunday (<code>0</code>) or Monday (<code>1</code>).</td></tr>
+<tr><td><code>menu.lang</code></td><td><code>'en' | 'ne'</code></td><td><code>'en'</code></td><td>Localize month/day labels and digits to English or Nepali (नेपाली).</td></tr>
+<tr><td><code>menu.showMonth</code></td><td><code>boolean</code></td><td><code>true</code></td><td>Show/hide the month selector dropdown in the popover header.</td></tr>
+<tr><td><code>menu.showYear</code></td><td><code>boolean</code></td><td><code>true</code></td><td>Show/hide the year selector dropdown in the popover header.</td></tr>
+<tr><td><code>menu.firstDayOfWeek</code></td><td><code>0 | 1</code></td><td><code>0</code></td><td>Start the week on Sunday (<code>0</code>) or Monday (<code>1</code>).</td></tr>
+<tr><td><code>menu.yearRange</code></td><td><code>{ min?: number; max?: number }</code></td><td>adapter range</td><td>Override the year dropdown range. Takes priority over <code>adapter.range</code>. Example: <code>{ min: 2075, max: 2090 }</code>.</td></tr>
 </tbody>
 </table>
 
-<pre><span class="comment">// Example: Nepali locale with Monday start</span>
+<pre><span class="comment">// Nepali locale with Monday start, hide year selector</span>
 <span class="tag">&lt;NepaliDatePicker</span>
   menu={{
     lang: <span class="string">"ne"</span>,
     firstDayOfWeek: <span class="number">1</span>,
     showMonth: <span class="keyword">true</span>,
-    showYear: <span class="keyword">true</span>,
+    showYear: <span class="keyword">false</span>,
   }}
-<span class="tag">/&gt;</span></pre>
+<span class="tag">/&gt;</span> <button class="copy-code-btn" onclick="copyCode(this)">Copy</button></pre>
 
-<h2 id="styling-props">Styling props</h2>
-<table>
-<thead>
-<tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td>inputClassName <span class="tag-pill tag-optional">optional</span></td><td><code>string</code></td><td>—</td><td>Extra class for the input element.</td></tr>
-<tr><td>inputPattern <span class="tag-pill tag-optional">optional</span></td><td><code>string | false</code></td><td><code>\d{4}-\d{2}-\d{2}</code></td><td>Native <code>pattern</code> attribute. Set <code>false</code> to remove.</td></tr>
-</tbody>
-</table>
-
-<h2 id="localization">Localization</h2>
-<p>Set <code>menu.lang="ne"</code> to render month names, weekday abbreviations, and calendar digits in <strong>Nepali (नेपाली)</strong>. The <code>onChange</code> value still returns the date in ASCII BS <code>YYYY-MM-DD</code> format.</p>
-
+<h4>Localization behavior</h4>
 <table>
 <thead>
 <tr><th>Option</th><th>Labels</th><th>Digits</th><th>Value format</th></tr>
@@ -289,11 +772,56 @@ bos-nepali-date
 <tr><td><code>menu.lang="ne"</code></td><td>नेपाली month/day names</td><td>०-९</td><td><code>२०८१-०१-१५</code> (display) / <code>2081-01-15</code> (value)</td></tr>
 </tbody>
 </table>
+<p>The input accepts Nepali digits (०-९) and normalizes them to ASCII automatically. The <code>onChange</code> value always returns ASCII BS dates.</p>
 
-<div class="callout"><strong>Note:</strong> The input accepts Nepali digits (०-९) and normalizes them to ASCII automatically.</div>
+<!-- ====== ClassNames & Styles ====== -->
+<h2 id="classnames-and-styles">classNames &amp; styles</h2>
+<p>Both pickers accept <code>classNames</code> and <code>styles</code> props for granular styling of sub-elements. These follow the same pattern as Ant Design's <code>classNames</code>/<code>styles</code> API.</p>
 
+<h3>PickerClassNames</h3>
+<table>
+<thead>
+<tr><th>Key</th><th>Target element</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>input</code></td><td><code>&lt;input&gt;</code> element</td><td>Additional class for the text input.</td></tr>
+<tr><td><code>popup</code></td><td><code>.np-popover</code> dialog</td><td>Additional class for the popover wrapper.</td></tr>
+<tr><td><code>header</code></td><td><code>.np-popover__header</code></td><td>Additional class for the month/year header.</td></tr>
+<tr><td><code>grid</code></td><td><code>.np-cal-grid</code></td><td>Additional class for the calendar grid.</td></tr>
+<tr><td><code>cell</code></td><td><code>.np-cal-cell</code> buttons</td><td>Additional class for each day cell button.</td></tr>
+<tr><td><code>footer</code></td><td><code>.np-footer</code></td><td>Additional class for the footer (Clear/Today).</td></tr>
+</tbody>
+</table>
+
+<h3>PickerStyles</h3>
+<table>
+<thead>
+<tr><th>Key</th><th>Target element</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>input</code></td><td><code>&lt;input&gt;</code> element</td><td>Inline styles for the text input.</td></tr>
+<tr><td><code>popup</code></td><td><code>.np-popover</code> dialog</td><td>Inline styles for the popover wrapper.</td></tr>
+<tr><td><code>header</code></td><td><code>.np-popover__header</code></td><td>Inline styles for the month/year header.</td></tr>
+<tr><td><code>grid</code></td><td><code>.np-cal-grid</code></td><td>Inline styles for the calendar grid.</td></tr>
+<tr><td><code>footer</code></td><td><code>.np-footer</code></td><td>Inline styles for the footer (Clear/Today).</td></tr>
+</tbody>
+</table>
+
+<pre><span class="tag">&lt;NepaliDatePicker</span>
+  classNames={{
+    popup: <span class="string">"my-custom-popup"</span>,
+    cell: <span class="string">"my-custom-cell"</span>,
+    footer: <span class="string">"dark-mode-footer"</span>,
+  }}
+  styles={{
+    popup: { borderRadius: <span class="string">"16px"</span> },
+    header: { background: <span class="string">"#fef3c7"</span> },
+  }}
+<span class="tag">/&gt;</span></pre>
+
+<!-- ====== Styling ====== -->
 <h2 id="styling">Styling</h2>
-<p>The picker's base styles are imported automatically from the component. Override these CSS variables to theme the component to match your application.</p>
+<p>The picker's base styles are auto-imported from the CSS bundle. Override these CSS variables to theme the component.</p>
 
 <h3>CSS Variables</h3>
 <table>
@@ -301,29 +829,37 @@ bos-nepali-date
 <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>--np-font</code></td><td>inherits host</td><td>Font family for picker controls.</td></tr>
+<tr><td><code>--np-font</code></td><td>inherits host</td><td>Font family for all picker controls.</td></tr>
 <tr><td><code>--np-popover-min-width</code></td><td><code>280px</code></td><td>Minimum calendar popover width.</td></tr>
 <tr><td><code>--np-popover-max-width</code></td><td><code>320px</code></td><td>Maximum calendar popover width.</td></tr>
+<tr><td><code>--np-color-error</code></td><td><code>#ef4444</code></td><td>Border/bg color for <code>status="error"</code>.</td></tr>
+<tr><td><code>--np-color-warning</code></td><td><code>#f59e0b</code></td><td>Border/bg color for <code>status="warning"</code>.</td></tr>
+<tr><td><code>--np-underline-color</code></td><td><code>--np-primary</code></td><td>Underline border/shadow color for <code>variant="underlined"</code> on focus.</td></tr>
+<tr><td><code>--np-underline-border</code></td><td><code>--np-border</code></td><td>Bottom border color for <code>variant="underlined"</code> when idle.</td></tr>
+<tr><td><code>--np-filled-bg</code></td><td><code>#f8f9fa</code></td><td>Background color for <code>variant="filled"</code>.</td></tr>
+<tr><td><code>--np-sm-height</code></td><td><code>24px</code></td><td>Input height for <code>size="small"</code>.</td></tr>
+<tr><td><code>--np-md-height</code></td><td><code>32px</code></td><td>Input height for <code>size="middle"</code> (default).</td></tr>
+<tr><td><code>--np-lg-height</code></td><td><code>40px</code></td><td>Input height for <code>size="large"</code>.</td></tr>
 </tbody>
 </table>
 
-<pre><span class="comment">/* Example: custom theme */</span>
+<pre><span class="comment">/* Custom theme override */</span>
 .np-picker {
-  --np-font: <span class="string">"Noto Sans", sans-serif</span>;
+  --np-font: <span class="string">"Noto Sans Devanagari", sans-serif</span>;
   --np-popover-min-width: <span class="number">300px</span>;
-  --np-popover-max-width: <span class="number">360px</span>;
+  --np-color-error: <span class="number">#dc2626</span>;
+  --np-color-warning: <span class="number">#d97706</span>;
 }</pre>
 
-<div class="callout"><strong>Inherited font:</strong> The picker inherits the host app's font family. If you need to force a specific font (e.g., a Nepali-capable font), set <code>--np-font</code> on the wrapper or <code>.np-picker</code> class.</div>
-
+<!-- ====== Adapter ====== -->
 <h2 id="adapter">Adapter</h2>
-<p>The <strong>adapter</strong> is the conversion engine that translates between Bikram Sambat (BS) and Gregorian (AD) dates. The library ships with a <code>defaultAdapter</code> and a <code>MemoryBsAdapter</code> for custom year tables.</p>
+<p>The <strong>adapter</strong> is the conversion engine that translates between Bikram Sambat (BS) and Gregorian (AD) dates. The library ships with two built-in adapters.</p>
 
 <h3>defaultAdapter</h3>
-<p>Pre-configured with demo data for BS years 2080–2081. Suitable for evaluation and development. <strong>Not recommended for production</strong> — <code>toAD()</code> and <code>toBS()</code> will throw for dates outside this range.</p>
+<p>Pre-configured with demo data for BS years 2080–2081. Suitable for evaluation and development. <strong>Not recommended for production</strong> — <code>toAD()</code> and <code>toBS()</code> throw for dates outside this range.</p>
 
 <h3>MemoryBsAdapter</h3>
-<p>Create a custom adapter with your own complete year table.</p>
+<p>Create a custom adapter with your own complete year table for production use.</p>
 
 <pre><span class="keyword">import</span> { <span class="function">MemoryBsAdapter</span> } <span class="keyword">from</span> <span class="string">"bos-nepali-date"</span>
 
@@ -336,10 +872,10 @@ bos-nepali-date
   },
 })</pre>
 
-<div class="callout"><strong>Note:</strong> To use in production, you'll need to provide a complete BS year table (2000–2100 recommended). The published NPM package only includes demo data for 2080–2081.</div>
+<div class="callout"><strong>Full data included:</strong> The published NPM package ships with complete BS year data for <strong>2000–2099</strong> (100 years) in <code>defaultAdapter</code>. No need to provide your own table unless you need years beyond this range. For custom tables, use <code>MemoryBsAdapter</code> or implement the <code>BsAdapter</code> interface.</div>
 
-<h3>Creating a custom adapter</h3>
-<p>Implement the <code>BsAdapter</code> interface to provide your own conversion logic:</p>
+<h3>BsAdapter interface</h3>
+<p>Implement this interface to provide your own conversion logic, e.g., from an API or database.</p>
 
 <div class="interface-box">
 <span class="comment">// BsAdapter interface</span><br>
@@ -350,16 +886,102 @@ bos-nepali-date
 &nbsp;&nbsp;diffDays: (date1: BsDate, date2: BsDate) => <span class="keyword">number</span><br>
 &nbsp;&nbsp;today: () => BsDate<br>
 &nbsp;&nbsp;range?: { min?: BsDate; max?: BsDate }<br>
-}
-</div>
+}</div>
 
+<pre><span class="comment">// Custom adapter example (e.g., API-backed)</span>
+<span class="keyword">const</span> apiAdapter: BsAdapter = {
+  toAD: (date) => { <span class="comment">/* POST /convert-to-ad */</span> },
+  toBS: (iso) => { <span class="comment">/* POST /convert-to-bs */</span> },
+  addDays: (date, days) => { <span class="comment">/* POST /add-days */</span> },
+  diffDays: (a, b) => { <span class="comment">/* POST /diff */</span> },
+  today: () => { <span class="comment">/* GET /today-bs */</span> },
+  range: { min: { year: 2000, month: 1, day: 1 }, max: { year: 2090, month: 12, day: 30 } },
+}</pre>
+
+<!-- ====== TypeScript ====== -->
+<h2 id="typescript">TypeScript</h2>
+<p>All components and types are fully typed. Key exports:</p>
+
+<div class="interface-box">
+<span class="comment">// Core types</span><br>
+<span class="keyword">type</span> BsDate = { year: <span class="keyword">number</span>; month: <span class="keyword">number</span>; day: <span class="keyword">number</span> }<br>
+<span class="keyword">type</span> AdDateIso = <span class="keyword">string</span> <span class="comment">// "YYYY-MM-DD"</span><br>
+<span class="keyword">interface</span> BsAdapter { toAD; toBS; addDays; diffDays; today; range? }<br><br>
+<span class="comment">// Picker prop types</span><br>
+<span class="keyword">type</span> PickerSize = <span class="string">'small'</span> | <span class="string">'middle'</span> | <span class="string">'large'</span><br>
+<span class="keyword">type</span> PickerStatus = <span class="string">'error'</span> | <span class="string">'warning'</span><br>
+<span class="keyword">type</span> PickerVariant = <span class="string">'outlined'</span> | <span class="string">'filled'</span> | <span class="string">'borderless'</span> | <span class="string">'underlined'</span><br>
+<span class="keyword">type</span> PickerPlacement = <span class="string">'bottomLeft'</span> | <span class="string">'bottomRight'</span> | <span class="string">'topLeft'</span> | <span class="string">'topRight'</span><br><br>
+<span class="comment">// Options types</span><br>
+DisableOptions<br>
+MenuOptions<br>
+CellRenderInfo<br>
+NepaliDateRangePickerProps</div>
+
+<pre><span class="comment">// Import types:</span>
+<span class="keyword">import</span> {
+  <span class="keyword">type</span> BsDate, <span class="keyword">type</span> BsAdapter, <span class="keyword">type</span> AdDateIso,
+  <span class="keyword">type</span> DisableOptions, <span class="keyword">type</span> MenuOptions,
+  <span class="keyword">type</span> PickerSize, <span class="keyword">type</span> PickerStatus,
+  <span class="keyword">type</span> PickerVariant, <span class="keyword">type</span> PickerPlacement,
+  <span class="keyword">type</span> CellRenderInfo, <span class="keyword">type</span> NepaliDateRangePickerProps,
+} <span class="keyword">from</span> <span class="string">"bos-nepali-date"</span></pre>
+
+<!-- ====== Accessibility ====== -->
 <h2 id="accessibility">Accessibility</h2>
-<ul>
-<li><strong>Keyboard:</strong> Escape closes the popover, Tab navigates between controls.</li>
-<li><strong>Click-outside:</strong> Clicking outside the popover closes it automatically.</li>
-<li><strong>ARIA:</strong> Month/year toggles expose <code>aria-haspopup</code> and <code>aria-expanded</code>. Calendar days expose <code>disabled</code> state.</li>
-<li><strong>Input:</strong> Numeric mask enforces <code>YYYY-MM-DD</code> format. Accepts and normalizes Nepali digits automatically.</li>
-</ul>
+<p>The picker components follow WAI-ARIA design patterns for accessible date picker widgets.</p>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>Implementation</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td>Calendar semantics</td>
+  <td><code>role="grid"</code>, <code>role="gridcell"</code> with <code>aria-colindex</code>, <code>role="columnheader"</code>, <code>role="row"</code> wrappers. Each cell has <code>aria-label</code> with full date context (e.g., "15 Baishak, 2081 BS").</td>
+</tr>
+<tr>
+  <td>Selected state</td>
+  <td><code>aria-selected</code> on selected cells. Range picker highlights both start and end.</td>
+</tr>
+<tr>
+  <td>Disabled state</td>
+  <td>Disabled cells have <code>disabled</code> attribute and are not focusable.</td>
+</tr>
+<tr>
+  <td>Modal dialog</td>
+  <td>Popover uses <code>role="dialog"</code> with <code>aria-modal="true"</code> and <code>aria-label</code>.</td>
+</tr>
+<tr>
+  <td>Live region</td>
+  <td><code>aria-live="polite"</code> region announces month/year changes to screen readers.</td>
+</tr>
+<tr>
+  <td>Focus management</td>
+  <td>Popover auto-focuses first focusable element on open. Focus returns to trigger input on close. Tab trapping within open popover.</td>
+</tr>
+<tr>
+  <td>Keyboard</td>
+  <td>Escape closes the popover. Tab navigates between controls within the popover. Click-outside closes automatically.</td>
+</tr>
+<tr>
+  <td>Label association</td>
+  <td>Visible labels use <code>htmlFor</code>/<code>id</code> association. Inputs have <code>aria-label</code> when no visible label.</td>
+</tr>
+<tr>
+  <td>Footer buttons</td>
+  <td>Clear and Today buttons have <code>aria-label</code> in both English and Nepali.</td>
+</tr>
+<tr>
+  <td>Header controls</td>
+  <td>Month/year toggles expose <code>aria-haspopup="listbox"</code> and <code>aria-expanded</code>. Previous/next buttons have <code>aria-label</code>.</td>
+</tr>
+<tr>
+  <td>Input</td>
+  <td>Numeric mask enforces YYYY-MM-DD format. Accepts and normalizes Nepali digits (०-९) automatically.</td>
+</tr>
+</tbody>
+</table>
 
 </div>
 </main>
@@ -371,10 +993,12 @@ bos-nepali-date
 // Table of contents — highlight active section on scroll
 (function(){
   var tocLinks = document.querySelectorAll('.toc-link:not(.sub)');
+  var subLinks = document.querySelectorAll('.toc-link.sub');
+  var allLinks = document.querySelectorAll('.toc-link');
   var headings = [];
   var headerH = 72;
 
-  tocLinks.forEach(function(link) {
+  [].forEach.call(allLinks, function(link) {
     var id = link.getAttribute('href').slice(1);
     var el = document.getElementById(id);
     if (el) headings.push({ el: el, link: link, top: 0, bottom: 0 });
@@ -384,31 +1008,196 @@ bos-nepali-date
   function updateActive() {
     var scrollY = window.scrollY;
     var active = null;
-
     for (var i = 0; i < headings.length; i++) {
       var h = headings[i];
       var rect = h.el.getBoundingClientRect();
       h.top = rect.top + scrollY;
       h.bottom = rect.bottom + scrollY;
     }
-
     for (var i = headings.length - 1; i >= 0; i--) {
-      if (headings[i].top <= scrollY + headerH) {
+      if (headings[i].top <= scrollY + headerH + 20) {
         active = headings[i];
         break;
       }
     }
-
     if (!active && headings.length) active = headings[0];
-
     headings.forEach(function(h) {
       h.link.classList.toggle('active', h === active);
     });
   }
-
   updateActive();
   window.addEventListener('scroll', updateActive, { passive: true });
   window.addEventListener('resize', updateActive, { passive: true });
+})();
+
+// ── Copy code button ──
+function copyCode(btn) {
+  var pre = btn.closest('pre');
+  if (!pre) return;
+  var text = pre.textContent.replace(/Copy$/, '').trim();
+  navigator.clipboard.writeText(text).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = orig; }, 1500);
+  });
+}
+</script>
+
+<!-- ── UMD Bundle + CSS: inline live examples ── -->
+<link rel="stylesheet" href="bos-nepali-date.css">
+<script>
+(function(){
+  function ls(src, cb) {
+    var s = document.createElement('script');
+    s.src = src; s.onload = cb; s.onerror = cb;
+    document.body.appendChild(s);
+  }
+
+  ls('https://unpkg.com/react@18/umd/react.production.min.js', function() {
+    ls('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', function() {
+      ls('bos-nepali-date.umd.js', function() {
+        try { boot(); }
+        catch(e) {
+          console.error('Doc examples bootstrap error:', e);
+          var errs = document.querySelectorAll('.example-error');
+          errs.forEach(function(el) { el.style.display = 'block'; el.textContent = '\u26a0\ufe0f ' + e.message; });
+          var loadings = document.querySelectorAll('.example-preview.loading');
+          loadings.forEach(function(el) { el.textContent = '\u26a0\ufe0f Failed to load examples'; });
+        }
+      });
+    });
+  });
+
+  function boot() {
+    var R = window.React, RD = window.ReactDOM;
+    var Lib = window.BosNepaliDate;
+    if (!R || !RD || !Lib) return;
+
+    var h = R.createElement, useState = R.useState;
+    var Picker = Lib.NepaliDatePicker;
+    var RangePicker = Lib.NepaliDateRangePicker;
+    var adapter = Lib.defaultAdapter;
+
+    // ── Helper: render example into a container ──
+    function renderEx(containerId, element) {
+      var container = document.getElementById(containerId);
+      if (!container) return;
+      var preview = container.querySelector('.example-preview');
+      if (preview) preview.classList.remove('loading');
+      var errorEl = container.querySelector('.example-error');
+      if (errorEl) errorEl.style.display = 'none';
+      var root = RD.createRoot(container.querySelector('.example-preview'));
+      root.render(element);
+    }
+
+    // ── Example: Basic single picker ──
+    renderEx('ex-basic',
+      h(Picker, {
+        adapter: adapter,
+        onChange: function() {},
+      })
+    );
+
+    // ── Example: Range picker ──
+    renderEx('ex-range',
+      h(RangePicker, {
+        adapter: adapter,
+        onChange: function() {},
+      })
+    );
+
+    // ── Example: Display variants (size, status) ──
+    ;(function(){
+      var container = document.getElementById('ex-display');
+      if (!container) return;
+
+      var preview = container.querySelector('.example-preview');
+      var errorEl = container.querySelector('.example-error');
+      var displayRoot = null;
+
+      function renderDisplay() {
+        preview.classList.remove('loading');
+        if (errorEl) errorEl.style.display = 'none';
+        if (!displayRoot) displayRoot = RD.createRoot(preview);
+
+        var size = document.getElementById('ex-display-size').value;
+        var hasError = document.getElementById('ex-display-error').checked;
+        var hasWarning = document.getElementById('ex-display-warning').checked;
+        var status = hasError ? 'error' : hasWarning ? 'warning' : undefined;
+
+        displayRoot.render(h('div', { style: { display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-start' } },
+          h('div', null,
+            h(Picker, {
+              adapter: adapter,
+              size: size,
+              status: status,
+              defaultValue: { year: 2081, month: 1, day: 15 },
+              onChange: function() {},
+            })
+          )
+        ));
+      }
+
+      renderDisplay();
+      var ids = ['ex-display-size','ex-display-error','ex-display-warning'];
+      ids.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('change', renderDisplay);
+          el.addEventListener('input', renderDisplay);
+        }
+      });
+    })();
+
+    // ── Example: Featured single picker with controls ──
+    ;(function(){
+      var container = document.getElementById('ex-featured');
+      if (!container) return;
+
+      var preview = container.querySelector('.example-preview');
+      var errorEl = container.querySelector('.example-error');
+      var featuredRoot = null;
+
+      function renderFeatured() {
+        preview.classList.remove('loading');
+        if (errorEl) errorEl.style.display = 'none';
+        if (!featuredRoot) featuredRoot = RD.createRoot(preview);
+
+        var variant = (document.getElementById('ex-featured-variant') || {}).value || 'outlined';
+        var size = (document.getElementById('ex-featured-size') || {}).value || 'middle';
+        var hasError = (document.getElementById('ex-featured-status') || {}).checked || false;
+        var allowClear = (document.getElementById('ex-featured-allowclear') || {}).checked || false;
+        var readOnly = (document.getElementById('ex-featured-readonly') || {}).checked || false;
+        var disable5th = (document.getElementById('ex-featured-disable5th') || {}).checked || false;
+
+        var props = {
+          adapter: adapter,
+          variant: variant,
+          size: size,
+          status: hasError ? 'error' : undefined,
+          allowClear: allowClear,
+          inputReadOnly: readOnly,
+          defaultValue: { year: 2081, month: 1, day: 15 },
+          onChange: function() {},
+        };
+        if (disable5th) {
+          props.disabledDate = function(d) { return d.day === 5; };
+        }
+
+        featuredRoot.render(h(Picker, props));
+      }
+
+      renderFeatured();
+      var fids = ['ex-featured-variant','ex-featured-size','ex-featured-status','ex-featured-allowclear','ex-featured-readonly','ex-featured-disable5th'];
+      fids.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('change', renderFeatured);
+          el.addEventListener('input', renderFeatured);
+        }
+      });
+    })();
+  }
 })();
 </script>
 </body>

@@ -1,15 +1,43 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '../utils/classnames';
 import { BsAdapter, BsDate } from '../types';
+
+export type CellRenderInfo = {
+  date: BsDate;
+  today: boolean;
+  selected: boolean;
+  disabled: boolean;
+  inCurrentMonth: boolean;
+  isRangeStart: boolean;
+  isRangeEnd: boolean;
+  inRange: boolean;
+};
+
+const MONTH_NAMES = ['', 'Baishak', 'Jestha', 'Ashar', 'Shrawan', 'Bhadra', 'Ashoj', 'Kartik', 'Mangshir', 'Poush', 'Magh', 'Falgun', 'Chaitra'];
+const MONTH_NAMES_NE = ['', 'बैशाख', 'जेठ', 'आषाढ़', 'साउन', 'भदौ', 'असोज', 'कार्तिक', 'मंसिर', 'पुष', 'माघ', 'फाल्गुण', 'चैत्र'];
+
+function cellAriaLabel(date: BsDate, isNepali?: boolean): string {
+  const monthName = isNepali ? MONTH_NAMES_NE[date.month] : MONTH_NAMES[date.month];
+  return `${date.day} ${monthName}, ${date.year} BS`;
+}
 
 export type CalendarGridProps = {
   month: BsDate; // any day in the month; day is ignored
   adapter: BsAdapter;
   firstDayOfWeek?: 0 | 1; // 0 Sunday, 1 Monday
   onSelect?: (date: BsDate) => void;
+  onHover?: (date: BsDate | null) => void; // hover for range preview
   selected?: BsDate | null;
+  rangeEnd?: BsDate | null; // end of range (range picker); also styled as selected
   inRange?: (date: BsDate) => boolean;
   disabled?: (date: BsDate) => boolean;
+  cellRender?: (date: BsDate, info: CellRenderInfo) => React.ReactNode;
+  className?: string; // wrapper class
+  cellClassName?: string; // cell class
+  /** Month list for aria-labels on calendar cells. Pass full array (index 0 empty). @default ['', 'Baishak', ...] */
+  monthNames?: string[];
+  /** Whether the interface is in Nepali (affects aria-labels). @default false */
+  isNepali?: boolean;
   dowLabels?: string[];
   formatDay?: (day: number) => string;
 };
@@ -40,9 +68,16 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   adapter,
   firstDayOfWeek = 0,
   onSelect,
+  onHover,
   selected,
+  rangeEnd,
   inRange,
   disabled,
+  cellRender,
+  className,
+  cellClassName,
+  monthNames,
+  isNepali = false,
   dowLabels = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
   formatDay = (d) => String(d),
 }) => {
@@ -91,36 +126,67 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   }
 
   return (
-    <div className="np-cal-grid">
-      {dowLabels
-        .slice(firstDayOfWeek)
-        .concat(dowLabels.slice(0, firstDayOfWeek))
-        .map((label) => (
-          <div key={label} className="np-cal-dow">{label}</div>
-        ))}
-      {cells.map(({ date, inCurrentMonth, outOfRange }, idx) => {
-        const isSelected = sameDay(date, selected);
-        const isDisabled = outOfRange || (date ? disabled?.(date) : true) || false;
-        const isRange = date ? inRange?.(date) ?? false : false;
-        const isToday = sameDay(date, today);
-        return (
-          <button
-            key={date ? `${date.year}-${date.month}-${date.day}` : `empty-${idx}`}
-            type="button"
-            className={clsx(
-              'np-cal-cell',
-              !inCurrentMonth && 'np-cal-cell--muted',
-              isSelected && 'np-cal-cell--selected',
-              isRange && !isSelected && 'np-cal-cell--range',
-              isToday && !isSelected && 'np-cal-cell--today'
-            )}
-            onClick={() => !isDisabled && date && onSelect?.(date)}
-            disabled={isDisabled}
-          >
-            <span className="np-cal-day">{date ? formatDay(date.day) : ''}</span>
-          </button>
-        );
-      })}
+    <div
+      className={cn('np-cal-grid', className)}
+      role="grid"
+      aria-label={isNepali ? `${monthNames?.[month.month] ?? ''} ${month.year}` : `${monthNames?.[month.month] ?? ''} ${month.year}`}
+    >
+      <div role="row" className="np-cal-grid__row">
+        {dowLabels
+          .slice(firstDayOfWeek)
+          .concat(dowLabels.slice(0, firstDayOfWeek))
+          .map((label, i) => (
+            <div key={label} role="columnheader" aria-colindex={i + 1} className="np-cal-dow" aria-label={label}>{label}</div>
+          ))}
+      </div>
+      {Array.from({ length: Math.ceil(cells.length / 7) }, (_, rowIdx) => (
+        <div key={rowIdx} role="row" className="np-cal-grid__row">
+          {cells.slice(rowIdx * 7, rowIdx * 7 + 7).map(({ date, inCurrentMonth, outOfRange }, colIdx) => {
+            const isSelected = sameDay(date, selected);
+            const isRangeEnd = sameDay(date, rangeEnd);
+            const isDisabled = outOfRange || (date ? disabled?.(date) : true) || false;
+            const isInRange = date ? inRange?.(date) ?? false : false;
+            const isToday = sameDay(date, today);
+
+            const cellContent = date && cellRender ? cellRender(date, {
+              date,
+              today: isToday,
+              selected: isSelected,
+              disabled: isDisabled,
+              inCurrentMonth,
+              isRangeStart: isSelected && !!rangeEnd,
+              isRangeEnd: isRangeEnd && !isSelected,
+              inRange: isInRange,
+            }) : undefined;
+
+            return (
+              <button
+                key={date ? `${date.year}-${date.month}-${date.day}` : `empty-${rowIdx}-${colIdx}`}
+                type="button"
+                role="gridcell"
+                aria-colindex={colIdx + 1}
+                aria-label={date ? cellAriaLabel(date, isNepali) : undefined}
+                aria-selected={isSelected || undefined}
+                className={cn(
+                  'np-cal-cell',
+                  cellClassName,
+                  !inCurrentMonth && 'np-cal-cell--muted',
+                  isSelected && 'np-cal-cell--selected',
+                  isRangeEnd && !isSelected && 'np-cal-cell--selected',
+                  isInRange && !isSelected && !isRangeEnd && 'np-cal-cell--range',
+                  isToday && !isSelected && !isRangeEnd && 'np-cal-cell--today'
+                )}
+                onClick={() => !isDisabled && date && onSelect?.(date)}
+                onMouseEnter={() => !isDisabled && date && onHover?.(date)}
+                onMouseLeave={() => onHover?.(null)}
+                disabled={isDisabled}
+              >
+                {cellContent ?? <span className="np-cal-day">{date ? formatDay(date.day) : ''}</span>}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 };

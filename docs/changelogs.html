@@ -105,8 +105,25 @@ bos-nepali-date
 <li class="entry">
 <div class="dot"></div>
 <div class="version-header">
-<span class="version">v0.1.17</span>
+<span class="version">v0.2.0</span>
 <span class="tag latest">Latest</span>
+<span class="tag breaking">Breaking</span>
+</div>
+<div class="title">CSS externalized, bundle optimized, data flattened</div>
+<ul class="changes">
+<li><span class="emoji">⚠️</span><span class="desc"><strong>Breaking:</strong> CSS is no longer auto-injected. Add <code>import 'bos-nepali-date/style'</code> to your entry file. The UMD bundle now loads styles from a separate <code>bos-nepali-date.css</code> file.</span></li>
+<li><span class="emoji">📦</span><span class="desc">ESM bundle reduced from ~24 KB gzip to ~13 KB gzip by externalizing CSS (~46% savings on the JS bundle). CJS bundle similarly reduced.</span></li>
+<li><span class="emoji">⚡</span><span class="desc">Flattened <code>bsMonthData</code> from a Record to a compact <code>readonly number[]</code> array — smaller bundle and simpler offset-based access.</span></li>
+<li><span class="emoji">🔧</span><span class="desc"><code>MemoryBsAdapter</code> now accepts both flat arrays (preferred) and legacy Record-format year tables for backward compatibility.</span></li>
+<li><span class="emoji">🧪</span><span class="desc">Added 24 new unit tests for presets, <code>onPanelChange</code>, <code>name</code> prop, year range, and dual-month view. Total: 163 tests.</span></li>
+</ul>
+</li>
+
+<li class="entry">
+<div class="dot"></div>
+<div class="version-header">
+<span class="version">v0.1.17</span>
+<span class="tag">—</span>
 </div>
 <div class="title">Live demo &amp; docs redesign</div>
 <ul class="changes">

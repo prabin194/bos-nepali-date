@@ -33,16 +33,21 @@ function Demo() {
 }
 ```
 
-Styles are auto-imported by the component. If your bundler strips CSS side effects, you can import explicitly:
-```ts
+CSS must be imported separately. Add the following import to your entry file:
+```tsx
 import 'bos-nepali-date/style';
+```
+
+If you're using a bundler that automatically resolves `style` exports, this is also available at:
+```tsx
+import 'bos-nepali-date/index.css';
 ```
 
 ## Adapter
 
 `MemoryBsAdapter` takes a year table: `{ [bsYear]: [12 month lengths] }` plus an anchor mapping BS→AD.
 
-The published `defaultAdapter` currently ships with BS year data for `2000-2099` and exposes that range via `adapter.range`. If you need a different window or a separately maintained dataset, provide your own adapter instance.
+The published `defaultAdapter` ships with complete BS year data for **2000–2099** (100 years) and exposes that range via `adapter.range`. No separate data package is needed for production use. If you need years beyond this range, provide your own adapter instance via `MemoryBsAdapter`.
 
 ```ts
 import { MemoryBsAdapter } from 'bos-nepali-date';
@@ -73,6 +78,8 @@ const adapter = new MemoryBsAdapter({
 | `disabledDate` | `(date: BsDate) => boolean` | — | Callback to dynamically disable individual dates. |
 | `open` | `boolean` | — | Controlled popover visibility. Use with `onOpenChange`. |
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the popover opens or closes. |
+| `onPanelChange` | `(date: BsDate) => void` | — | Called when the calendar panel navigates to a different month/year. |
+| `name` | `string` | — | Native `name` attribute for the input element. |
 | `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Picker size variant. |
 | `status` | `'error' \| 'warning'` | — | Validation state styling for the input. |
 | `allowClear` | `boolean` | `false` | Show a clear button on the input when a value is selected. |
@@ -100,6 +107,7 @@ Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date
 | `menu.showYear` | `boolean` | `true` | Show/hide year selector; hidden still shows current year text. |
 | `menu.lang` | `'en' \| 'ne'` | `'en'` | Localize month/day labels and digits (emitted value stays ASCII `YYYY-MM-DD`). |
 | `menu.firstDayOfWeek` | `0 \| 1` | `0` | Sunday or Monday start. |
+| `menu.yearRange` | `{ min?: number; max?: number }` | adapter range | Override the year dropdown range. Takes priority over adapter.range. |
 
 ## Range Picker (`NepaliDateRangePicker`)
 
@@ -127,6 +135,8 @@ function RangeDemo() {
 | `onChange` | `(dates: [BsDate \| null, BsDate \| null]) => void` | — | Fired when the range changes. |
 | `separator` | `string` | `→` | Separator text between inputs. |
 | `endPlaceholder` | `string` | `placeholder` | Placeholder for the end input. |
+| `presets` | `Preset[]` | `[]` | Quick-select preset ranges. Each: `{ label: string, value: [BsDate, BsDate] }`. |
+| `name` / `nameEnd` | `string` | — | Native `name` attributes for start and end inputs. |
 
 All other props (`adapter`, `minDate`, `maxDate`, `disable`, `disabledDate`, `size`, `status`, `allowClear`, `disabled`, `open`, `onOpenChange`, `menu`) work the same as the single picker.
 
@@ -135,6 +145,8 @@ All other props (`adapter`, `minDate`, `maxDate`, `disable`, `disabledDate`, `si
 2. Second click selects the end date — popover closes, `onChange` fires.
 3. If second click is before the start, the range auto-swaps.
 4. Hover over dates to preview the in-progress range.
+5. **Dual-month view** — The popover shows two months side by side. Left month has clickable month/year selectors; right month follows navigation.
+6. **Presets** — Pass `presets={[{ label: 'This Month', value: [start, end] }]}` for quick range selection.
 
 ## Accessibility
 - Escape closes the popover; click-outside also closes.
@@ -147,22 +159,24 @@ All other props (`adapter`, `minDate`, `maxDate`, `disable`, `disabledDate`, `si
 - The component is controlled: pass `value` and update it through `onChange`.
 - `onChange` returns a structured BS date object, not a formatted string.
 - The package is React-only and expects `react` and `react-dom` as peer dependencies.
-- The bundled stylesheet is imported automatically, with `bos-nepali-date/style` available as a fallback import.
+- Styles must be imported separately: add `import 'bos-nepali-date/style'` to your entry file.
 
 ## Styling
 
-Base styles live in `src/styles/base.css` and are imported automatically. Override CSS variables (see file) to theme.
+Base styles ship as a separate CSS file (`dist/index.css`). Import them in your app:
+```tsx
+import 'bos-nepali-date/style';
+```
+
+Override CSS variables to theme the picker:
 
 The picker inherits the host application's font by default. If you need to force a font family, override `--np-font` on a wrapper or on `.np-picker`.
 
 The calendar popover uses a standard width by default: `280px` minimum and `320px` maximum. Override `--np-popover-min-width` and `--np-popover-max-width` if your layout needs a different size.
 
-The range picker popover uses a wider default of `320px` (standard) to `400px` (max) for a better dual-input experience.
+The range picker popover uses a wider default of `580px` for the dual-month view, and up to `580px` max width for a better dual-input experience.
 
-Styles are flagged as side effects so bundlers keep them; if your setup drops CSS, import explicitly:
-```ts
-import 'bos-nepali-date/style';
-```
+The CSS file is marked as a side effect so bundlers don't tree-shake it away.
 
 ## Variants
 
@@ -193,6 +207,13 @@ Four visual variants are available via the `variant` prop:
 | `--np-lg-height` | `40px` | Input height for `size="large"`. |
 
 ## Changelog
+
+### 0.2.0 (Breaking)
+- **CSS is no longer auto-injected.** Add `import 'bos-nepali-date/style'` to your entry file to load styles.
+- ESM bundle reduced from ~24 KB gzip to ~13 KB gzip by externalizing CSS (~46% savings on the JS bundle).
+- Flattened `bsMonthData` from a Record to a compact `readonly number[]` array — smaller bundle and simpler offset-based access.
+- `MemoryBsAdapter` now accepts both flat arrays (preferred) and legacy Record-format year tables for backward compatibility.
+- Added 24 new unit tests for presets, `onPanelChange`, `name` prop, year range, and dual-month view (163 total).
 
 ### 0.1.17
 - Fix the publish pipeline so `prepublishOnly` runs Vitest in non-watch mode during npm releases.
@@ -248,6 +269,6 @@ Four visual variants are available via the `variant` prop:
 ## Roadmap
 
 - Ship authoritative BS tables (2000–2100) as a data package.
-- Range picker + dual calendar view.
+- Storybook stories and visual regression coverage (in progress).
 - Storybook stories and visual regression coverage.
 - Input masking and ARIA refinements.
