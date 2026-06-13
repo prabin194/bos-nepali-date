@@ -1,0 +1,260 @@
+[
+  {
+    "t": "Try it live",
+    "u": "/#try-it-live",
+    "p": "Home",
+    "c": "Try it live Pick a Nepali date, switch languages, and test disable rules in real time. Loading demo... ⚠️ Demo could not load. Make sure JavaScript is enabled."
+  },
+  {
+    "t": "Everything you need",
+    "u": "/#everything-you-need",
+    "p": "Home",
+    "c": "Everything you need A complete BS date picker experience with zero configuration required 📅"
+  },
+  {
+    "t": "True BS dates",
+    "u": "/#true-bs-dates",
+    "p": "Home",
+    "c": "True BS dates Real Bikram Sambat arithmetic, not Gregorian approximations. Uses an authoritative day-by-day conversion table. 🔌"
+  },
+  {
+    "t": "Pluggable adapter",
+    "u": "/#pluggable-adapter",
+    "p": "Home",
+    "c": "Pluggable adapter Swap in custom conversion tables via the BsAdapter interface. Built-in MemoryBsAdapter for full control. 🌐"
+  },
+  {
+    "t": "Dual language",
+    "u": "/#dual-language",
+    "p": "Home",
+    "c": "Dual language Toggle between English and Nepali (नेपाली) — labels, month names, weekday abbreviations, and digit display. ⛔"
+  },
+  {
+    "t": "Disable rules",
+    "u": "/#disable-rules",
+    "p": "Home",
+    "c": "Disable rules Disable specific dates, ranges, today, or before/after boundaries. Combine minDate / maxDate with disable options. ⌨️"
+  },
+  {
+    "t": "Keyboard accessible",
+    "u": "/#keyboard-accessible",
+    "p": "Home",
+    "c": "Keyboard accessible Escape to close, Tab to navigate, ARIA attributes, input masking, and automatic Nepali digit normalization. 🎨"
+  },
+  {
+    "t": "Themable",
+    "u": "/#themable",
+    "p": "Home",
+    "c": "Themable Override every visual aspect via CSS variables. Font, sizing, colors — match your application's design system."
+  },
+  {
+    "t": "Getting started",
+    "u": "/#getting-started",
+    "p": "Home",
+    "c": "Getting started Install, import, and use in minutes 1"
+  },
+  {
+    "t": "Install",
+    "u": "/#install",
+    "p": "Home",
+    "c": "Install Add the package to your React project: $ npm install bos-nepali-date 2"
+  },
+  {
+    "t": "Import the component",
+    "u": "/#import-the-component",
+    "p": "Home",
+    "c": "Import the component Import NepaliDatePicker and the defaultAdapter : import { useState } from \"react\" import { NepaliDatePicker, defaultAdapter } from \"bos-nepali-date\" 3"
+  },
+  {
+    "t": "Render & control",
+    "u": "/#render-control",
+    "p": "Home",
+    "c": "Render & control Wire up value and onChange , pass the adapter: <NepaliDatePicker value={value} onChange={setValue} adapter={defaultAdapter} /> Read full documentation → bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; GitHub &bull; npm"
+  },
+  {
+    "t": "Getting started",
+    "u": "/documentation.html#getting-started",
+    "p": "Documentation",
+    "c": "Getting started $ npm install bos-nepali-date import { useState } from \"react\" import { NepaliDatePicker , defaultAdapter } from \"bos-nepali-date\" function Demo () { const [value, setValue] = useState ( null ) return ( <NepaliDatePicker value={value} onChange={setValue} adapter={defaultAdapter} /> ) } Copy Loading live example... // Renders:"
+  },
+  {
+    "t": "Basic usage",
+    "u": "/documentation.html#basic-usage",
+    "p": "Documentation",
+    "c": "Basic usage The onChange callback receives a BsDate object or null (when cleared). // BsDate shape { year: number , // e.g. 2080 month: number , // 1–12 (Baishak–Chaitra) day: number // 1–32 } // Range picker usage import { NepaliDateRangePicker } from \"bos-nepali-date\" function RangeDemo () { const [range, setRange] = useState ([ null , null ]) return ( <NepaliDateRangePicker value={range} onChange={setRange} adapter={defaultAdapter} /> ) } Copy Loading live example... ⏎ Live Select start and end dates — the range highlights inline. Open full demo →"
+  },
+  {
+    "t": "Common props",
+    "u": "/documentation.html#common-props",
+    "p": "Documentation",
+    "c": "Common props These props are shared by both NepaliDatePicker and NepaliDateRangePicker ."
+  },
+  {
+    "t": "Basic",
+    "u": "/documentation.html#basic",
+    "p": "Documentation",
+    "c": "Basic Prop Type Default Description value BsDate | null / [BsDate|null, BsDate|null] — Controlled value. Single picker: BsDate | null . Range picker: tuple [start, end] . Use undefined (omit) for uncontrolled mode. defaultValue BsDate | null / [BsDate|null, BsDate|null] null Default value for uncontrolled mode. Only used when value is not provided. Single: BsDate | null . Range: tuple [start, end] . onChange (date: BsDate|null) => void / ([BsDate|null, BsDate|null]) => void — Callback when selection changes. Single: receives date or null. Range: receives [start, end] tuple. adapter BsAdapter defaultAdapter Conversion engine for BS↔AD arithmetic. Ships with defaultAdapter (2080–2081 demo) and MemoryBsAdapter (custom year tables). placeholder string \"YYYY-MM-DD (BS)\" Placeholder text for the input field(s). disabled boolean false Disable the entire picker. No interaction, input is grayed out."
+  },
+  {
+    "t": "Date control",
+    "u": "/documentation.html#date-control",
+    "p": "Documentation",
+    "c": "Date control Prop Type Default Description minDate BsDate — Earliest selectable date. Dates before this are disabled. Combines with other disable rules. maxDate BsDate — Latest selectable date. Dates after this are disabled. Combines with other disable rules. disabledDate (date: BsDate) => boolean — Callback to dynamically disable individual dates. Called per calendar cell. Return true to prevent selection."
+  },
+  {
+    "t": "Display",
+    "u": "/documentation.html#display",
+    "p": "Documentation",
+    "c": "Display Prop Type Default Description variant 'outlined' | 'filled' | 'borderless' | 'underlined' 'outlined' Visual style of the picker input. outlined has border, filled has background fill, borderless has no border, underlined shows only a bottom border. size 'small' | 'middle' | 'large' 'middle' Adjusts input height, font size, and popover sizing. status 'error' | 'warning' — Applies validation state colors to the input border and background. placement 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight' 'bottomLeft' Popover placement relative to the trigger input. Automatically flips to opposite side when insufficient space. allowClear boolean false Show a × clear button inside the input when a value is selected. inputReadOnly boolean false Set the input to read-only. Calendar selection via popover still works. autoFocus boolean false Auto-focus the trigger input on mount."
+  },
+  {
+    "t": "Localization",
+    "u": "/documentation.html#localization",
+    "p": "Documentation",
+    "c": "Localization Prop Type Default Description menu MenuOptions {} Localization and display options. See Menu options for details."
+  },
+  {
+    "t": "Customization",
+    "u": "/documentation.html#customization",
+    "p": "Documentation",
+    "c": "Customization Prop Type Default Description className string — Extra CSS class for the root wrapper element. classNames PickerClassNames {} Semantic class names for sub-elements. See classNames & styles . styles PickerStyles {} Semantic inline styles for sub-elements. See classNames & styles . cellRender (date: BsDate, info: CellRenderInfo) => React.ReactNode — Custom render function for date cells. Receives the date and a CellRenderInfo object with status flags. renderExtraFooter () => React.ReactNode — Custom React node rendered at the bottom of the popover, above the Clear/Today footer buttons. inputPattern string | false \\d{4}-\\d{2}-\\d{2} Native HTML pattern attribute on the input. Set false to remove. Loading live example... ⏎ Live Small Middle Large status=\"error\" status=\"warning\" Open full demo →"
+  },
+  {
+    "t": "Popover control",
+    "u": "/documentation.html#popover-control",
+    "p": "Documentation",
+    "c": "Popover control Prop Type Default Description open boolean — Controlled popover visibility. When provided, the parent controls open/close state. onOpenChange (open: boolean) => void — Callback when popover opens or closes. Required with open for controlled mode. getPopupContainer (trigger: HTMLElement) => HTMLElement document.body Custom DOM container for the popover portal. Useful for containing within a scrollable parent."
+  },
+  {
+    "t": "Events",
+    "u": "/documentation.html#events",
+    "p": "Documentation",
+    "c": "Events Prop Type Default Description onFocus () => void — Called when the trigger input gains focus. onBlur () => void — Called when the trigger input loses focus. onKeyDown (e: React.KeyboardEvent<HTMLInputElement>) => void — Called on keydown on the trigger input."
+  },
+  {
+    "t": "NepaliDatePicker",
+    "u": "/documentation.html#nepali-date-picker",
+    "p": "Documentation",
+    "c": "NepaliDatePicker The single date picker component. Accepts all common props plus the following: Prop Type Default Description label string \"Select date\" Visible label text when showLabel is enabled. Also used as aria-label on the input. showLabel boolean false Render a visible label above the input. The label uses htmlFor / id association with the input. disable DisableOptions {} Static disable rules. See Disable options . inputClassName string — Extra CSS class for the <input> element. Alternative to classNames.input . // Full featured single picker <NepaliDatePicker value={value} onChange={setValue} adapter={adapter} variant= \"outlined\" size= \"middle\" status= \"error\" placement= \"bottomLeft\" allowClear inputReadOnly disabledDate={(d) => d.day === 5 } menu={{ lang: \"en\" }} classNames={{ popup: \"my-popup\" }} renderExtraFooter={() => <span> Custom footer </span> } /> Copy Loading live example... ⏎ Live Small Middle Large Outlined Filled Borderless Underlined status=\"error\" allowClear inputReadOnly disable 5th Open full demo →"
+  },
+  {
+    "t": "NepaliDateRangePicker",
+    "u": "/documentation.html#range-picker",
+    "p": "Documentation",
+    "c": "NepaliDateRangePicker The range date picker component for selecting start and end dates. Accepts all common props plus the following: Prop Type Default Description value [BsDate | null, BsDate | null] — Controlled range value as [start, end] . Both can be null . onChange (dates: [BsDate | null, BsDate | null]) => void — Fired when the range changes via selection, input typing, or clear. label string \"Select date range\" Visible label text when showLabel is enabled. showLabel boolean false Render a visible label above the range inputs. separator string \"→\" Separator displayed between the start and end inputs. endPlaceholder string — Placeholder for the end input. Falls back to placeholder . disable DisableOptions {} Static disable rules applied to both dates. See Disable options . // Range picker with all options <NepaliDateRangePicker value={[start, end]} onChange={setRange} adapter={fullAdapter} minDate={{ year: 2080 , month: 1 , day: 1 }} maxDate={{ year: 2085 , month: 12 , day: 30 }} separator= \"to\" size= \"small\" variant= \"filled\" allowClear menu={{ lang: \"ne\" }} />"
+  },
+  {
+    "t": "Range selection behavior",
+    "u": "/documentation.html#range-behavior",
+    "p": "Documentation",
+    "c": "Range selection behavior First click: selects the start date — the popover stays open and highlights the start cell. Second click: selects the end date — the popover closes and onChange fires with the full range. Dates between start and end are highlighted. Auto-swap: If the second click lands before the start date, the range is automatically reversed so start ≤ end . Hover preview: While selecting the end date, hovering over dates shows a visual preview of the in-progress range. Third click: Clicking when both dates are already set restarts the selection with the clicked date as the new start. Input typing: Both input fields accept typed BS dates in YYYY-MM-DD format (supports Nepali digits). Clear button: Clears both start and end values (when allowClear is enabled)."
+  },
+  {
+    "t": "Disable options",
+    "u": "/documentation.html#disable-options",
+    "p": "Documentation",
+    "c": "Disable options Pass a disable object to control which dates cannot be selected. These static rules combine with the disabledDate callback — if any rule marks a date as disabled, it will be unselectable. Property Type Default Description disable.today boolean false Prevent selecting today's date. disable.date BsDate — Disable a single specific date. disable.dates BsDate[] [] Disable a list of specific dates. disable.before BsDate — Disable all dates before this date (exclusive). disable.after BsDate — Disable all dates after this date (exclusive). // Disable today + block specific dates + block past dates <NepaliDatePicker disable={{ today: true , dates: [ { year: 2081 , month: 1 , day: 1 }, { year: 2081 , month: 1 , day: 15 }, ], before: { year: 2081 , month: 1 , day: 10 }, }} disabledDate={(d) => d.day === 5 } // also disable every 5th /> Copy Combines with disabledDate : Both the static disable object and the disabledDate callback are evaluated independently. A date is disabled if any rule applies. Use minDate / maxDate for simple ranged clamping instead of disable.before / disable.after ."
+  },
+  {
+    "t": "Menu options",
+    "u": "/documentation.html#menu-options",
+    "p": "Documentation",
+    "c": "Menu options The menu prop controls localization, calendar layout, and visibility of navigation controls. Property Type Default Description menu.lang 'en' | 'ne' 'en' Localize month/day labels and digits to English or Nepali (नेपाली). menu.showMonth boolean true Show/hide the month selector dropdown in the popover header. menu.showYear boolean true Show/hide the year selector dropdown in the popover header. menu.firstDayOfWeek 0 | 1 0 Start the week on Sunday ( 0 ) or Monday ( 1 ). // Nepali locale with Monday start, hide year selector <NepaliDatePicker menu={{ lang: \"ne\" , firstDayOfWeek: 1 , showMonth: true , showYear: false , }} /> Copy Localization behavior Option Labels Digits Value format menu.lang=\"en\" (default) English month/day names 0–9 2081-01-15 menu.lang=\"ne\" नेपाली month/day names ०-९ २०८१-०१-१५ (display) / 2081-01-15 (value) The input accepts Nepali digits (०-९) and normalizes them to ASCII automatically. The onChange value always returns ASCII BS dates."
+  },
+  {
+    "t": "classNames & styles",
+    "u": "/documentation.html#classnames-and-styles",
+    "p": "Documentation",
+    "c": "classNames & styles Both pickers accept classNames and styles props for granular styling of sub-elements. These follow the same pattern as Ant Design's classNames / styles API."
+  },
+  {
+    "t": "PickerClassNames",
+    "u": "/documentation.html#pickerclassnames",
+    "p": "Documentation",
+    "c": "PickerClassNames Key Target element Description input <input> element Additional class for the text input. popup .np-popover dialog Additional class for the popover wrapper. header .np-popover__header Additional class for the month/year header. grid .np-cal-grid Additional class for the calendar grid. cell .np-cal-cell buttons Additional class for each day cell button. footer .np-footer Additional class for the footer (Clear/Today)."
+  },
+  {
+    "t": "PickerStyles",
+    "u": "/documentation.html#pickerstyles",
+    "p": "Documentation",
+    "c": "PickerStyles Key Target element Description input <input> element Inline styles for the text input. popup .np-popover dialog Inline styles for the popover wrapper. header .np-popover__header Inline styles for the month/year header. grid .np-cal-grid Inline styles for the calendar grid. footer .np-footer Inline styles for the footer (Clear/Today). <NepaliDatePicker classNames={{ popup: \"my-custom-popup\" , cell: \"my-custom-cell\" , footer: \"dark-mode-footer\" , }} styles={{ popup: { borderRadius: \"16px\" }, header: { background: \"#fef3c7\" }, }} />"
+  },
+  {
+    "t": "Styling",
+    "u": "/documentation.html#styling",
+    "p": "Documentation",
+    "c": "Styling The picker's base styles are auto-imported from the CSS bundle. Override these CSS variables to theme the component."
+  },
+  {
+    "t": "CSS Variables",
+    "u": "/documentation.html#css-variables",
+    "p": "Documentation",
+    "c": "CSS Variables Variable Default Description --np-font inherits host Font family for all picker controls. --np-popover-min-width 280px Minimum calendar popover width. --np-popover-max-width 320px Maximum calendar popover width. --np-color-error #ef4444 Border/bg color for status=\"error\" . --np-color-warning #f59e0b Border/bg color for status=\"warning\" . --np-underline-color --np-primary Underline border/shadow color for variant=\"underlined\" on focus. --np-underline-border --np-border Bottom border color for variant=\"underlined\" when idle. --np-filled-bg #f8f9fa Background color for variant=\"filled\" . --np-sm-height 24px Input height for size=\"small\" . --np-md-height 32px Input height for size=\"middle\" (default). --np-lg-height 40px Input height for size=\"large\" . /* Custom theme override */ .np-picker { --np-font: \"Noto Sans Devanagari\", sans-serif ; --np-popover-min-width: 300px ; --np-color-error: #dc2626 ; --np-color-warning: #d97706 ; }"
+  },
+  {
+    "t": "Adapter",
+    "u": "/documentation.html#adapter",
+    "p": "Documentation",
+    "c": "Adapter The adapter is the conversion engine that translates between Bikram Sambat (BS) and Gregorian (AD) dates. The library ships with two built-in adapters."
+  },
+  {
+    "t": "defaultAdapter",
+    "u": "/documentation.html#defaultadapter",
+    "p": "Documentation",
+    "c": "defaultAdapter Pre-configured with demo data for BS years 2080–2081. Suitable for evaluation and development. Not recommended for production — toAD() and toBS() throw for dates outside this range."
+  },
+  {
+    "t": "MemoryBsAdapter",
+    "u": "/documentation.html#memorybsadapter",
+    "p": "Documentation",
+    "c": "MemoryBsAdapter Create a custom adapter with your own complete year table for production use. import { MemoryBsAdapter } from \"bos-nepali-date\" const adapter = new MemoryBsAdapter ({ anchorBs: { year: 2000 , month: 1 , day: 1 }, anchorAdIso: \"1943-04-14\" , yearTable: { 2080 : [ 31 , 32 , 31 , 32 , 31 , 30 , 30 , 30 , 29 , 30 , 29 , 31 ], 2081 : [ 31 , 31 , 31 , 32 , 31 , 31 , 30 , 29 , 30 , 29 , 30 , 30 ], }, }) Production use: The published NPM package only includes demo data for 2080–2081. Provide a complete BS year table (2000–2100 recommended) via MemoryBsAdapter or implement the BsAdapter interface for production."
+  },
+  {
+    "t": "BsAdapter interface",
+    "u": "/documentation.html#bsadapter-interface",
+    "p": "Documentation",
+    "c": "BsAdapter interface Implement this interface to provide your own conversion logic, e.g., from an API or database. // BsAdapter interface { toAD: (date: BsDate) => AdDateIso toBS: (date: AdDateIso) => BsDate addDays: (date: BsDate, days: number ) => BsDate diffDays: (date1: BsDate, date2: BsDate) => number today: () => BsDate range?: { min?: BsDate; max?: BsDate } } // Custom adapter example (e.g., API-backed) const apiAdapter: BsAdapter = { toAD: (date) => { /* POST /convert-to-ad */ }, toBS: (iso) => { /* POST /convert-to-bs */ }, addDays: (date, days) => { /* POST /add-days */ }, diffDays: (a, b) => { /* POST /diff */ }, today: () => { /* GET /today-bs */ }, range: { min: { year: 2000, month: 1, day: 1 }, max: { year: 2090, month: 12, day: 30 } }, }"
+  },
+  {
+    "t": "TypeScript",
+    "u": "/documentation.html#typescript",
+    "p": "Documentation",
+    "c": "TypeScript All components and types are fully typed. Key exports: // Core types type BsDate = { year: number ; month: number ; day: number } type AdDateIso = string // \"YYYY-MM-DD\" interface BsAdapter { toAD; toBS; addDays; diffDays; today; range? } // Picker prop types type PickerSize = 'small' | 'middle' | 'large' type PickerStatus = 'error' | 'warning' type PickerVariant = 'outlined' | 'filled' | 'borderless' | 'underlined' type PickerPlacement = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight' // Options types DisableOptions MenuOptions CellRenderInfo NepaliDateRangePickerProps // Import types: import { type BsDate, type BsAdapter, type AdDateIso, type DisableOptions, type MenuOptions, type PickerSize, type PickerStatus, type PickerVariant, type PickerPlacement, type CellRenderInfo, type NepaliDateRangePickerProps, } from \"bos-nepali-date\""
+  },
+  {
+    "t": "Accessibility",
+    "u": "/documentation.html#accessibility",
+    "p": "Documentation",
+    "c": "Accessibility The picker components follow WAI-ARIA design patterns for accessible date picker widgets. Feature Implementation Calendar semantics role=\"grid\" , role=\"gridcell\" with aria-colindex , role=\"columnheader\" , role=\"row\" wrappers. Each cell has aria-label with full date context (e.g., \"15 Baishak, 2081 BS\"). Selected state aria-selected on selected cells. Range picker highlights both start and end. Disabled state Disabled cells have disabled attribute and are not focusable. Modal dialog Popover uses role=\"dialog\" with aria-modal=\"true\" and aria-label . Live region aria-live=\"polite\" region announces month/year changes to screen readers. Focus management Popover auto-focuses first focusable element on open. Focus returns to trigger input on close. Tab trapping within open popover. Keyboard Escape closes the popover. Tab navigates between controls within the popover. Click-outside closes automatically. Label association Visible labels use htmlFor / id association. Inputs have aria-label when no visible label. Footer buttons Clear and Today buttons have aria-label in both English and Nepali. Header controls Month/year toggles expose aria-haspopup=\"listbox\" and aria-expanded . Previous/next buttons have aria-label . Input Numeric mask enforces YYYY-MM-DD format. Accepts and normalizes Nepali digits (०-९) automatically. bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; GitHub &bull; npm"
+  },
+  {
+    "t": "🔄 In progress",
+    "u": "/roadmap.html#in-progress",
+    "p": "Roadmap",
+    "c": "🔄 In progress 📦 Authoritative BS tables In progress Ship a complete, authoritative Bikram Sambat year table (2000–2100 BS) as a separate data package so users don't need to source their own conversion data. • Compile and verify BS↔AD mappings from official Nepali calendar sources. • Publish as a companion npm package with versioned releases. • Include a pre-built adapter factory that consumes the data package. • Add CI verification to catch date mismatch regressions."
+  },
+  {
+    "t": "⏳ Planned",
+    "u": "/roadmap.html#planned",
+    "p": "Roadmap",
+    "c": "⏳ Planned 📅 Range picker + dual calendar view Planned A new NepaliDateRangePicker component for selecting a start and end date, with a side-by-side dual-month view. • Select start and end dates with visual range highlighting. • Dual-month layout showing two consecutive BS months side by side. • Reuse disable rules, localization, and styling from the single picker. • Controlled and uncontrolled modes with range value. 📖 Storybook stories & visual regression Planned Build a comprehensive Storybook catalog for visual testing, documentation, and easier contributor onboarding. • Stories for every prop combination, locale, and disable rule. • Visual regression testing with Chromatic to catch unintended style changes. • Interactive playground stories for live prop exploration."
+  },
+  {
+    "t": "🔭 Under research",
+    "u": "/roadmap.html#under-research",
+    "p": "Roadmap",
+    "c": "🔭 Under research ⌨️ Input masking & ARIA refinements Research Polish the input experience with smarter masking, better keyboard navigation, and full WCAG compliance. • Auto-format the input as the user types. • Full WCAG 2.1 AA compliance audit and remediation. • Screen reader announcements for date selection. • Focus trap management inside the popover. ⚡ React 19 & SSR improvements Research Ensure compatibility with React 19's concurrent features and improve server-side rendering support. • Test and certify compatibility with React 19. • Evaluate using React 19 APIs for form integration. • SSR-safe portal rendering without hydration mismatches. 🧪 Expanded test coverage Research Broaden the test suite to cover edge cases, browser interactions, and visual regressions. • Browser-level tests with Playwright for click-outside, keyboard, and popover positioning. • Property-based testing for date conversion edge cases. • Accessibility testing with axe-core integration."
+  },
+  {
+    "t": "✅ Shipped",
+    "u": "/roadmap.html#shipped",
+    "p": "Roadmap",
+    "c": "✅ Shipped 🌐 Localization & disable rules Shipped Nepali (नेपाली) locale support and comprehensive date disable options — single dates, ranges, today, before/after. 🎨 Theming & CSS variables Shipped Customizable styling through CSS variables for font, popover sizing, and colors. 🔄 Overflow-safe popover Shipped Portal-based popover with viewport-aware positioning that works inside dialogs, drawers, and scroll containers. Have an idea for the roadmap? Found a bug? Contributions are welcome! 🐛 Open an issue ⭐ Star on GitHub bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; GitHub &bull; npm"
+  },
+  {
+    "t": "Changelogs",
+    "u": "/changelogs.html",
+    "p": "Changelogs",
+    "c": "Changelogs All releases, improvements, and fixes for bos-nepali-date. v0.1.17 Latest Live demo & docs redesign 🎨 Redesigned docs site with DM Sans font, amber accent palette, and cleaner layout. 🖥️ Added live interactive demo on the homepage with language toggle and disable rules. 📦 Added UMD bundle for browser usage and live demos. 🌙 Dark mode toggle across all docs pages with system preference detection. v0.1.13 — Overflow-safe popover ✨ Fix calendar popover clipping inside dialogs, drawers, cards, and other overflow -constrained containers. 🔧 Render the picker overlay through a portal and anchor it with viewport-aware fixed positioning. 🔄 Reposition the overlay on scroll and resize while keeping outside-click and keyboard dismissal behavior. ✅ Added regression coverage for portaled popover rendering and outside-click handling. v0.1.11 Fix Font & popover sizing 🔤 Stop forcing Inter/system-ui as the default picker font — controls now inherit the host app font. ✅ Fix incorrect Nepali glyph rendering on systems with problematic fallback fonts. 📐 Use a standard calendar popover width instead of stretching to the input width (adds --np-popover-min-width / --np-popover-max-width CSS variables). v0.1.9 Optional input validation ⚙️ Make input pattern optional ( inputPattern prop) — allows disabling native validation. v0.1.8 Input pattern prop ➕ Added inputPattern prop; set to false to remove native input pattern validation. v0.1.7 Input styling & icon refresh ➕ Added inputClassName for custom input styling. 🔄 Swapped caret for a calendar icon on the trigger button. 📦 Version bump for npm publish. v0.1.6 Feature Auto-injected CSS 🎨 Bundles now auto-inject CSS (no manual import needed). 🔧 Added tsup config to ensure styles are emitted as side effects. v0.1.1 Feature Localization & disable rules 🌐 Added localization ( lang: 'en' | 'ne' ) with Nepali digits and labels. ⛔ Added disable rules — single date, date list, today, before/after. ⌨️ Input mask now normalizes Nepali digits and blocks non-numeric input. 👁️ Month/year selectors can be hidden while static labels still render. ✅ Added Vitest + jsdom test suite with edge-case coverage."
+  }
+]
