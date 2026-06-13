@@ -70,6 +70,13 @@ const adapter = new MemoryBsAdapter({
 | `inputPattern` | `string \| false` | `\d{4}-\d{2}-\d{2}` | Native pattern attribute. Set `false` to remove browser validation. |
 | `showLabel` | `boolean` | `false` | Whether to render the built-in label text. |
 | `className` | `string` | — | Extra class for the root wrapper. |
+| `disabledDate` | `(date: BsDate) => boolean` | — | Callback to dynamically disable individual dates. |
+| `open` | `boolean` | — | Controlled popover visibility. Use with `onOpenChange`. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the popover opens or closes. |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Picker size variant. |
+| `status` | `'error' \| 'warning'` | — | Validation state styling for the input. |
+| `allowClear` | `boolean` | `false` | Show a clear button on the input when a value is selected. |
+| `disabled` | `boolean` | `false` | Disable the entire picker (no interaction). |
 
 ### Locale behavior
 - `menu.lang="ne"` renders Nepali month names, weekday abbreviations, and Nepali digits in the grid/header. `onChange` still returns ASCII BS `YYYY-MM-DD`.
@@ -84,7 +91,7 @@ const adapter = new MemoryBsAdapter({
 | `disable.before` | `BsDate` | — | Disable all dates before this. |
 | `disable.after` | `BsDate` | — | Disable all dates after this. |
 
-Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date is not selectable.
+Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date is not selectable. The `disabledDate` callback is also evaluated alongside these rules.
 
 ### MenuOptions
 | Prop | Type | Default | Description |
@@ -94,10 +101,46 @@ Disable checks combine with `minDate` / `maxDate`; if any rule matches, the date
 | `menu.lang` | `'en' \| 'ne'` | `'en'` | Localize month/day labels and digits (emitted value stays ASCII `YYYY-MM-DD`). |
 | `menu.firstDayOfWeek` | `0 \| 1` | `0` | Sunday or Monday start. |
 
-### Accessibility
+## Range Picker (`NepaliDateRangePicker`)
+
+The `NepaliDateRangePicker` component provides date range selection with the same Bikram Sambat support. It shares most props with `NepaliDatePicker`.
+
+```tsx
+import { NepaliDateRangePicker, defaultAdapter } from 'bos-nepali-date';
+
+function RangeDemo() {
+  const [range, setRange] = useState([null, null]);
+  return (
+    <NepaliDateRangePicker
+      value={range}
+      onChange={setRange}
+      adapter={defaultAdapter}
+    />
+  );
+}
+```
+
+**Range picker props:**
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `[BsDate \| null, BsDate \| null]` | `[null, null]` | Controlled range: `[start, end]`. |
+| `onChange` | `(dates: [BsDate \| null, BsDate \| null]) => void` | — | Fired when the range changes. |
+| `separator` | `string` | `→` | Separator text between inputs. |
+| `endPlaceholder` | `string` | `placeholder` | Placeholder for the end input. |
+
+All other props (`adapter`, `minDate`, `maxDate`, `disable`, `disabledDate`, `size`, `status`, `allowClear`, `disabled`, `open`, `onOpenChange`, `menu`) work the same as the single picker.
+
+**Selection flow:**
+1. First click selects the start date — popover stays open.
+2. Second click selects the end date — popover closes, `onChange` fires.
+3. If second click is before the start, the range auto-swaps.
+4. Hover over dates to preview the in-progress range.
+
+## Accessibility
 - Escape closes the popover; click-outside also closes.
 - Month/year toggles are real buttons with `aria-haspopup`/`aria-expanded`.
 - Calendar days expose `disabled` state; input uses numeric mask (`YYYY-MM-DD`).
+- Range picker inputs have distinct `aria-label` values for start and end.
 
 ## What To Know
 
@@ -114,10 +157,40 @@ The picker inherits the host application's font by default. If you need to force
 
 The calendar popover uses a standard width by default: `280px` minimum and `320px` maximum. Override `--np-popover-min-width` and `--np-popover-max-width` if your layout needs a different size.
 
+The range picker popover uses a wider default of `320px` (standard) to `400px` (max) for a better dual-input experience.
+
 Styles are flagged as side effects so bundlers keep them; if your setup drops CSS, import explicitly:
 ```ts
 import 'bos-nepali-date/style';
 ```
+
+## Variants
+
+Four visual variants are available via the `variant` prop:
+
+| Variant | Description |
+| --- | --- |
+| `outlined` (default) | Full border around the input |
+| `filled` | Subtle background fill, no border |
+| `borderless` | No border or background |
+| `underlined` | Bottom-border only, minimal style |
+
+![Underlined variant](docs/images/underlined-variant.png)
+
+### CSS Variables
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--np-font` | inherits host | Font family for picker controls. |
+| `--np-popover-min-width` | `280px` | Minimum calendar popover width. |
+| `--np-popover-max-width` | `320px` | Maximum calendar popover width. |
+| `--np-color-error` | `#ef4444` | Border/bg color for `status="error"`. |
+| `--np-color-warning` | `#f59e0b` | Border/bg color for `status="warning"`. |
+| `--np-underline-color` | `--np-primary` | Underline border/shadow color for `variant="underlined"` on focus. |
+| `--np-underline-border` | `--np-border` | Bottom border color for `variant="underlined"` when idle. |
+| `--np-filled-bg` | `#f8f9fa` | Background color for `variant="filled"`. |
+| `--np-sm-height` | `24px` | Input height for `size="small"`. |
+| `--np-md-height` | `32px` | Input height for `size="middle"`. |
+| `--np-lg-height` | `40px` | Input height for `size="large"`. |
 
 ## Changelog
 
