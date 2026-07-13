@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { cn } from '../utils/classnames';
 import { BsAdapter, BsDate } from '../types';
 
@@ -87,6 +87,52 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const leadingEmpty = (weekday(firstOfMonth, adapter) - firstDayOfWeek + 7) % 7;
   const cells: Array<{ date?: BsDate; inCurrentMonth: boolean; outOfRange?: boolean }> = [];
 
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+
+  const findFocusable = useCallback((startIdx: number, direction: number): number => {
+    let idx = startIdx;
+    for (let attempt = 0; attempt < cells.length; attempt++) {
+      idx = (idx + direction + cells.length) % cells.length;
+      const c = cells[idx];
+      if (c.date && !c.outOfRange && !disabled?.(c.date)) return idx;
+    }
+    return -1;
+  }, [cells, disabled]);
+
+  function handleGridKeyDown(e: React.KeyboardEvent) {
+    let newIndex = focusedIndex;
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault();
+        newIndex = findFocusable(focusedIndex >= 0 ? focusedIndex : 0, -1);
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        newIndex = findFocusable(focusedIndex >= 0 ? focusedIndex : -1, 1);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        newIndex = findFocusable(focusedIndex >= 0 ? focusedIndex : 0, -7);
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        newIndex = findFocusable(focusedIndex >= 0 ? focusedIndex : -1, 7);
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (focusedIndex >= 0 && cells[focusedIndex]?.date && !isCellDisabled(cells[focusedIndex])) {
+          onSelect?.(cells[focusedIndex].date!);
+        }
+        return;
+      default:
+        return;
+    }
+    if (newIndex >= 0 && newIndex !== focusedIndex) {
+      setFocusedIndex(newIndex);
+    }
+  }
+
   // previous month spill
   let prev: BsDate | undefined;
   try {
@@ -125,10 +171,16 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     }
   }
 
+  function isCellDisabled(c: { date?: BsDate; outOfRange?: boolean }): boolean {
+    return c.outOfRange || (c.date ? disabled?.(c.date) : true) || false;
+  }
+
   return (
     <div
       className={cn('np-cal-grid', className)}
       role="grid"
+      tabIndex={0}
+      onKeyDown={handleGridKeyDown}
       aria-label={isNepali ? `${monthNames?.[month.month] ?? ''} ${month.year}` : `${monthNames?.[month.month] ?? ''} ${month.year}`}
     >
       <div role="row" className="np-cal-grid__row">
@@ -159,6 +211,9 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
               inRange: isInRange,
             }) : undefined;
 
+            const cellIdx = rowIdx * 7 + colIdx;
+            const isFocused = cellIdx === focusedIndex;
+
             return (
               <button
                 key={date ? `${date.year}-${date.month}-${date.day}` : `empty-${rowIdx}-${colIdx}`}
@@ -167,6 +222,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 aria-colindex={colIdx + 1}
                 aria-label={date ? cellAriaLabel(date, isNepali) : undefined}
                 aria-selected={isSelected || undefined}
+                tabIndex={isFocused ? 0 : -1}
                 className={cn(
                   'np-cal-cell',
                   cellClassName,
@@ -174,11 +230,13 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                   isSelected && 'np-cal-cell--selected',
                   isRangeEnd && !isSelected && 'np-cal-cell--selected',
                   isInRange && !isSelected && !isRangeEnd && 'np-cal-cell--range',
-                  isToday && !isSelected && !isRangeEnd && 'np-cal-cell--today'
+                  isToday && !isSelected && !isRangeEnd && 'np-cal-cell--today',
+                  isFocused && !isSelected && !isRangeEnd && 'np-cal-cell--focused'
                 )}
                 onClick={() => !isDisabled && date && onSelect?.(date)}
                 onMouseEnter={() => !isDisabled && date && onHover?.(date)}
                 onMouseLeave={() => onHover?.(null)}
+                onFocus={() => { if (cellIdx !== focusedIndex && date && !isDisabled) setFocusedIndex(cellIdx); }}
                 disabled={isDisabled}
               >
                 {cellContent ?? <span className="np-cal-day">{date ? formatDay(date.day) : ''}</span>}

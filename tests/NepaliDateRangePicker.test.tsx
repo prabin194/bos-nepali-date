@@ -1011,3 +1011,185 @@ describe('disabledDate combined with static rules on range picker', () => {
     expect(getDayButton(15)).not.toBeDisabled();
   });
 });
+
+describe('useEffect behavior', () => {
+  it('syncs viewMonth to rangeStart month on open', () => {
+    render(
+      <NepaliDateRangePicker
+        value={[{ year: 2000, month: 3, day: 1 }, null]}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+    openPicker();
+    // Left calendar should show Ashar (month 3), right shows Shrawan (month 4)
+    expect(screen.getByText('Ashar')).toBeInTheDocument();
+    expect(screen.getByText('Shrawan')).toBeInTheDocument();
+  });
+
+  it('syncs viewMonth when controlled rangeStart changes to a different month', async () => {
+    const { rerender } = render(
+      <NepaliDateRangePicker
+        value={[{ year: 2000, month: 1, day: 1 }, null]}
+        onChange={() => {}}
+        adapter={adapter}
+        open={true}
+        onOpenChange={() => {}}
+      />
+    );
+    // Initially Baishak (month 1)
+    expect(screen.getByText('Baishak')).toBeInTheDocument();
+
+    rerender(
+      <NepaliDateRangePicker
+        value={[{ year: 2000, month: 5, day: 15 }, null]}
+        onChange={() => {}}
+        adapter={adapter}
+        open={true}
+        onOpenChange={() => {}}
+      />
+    );
+    // Should now show Bhadra (month 5)
+    expect(await screen.findByText('Bhadra')).toBeInTheDocument();
+  });
+
+  it('syncs viewMonth to end date month when end input is typed without a start', async () => {
+    render(
+      <NepaliDateRangePicker
+        value={[null, null]}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+    openPicker();
+
+    // Type a complete end date (month 10 = Magh)
+    const endInput = screen.getByLabelText('End date');
+    fireEvent.change(endInput, { target: { value: '2000-10-15' } });
+
+    // handleEndInputChange dispatches SET_VIEW_MONTH with month 10 (Magh)
+    await waitFor(() => {
+      expect(screen.getByText('Magh')).toBeInTheDocument();
+    });
+  });
+
+  it('syncs viewMonth to start date month when start input is typed without end', async () => {
+    render(
+      <NepaliDateRangePicker
+        value={[null, null]}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+    openPicker();
+
+    // Type a complete start date (month 7 = Kartik)
+    const startInput = screen.getByLabelText('Start date');
+    fireEvent.change(startInput, { target: { value: '2000-07-15' } });
+
+    // handleStartInputChange dispatches SET_VIEW_MONTH with month 7 (Kartik)
+    await waitFor(() => {
+      expect(screen.getByText('Kartik')).toBeInTheDocument();
+    });
+  });
+
+  it('prioritizes rangeStart over rangeEnd for viewMonth when both are set', () => {
+    render(
+      <NepaliDateRangePicker
+        value={[
+          { year: 2000, month: 2, day: 1 },  // Jestha
+          { year: 2000, month: 11, day: 5 },  // Magh
+        ]}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+    openPicker();
+    // Should show Jestha (rangeStart month), not Magh (rangeEnd month)
+    expect(screen.getByText('Jestha')).toBeInTheDocument();
+    expect(screen.queryByText('Magh')).not.toBeInTheDocument();
+  });
+
+  it('updates end input display when controlled end value changes', () => {
+    const { rerender } = render(
+      <NepaliDateRangePicker
+        value={[{ year: 2000, month: 1, day: 1 }, null]}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+    expect((screen.getByLabelText('End date') as HTMLInputElement).value).toBe('');
+
+    rerender(
+      <NepaliDateRangePicker
+        value={[{ year: 2000, month: 1, day: 1 }, { year: 2000, month: 1, day: 15 }]}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+    expect((screen.getByLabelText('End date') as HTMLInputElement).value).toBe('2000-01-15');
+  });
+
+  it('updates start input display when controlled start value changes', () => {
+    const { rerender } = render(
+      <NepaliDateRangePicker
+        value={[null, { year: 2000, month: 1, day: 15 }]}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+    expect((screen.getByLabelText('Start date') as HTMLInputElement).value).toBe('');
+
+    rerender(
+      <NepaliDateRangePicker
+        value={[{ year: 2000, month: 1, day: 5 }, { year: 2000, month: 1, day: 15 }]}
+        onChange={() => {}}
+        adapter={adapter}
+      />
+    );
+    expect((screen.getByLabelText('Start date') as HTMLInputElement).value).toBe('2000-01-05');
+  });
+
+  it('does not fire onChange on partial start input', () => {
+    const spy = vi.fn();
+    render(
+      <NepaliDateRangePicker
+        value={[null, null]}
+        onChange={spy}
+        adapter={adapter}
+      />
+    );
+    const startInput = screen.getByLabelText('Start date');
+
+    // Type a partial date (missing one day digit)
+    fireEvent.change(startInput, { target: { value: '2000-01-0' } });
+    // Should NOT fire onChange since input length < 10
+    expect(spy).not.toHaveBeenCalled();
+    // But the input should display the typed chars
+    expect((startInput as HTMLInputElement).value).toBe('2000-01-0');
+  });
+
+  it('fires onChange only after complete 10-char end input', () => {
+    const spy = vi.fn();
+    render(
+      <NepaliDateRangePicker
+        value={[{ year: 2000, month: 1, day: 1 }, null]}
+        onChange={spy}
+        adapter={adapter}
+      />
+    );
+    const endInput = screen.getByLabelText('End date');
+
+    // Type end date partially
+    fireEvent.change(endInput, { target: { value: '2000-01-1' } });
+    expect(spy).not.toHaveBeenCalled();
+
+    // Complete the date with the second digit
+    fireEvent.change(endInput, { target: { value: '2000-01-15' } });
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith([
+      { year: 2000, month: 1, day: 1 },
+      { year: 2000, month: 1, day: 15 },
+    ]);
+  });
+});

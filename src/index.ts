@@ -1,4 +1,4 @@
-export type { BsDate, BsAdapter, AdDateIso } from './types';
+export type { BsDate, BsAdapter, AdDateIso, DateFormat } from './types';
 export { MemoryBsAdapter, defaultAdapter } from './adapter/memoryAdapter';
 export { NepaliDatePicker } from './components/NepaliDatePicker';
 export type { DisableOptions, MenuOptions, PickerSize, PickerStatus, PickerVariant, PickerPlacement } from './components/NepaliDatePicker';

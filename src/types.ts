@@ -4,6 +4,24 @@ export type BsDate = {
   day: number;   // 1-32 depending on month
 };
 
+/**
+ * Date display/input format string.
+ *
+ * Supports tokens:
+ * - `YYYY` — 4-digit year
+ * - `YY`   — 2-digit year (will be prefixed with current century)
+ * - `MM`   — 2-digit month (01-12)
+ * - `M`    — 1-2 digit month (1-12)
+ * - `DD`   — 2-digit day (01-31)
+ * - `D`    — 1-2 digit day (1-31)
+ *
+ * The first non-token character between date parts becomes the separator.
+ * Examples: `'YYYY-MM-DD'`, `'DD/MM/YYYY'`, `'M/D/YYYY'`, `'YYYY.MM.DD'`
+ *
+ * @default 'YYYY-MM-DD'
+ */
+export type DateFormat = string;
+
 export type AdDateIso = string; // YYYY-MM-DD
 
 export interface BsAdapter {

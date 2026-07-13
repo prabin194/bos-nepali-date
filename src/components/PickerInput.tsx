@@ -19,6 +19,7 @@ type PickerInputProps = {
   onBlur?: () => void;
   onToggle: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  maxLength?: number;
 };
 
 export const PickerInput: React.FC<PickerInputProps> = ({
@@ -39,6 +40,7 @@ export const PickerInput: React.FC<PickerInputProps> = ({
   onBlur,
   onToggle,
   onKeyDown,
+  maxLength = 10,
 }) => (
   <div className="np-input-wrapper" onClick={disabled ? undefined : onFocus}>
     <input
@@ -53,7 +55,7 @@ export const PickerInput: React.FC<PickerInputProps> = ({
       onKeyDown={onKeyDown}
       inputMode="numeric"
       pattern={inputPattern === false ? undefined : inputPattern}
-      maxLength={10}
+      maxLength={maxLength}
       aria-label={label}
       disabled={disabled}
       readOnly={inputReadOnly}

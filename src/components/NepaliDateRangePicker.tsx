@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo, useState, useReducer, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { BsAdapter, BsDate } from '../types';
+import { BsAdapter, BsDate, DateFormat } from '../types';
 import { CalendarGrid } from './CalendarGrid';
 import { defaultAdapter } from '../adapter/memoryAdapter';
 import { bsMonthNames, bsMonthNamesNe } from '../adapter/bsTable';
 import { useEffect, useRef } from 'react';
 import { cn } from '../utils/classnames';
 import { PickerFooter } from './PickerFooter';
-import { formatBs, normalizeDigitsToAscii, parseBs, toNepaliDigits } from './pickerUtils';
+import { formatBs, normalizeDigitsToAscii, parseBs, toNepaliDigits, getFormatInfo, generateInputPattern } from './pickerUtils';
 import type { CellRenderInfo } from './CalendarGrid';
 import type { DisableOptions, MenuOptions, PickerSize, PickerStatus, PickerVariant, PickerPlacement } from './NepaliDatePicker';
 
@@ -40,8 +40,7 @@ type PickerUIAction =
   | { type: 'TOGGLE_YEAR' }
   | { type: 'SELECT_MONTH'; month: number }
   | { type: 'SELECT_YEAR'; year: number }
-  | { type: 'SET_VIEW_MONTH'; viewMonth: BsDate }
-  | { type: 'SET_MONTH_FROM_DATE'; date: BsDate };
+  | { type: 'SET_VIEW_MONTH'; viewMonth: BsDate };
 
 function pickerUIReducer(state: PickerUIState, action: PickerUIAction): PickerUIState {
   switch (action.type) {
@@ -61,8 +60,6 @@ function pickerUIReducer(state: PickerUIState, action: PickerUIAction): PickerUI
       return { ...state, viewMonth: { ...state.viewMonth, year: action.year, day: 1 }, yearOpen: false };
     case 'SET_VIEW_MONTH':
       return { ...state, viewMonth: action.viewMonth };
-    case 'SET_MONTH_FROM_DATE':
-      return { ...state, viewMonth: { ...action.date, day: 1 } };
     default:
       return state;
   }
@@ -131,6 +128,8 @@ export type NepaliDateRangePickerProps = {
   classNames?: { input?: string; popup?: string; header?: string; grid?: string; cell?: string; footer?: string };
   /** Semantic inline styles for sub-elements. */
   styles?: { input?: React.CSSProperties; popup?: React.CSSProperties; header?: React.CSSProperties; grid?: React.CSSProperties; footer?: React.CSSProperties };
+  /** Date display/input format. @default 'YYYY-MM-DD' */
+  dateFormat?: DateFormat;
 };
 
 export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
@@ -148,7 +147,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   separator = '→',
   className,
   menu = EMPTY_MENU,
-  inputPattern = '\\d{4}-\\d{2}-\\d{2}',
+  inputPattern,
   disabledDate,
   open: controlledOpen,
   onOpenChange,
@@ -172,6 +171,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   presets = EMPTY_PRESETS,
   classNames: semanticClassNames,
   styles: semanticStyles,
+  dateFormat = 'YYYY-MM-DD',
 }) => {
   const {
     today: disableToday = false,
@@ -193,13 +193,11 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   const controlledStart = isControlledValue ? (value?.[0] ?? null) : null;
   const controlledEnd = isControlledValue ? (value?.[1] ?? null) : null;
 
-  // ── Internal range state (for uncontrolled mode) ──
   const defaultValueStart = defaultValue?.[0] ?? null;
   const defaultValueEnd = defaultValue?.[1] ?? null;
   const [internalRangeStart, setInternalRangeStart] = useState<BsDate | null>(defaultValueStart);
   const [internalRangeEnd, setInternalRangeEnd] = useState<BsDate | null>(defaultValueEnd);
 
-  // ── UI state ──
   const initialRefDate = isControlledValue ? controlledStart : defaultValueStart;
   const [uiState, dispatch] = useReducer(pickerUIReducer, {
     open: false,
@@ -218,7 +216,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   const rangeStart = isControlledValue ? controlledStart : internalRangeStart;
   const rangeEnd = isControlledValue ? controlledEnd : internalRangeEnd;
 
-  // Stable refs for callbacks
   const onOpenChangeRef = useRef(onOpenChange);
   onOpenChangeRef.current = onOpenChange;
   const onPanelChangeRef = useRef(onPanelChange);
@@ -227,8 +224,11 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   isControlledRef.current = isControlled;
 
   const [hoverDate, setHoverDate] = useState<BsDate | null>(null);
-  const [startInput, setStartInput] = useState(() => formatBs(rangeStart));
-  const [endInput, setEndInput] = useState(() => formatBs(rangeEnd));
+  const formatInfo = useMemo(() => getFormatInfo(dateFormat), [dateFormat]);
+  const resolvedPattern: string | undefined = inputPattern === false ? undefined : (inputPattern ?? generateInputPattern(dateFormat));
+
+  const [startInput, setStartInput] = useState(() => formatBs(rangeStart, dateFormat));
+  const [endInput, setEndInput] = useState(() => formatBs(rangeEnd, dateFormat));
   const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
@@ -236,7 +236,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   const yearMenuRef = useRef<HTMLDivElement | null>(null);
   const announceRef = useRef<HTMLDivElement | null>(null);
 
-  // Move focus to popover when it opens
   useEffect(() => {
     if (isPickerOpen) {
       requestAnimationFrame(() => {
@@ -246,26 +245,26 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     }
   }, [isPickerOpen]);
 
-  // Sync inputs and viewMonth when controlled value changes
+  // Sync inputs when controlled value changes
   useEffect(() => {
-    setStartInput(formatBs(rangeStart));
-  }, [rangeStart]);
+    setStartInput(formatBs(rangeStart, dateFormat));
+  }, [rangeStart, dateFormat]);
 
   useEffect(() => {
-    setEndInput(formatBs(rangeEnd));
-  }, [rangeEnd]);
+    setEndInput(formatBs(rangeEnd, dateFormat));
+  }, [rangeEnd, dateFormat]);
 
   useEffect(() => {
     const refDate = rangeStart ?? rangeEnd ?? adapter.today();
-    dispatch({ type: 'SET_MONTH_FROM_DATE', date: refDate });
+    dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...refDate, day: 1 } });
   }, [rangeStart]);
 
   useEffect(() => {
     const refDate = rangeStart ?? rangeEnd ?? adapter.today();
     if (rangeEnd && !rangeStart) {
-      dispatch({ type: 'SET_MONTH_FROM_DATE', date: refDate });
+      dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...refDate, day: 1 } });
     }
-  }, [rangeEnd]);
+  }, [rangeEnd, rangeStart, adapter]);
 
   const safeDiffDays = useCallback((date1: BsDate, date2: BsDate): number | null => {
     try {
@@ -277,15 +276,9 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
 
   function shiftMonth(base: BsDate, direction: 1 | -1): BsDate | null {
     try {
-      let next = adapter.addDays(base, direction * 32);
-      next = { year: next.year, month: next.month, day: 1 };
-      const originalMonth = base.month;
-      const originalYear = base.year;
-
-      while (next.year === originalYear && next.month === originalMonth) {
-        next = adapter.addDays(next, direction);
-      }
-
+      // (33 - day) days forward or (day) days back always crosses exactly one month boundary
+      const jump = direction === 1 ? 33 - base.day : base.day;
+      const next = adapter.addDays(base, direction * jump);
       return { year: next.year, month: next.month, day: 1 };
     } catch {
       return null;
@@ -312,8 +305,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     };
   }, [adapter, safeDiffDays, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter, disabledDate]);
 
-  // ── Controlled open helpers ──
-
   function openPicker() {
     const cb = onOpenChangeRef.current;
     if (cb) cb(true);
@@ -339,15 +330,13 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     if (!isControlledRef.current) dispatch({ type: 'TOGGLE_OPEN' });
   }
 
-  // ── Range selection logic ──
-
   function emitRange(start: BsDate | null, end: BsDate | null) {
     if (!isControlledValue) {
       setInternalRangeStart(start);
       setInternalRangeEnd(end);
     }
-    setStartInput(formatBs(start));
-    setEndInput(formatBs(end));
+    setStartInput(formatBs(start, dateFormat));
+    setEndInput(formatBs(end, dateFormat));
     onChange?.([start, end]);
   }
 
@@ -355,23 +344,19 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     if (isDateDisabled(date)) return;
 
     if (!rangeStart) {
-      // First date: set as start, stay open
       emitRange(date, null);
-      dispatch({ type: 'SET_MONTH_FROM_DATE', date });
+      dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...date, day: 1 } });
     } else if (!rangeEnd) {
-      // Second date: complete the range
       const diff = safeDiffDays(rangeStart, date);
       if (diff !== null && diff < 0) {
-        // Clicked before start — swap: clicked becomes start, old start becomes end
         emitRange(date, rangeStart);
       } else {
         emitRange(rangeStart, date);
       }
       closePickerAndReturnFocus();
     } else {
-      // Both already set — restart selection with this date as new start
       emitRange(date, null);
-      dispatch({ type: 'SET_MONTH_FROM_DATE', date });
+      dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...date, day: 1 } });
     }
   }
 
@@ -384,26 +369,29 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     const t = adapter.today();
     if (!rangeStart) {
       emitRange(t, null);
-      dispatch({ type: 'SET_MONTH_FROM_DATE', date: t });
+      dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...t, day: 1 } });
     } else if (!rangeEnd) {
       handleSelect(t);
     } else {
       emitRange(t, null);
-      dispatch({ type: 'SET_MONTH_FROM_DATE', date: t });
+      dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...t, day: 1 } });
     }
   }
 
   function handleStartInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const normalized = normalizeDigitsToAscii(e.target.value);
-    const digits = normalized.replace(/[^0-9]/g, '').slice(0, 8);
-    const next =
-      digits.length <= 4
-        ? digits
-        : digits.length <= 6
-        ? `${digits.slice(0, 4)}-${digits.slice(4)}`
-        : `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+    const maxDigits = formatInfo.tokens.reduce((s, t) => s + (t === 'M' || t === 'D' ? 2 : t === 'YY' ? 2 : 4), 0);
+    const digits = normalized.replace(/[^0-9]/g, '').slice(0, maxDigits);
+    let next = digits;
+    for (let i = formatInfo.insertPositions.length - 1; i >= 0; i--) {
+      const pos = formatInfo.insertPositions[i];
+      if (next.length > pos) {
+        next = next.slice(0, pos) + formatInfo.separator + next.slice(pos);
+      }
+    }
     setStartInput(next);
-    const parsed = parseBs(next);
+    if (next.length < formatInfo.minFullLength) return;
+    const parsed = parseBs(next, dateFormat);
     if (!parsed) return;
     try {
       const iso = adapter.toAD(parsed);
@@ -415,7 +403,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
         } else {
           onChange?.([parsed, null]);
         }
-        dispatch({ type: 'SET_MONTH_FROM_DATE', date: parsed });
+        dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...parsed, day: 1 } });
       }
     } catch {
       // ignore
@@ -424,15 +412,18 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
 
   function handleEndInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const normalized = normalizeDigitsToAscii(e.target.value);
-    const digits = normalized.replace(/[^0-9]/g, '').slice(0, 8);
-    const next =
-      digits.length <= 4
-        ? digits
-        : digits.length <= 6
-        ? `${digits.slice(0, 4)}-${digits.slice(4)}`
-        : `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+    const maxDigits = formatInfo.tokens.reduce((s, t) => s + (t === 'M' || t === 'D' ? 2 : t === 'YY' ? 2 : 4), 0);
+    const digits = normalized.replace(/[^0-9]/g, '').slice(0, maxDigits);
+    let next = digits;
+    for (let i = formatInfo.insertPositions.length - 1; i >= 0; i--) {
+      const pos = formatInfo.insertPositions[i];
+      if (next.length > pos) {
+        next = next.slice(0, pos) + formatInfo.separator + next.slice(pos);
+      }
+    }
     setEndInput(next);
-    const parsed = parseBs(next);
+    if (next.length < formatInfo.minFullLength) return;
+    const parsed = parseBs(next, dateFormat);
     if (!parsed) return;
     try {
       const iso = adapter.toAD(parsed);
@@ -445,15 +436,13 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
           onChange?.([null, parsed]);
         }
         if (!rangeStart) {
-          dispatch({ type: 'SET_MONTH_FROM_DATE', date: parsed });
+          dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...parsed, day: 1 } });
         }
       }
     } catch {
       // ignore
     }
   }
-
-  // ── Range preview (hover-based) ──
 
   const inRange = useMemo(() => {
     return (date: BsDate) => {
@@ -472,8 +461,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     }
   }
 
-  // ── Navigation ──
-
   function moveMonth(delta: number) {
     let next = { ...viewMonth };
     const step = delta > 0 ? 1 : -1;
@@ -486,24 +473,19 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     onPanelChangeRef.current?.(next);
   }
 
-  // ── Presets ──
-
   function handlePreset(p: Preset) {
     emitRange(p.value[0], p.value[1]);
-    dispatch({ type: 'SET_MONTH_FROM_DATE', date: p.value[0] });
+    dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...p.value[0], day: 1 } });
     closePickerAndReturnFocus();
   }
 
-  // ── View helpers ──
-
-  // ── Dual-month view ──
   const nextViewMonth = shiftMonth(viewMonth, 1) ?? viewMonth;
 
   const isNepali = lang === 'ne';
   const monthList = isNepali ? bsMonthNamesNe : bsMonthNames;
   const monthName = monthList[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
   const nextMonthName = monthList[nextViewMonth.month] ?? nextViewMonth.month.toString().padStart(2, '0');
-  const placeholderText = placeholder ?? (isNepali ? 'YYYY-MM-DD (BS)' : 'YYYY-MM-DD (BS)');
+  const placeholderText = placeholder ?? `${dateFormat} (BS)`;
   const endPlaceholderText = endPlaceholder ?? placeholderText;
   const canMovePrev = shiftMonth(viewMonth, -1) !== null;
   const canMoveNext = shiftMonth(nextViewMonth, 1) !== null;
@@ -519,8 +501,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
       : [viewMonth.year];
 
   const hasValue = !!(rangeStart || rangeEnd);
-
-  // ── Popover positioning ──
 
   function updatePopoverPosition() {
     if (!wrapperRef.current || typeof window === 'undefined') return;
@@ -566,8 +546,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
       transform: effectiveOpenUp ? 'translateY(-100%)' : undefined,
     });
   }
-
-  // ── Effects ──
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -649,7 +627,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     }
   }
 
-  // ── Popover container ──
   const popoverContainer = getPopupContainer && wrapperRef.current
     ? getPopupContainer(wrapperRef.current)
     : typeof document !== 'undefined'
@@ -685,8 +662,8 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
           onBlur={onBlur}
           onKeyDown={onKeyDown}
           inputMode="numeric"
-          pattern={inputPattern === false ? undefined : inputPattern}
-          maxLength={10}
+          pattern={resolvedPattern}
+          maxLength={formatInfo.fullLength}
           aria-label="Start date"
           disabled={isPickerDisabled}
           readOnly={inputReadOnly}
@@ -701,8 +678,8 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
           onChange={handleEndInputChange}
           onFocus={() => { if (!isPickerDisabled) { onFocusProp?.(); openPicker(); } }}
           inputMode="numeric"
-          pattern={inputPattern === false ? undefined : inputPattern}
-          maxLength={10}
+          pattern={resolvedPattern}
+          maxLength={formatInfo.fullLength}
           aria-label="End date"
           disabled={isPickerDisabled}
           readOnly={inputReadOnly}
@@ -753,7 +730,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
               <div aria-live="polite" aria-atomic="true" ref={announceRef} className="np-sr-only">
                 {monthName} {isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}
               </div>
-              {/* Dual-month header */}
               <div className={cn('np-popover__header', 'np-dual-header', semanticClassNames?.header)} style={semanticStyles?.header}>
                 <button
                   type="button"
@@ -853,7 +829,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
                   ›
                 </button>
               </div>
-              {/* Dual-month calendars */}
               <div className="np-dual-month">
                 <div className="np-dual-month__col">
                   <CalendarGrid
