@@ -10,6 +10,7 @@ import { PickerInput } from './PickerInput';
 import { PickerHeader } from './PickerHeader';
 import { PickerFooter } from './PickerFooter';
 import { formatBs, normalizeDigitsToAscii, parseBs, toNepaliDigits, getFormatInfo, generateInputPattern } from './pickerUtils';
+import { pickerUIReducer } from './pickerReducer';
 
 export type DisableOptions = {
   today?: boolean;
@@ -38,46 +39,6 @@ const EMPTY_DISABLE: DisableOptions = {};
 const EMPTY_MENU: MenuOptions = {};
 const EMPTY_STYLES = {} as PickerStyles;
 const EMPTY_CLASSNAMES = {} as PickerClassNames;
-
-type PickerUIState = {
-  open: boolean;
-  monthOpen: boolean;
-  yearOpen: boolean;
-  viewMonth: BsDate;
-};
-
-type PickerUIAction =
-  | { type: 'OPEN' }
-  | { type: 'CLOSE' }
-  | { type: 'TOGGLE_OPEN' }
-  | { type: 'TOGGLE_MONTH' }
-  | { type: 'TOGGLE_YEAR' }
-  | { type: 'SELECT_MONTH'; month: number }
-  | { type: 'SELECT_YEAR'; year: number }
-  | { type: 'SET_VIEW_MONTH'; viewMonth: BsDate };
-
-function pickerUIReducer(state: PickerUIState, action: PickerUIAction): PickerUIState {
-  switch (action.type) {
-    case 'OPEN':
-      return { ...state, open: true };
-    case 'CLOSE':
-      return { ...state, open: false, monthOpen: false, yearOpen: false };
-    case 'TOGGLE_OPEN':
-      return { ...state, open: !state.open, monthOpen: false, yearOpen: false };
-    case 'TOGGLE_MONTH':
-      return { ...state, monthOpen: !state.monthOpen, yearOpen: false };
-    case 'TOGGLE_YEAR':
-      return { ...state, yearOpen: !state.yearOpen, monthOpen: false };
-    case 'SELECT_MONTH':
-      return { ...state, viewMonth: { ...state.viewMonth, month: action.month, day: 1 }, monthOpen: false };
-    case 'SELECT_YEAR':
-      return { ...state, viewMonth: { ...state.viewMonth, year: action.year, day: 1 }, yearOpen: false };
-    case 'SET_VIEW_MONTH':
-      return { ...state, viewMonth: action.viewMonth };
-    default:
-      return state;
-  }
-}
 
 type PickerClassNames = {
   input?: string;
@@ -316,10 +277,12 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   useEffect(() => {
     if (!isValueControlled) return;
     const formatted = formatBs(value, dateFormat);
-    if (parseBs(input, dateFormat)?.year !== value?.year || parseBs(input, dateFormat)?.month !== value?.month || parseBs(input, dateFormat)?.day !== value?.day) {
+    const parsed = parseBs(input, dateFormat);
+    if (parsed?.year !== value?.year || parsed?.month !== value?.month || parsed?.day !== value?.day) {
       setInput(formatted);
     }
     dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...(value ?? adapter.today()), day: 1 } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, adapter, isValueControlled, dateFormat]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -491,17 +454,24 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
 
     updatePopoverPosition();
 
+    let rafId = 0;
     function onReposition() {
-      updatePopoverPosition();
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        updatePopoverPosition();
+      });
     }
 
     window.addEventListener('resize', onReposition);
     window.addEventListener('scroll', onReposition, true);
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', onReposition);
       window.removeEventListener('scroll', onReposition, true);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPickerOpen, monthOpen, yearOpen, viewMonth.year, viewMonth.month]);
 
   function handleToggleMonth() {

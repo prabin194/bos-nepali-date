@@ -10,6 +10,7 @@ import { PickerFooter } from './PickerFooter';
 import { formatBs, normalizeDigitsToAscii, parseBs, toNepaliDigits, getFormatInfo, generateInputPattern } from './pickerUtils';
 import type { CellRenderInfo } from './CalendarGrid';
 import type { DisableOptions, MenuOptions, PickerSize, PickerStatus, PickerVariant, PickerPlacement } from './NepaliDatePicker';
+import { pickerUIReducer } from './pickerReducer';
 
 // Re-export types shared with single picker
 export type { DisableOptions, MenuOptions, PickerSize, PickerStatus, PickerVariant, PickerPlacement };
@@ -24,46 +25,6 @@ const EMPTY_DATES: BsDate[] = [];
 const EMPTY_DISABLE: DisableOptions = {};
 const EMPTY_MENU: MenuOptions = {};
 const EMPTY_PRESETS: Preset[] = [];
-
-type PickerUIState = {
-  open: boolean;
-  monthOpen: boolean;
-  yearOpen: boolean;
-  viewMonth: BsDate;
-};
-
-type PickerUIAction =
-  | { type: 'OPEN' }
-  | { type: 'CLOSE' }
-  | { type: 'TOGGLE_OPEN' }
-  | { type: 'TOGGLE_MONTH' }
-  | { type: 'TOGGLE_YEAR' }
-  | { type: 'SELECT_MONTH'; month: number }
-  | { type: 'SELECT_YEAR'; year: number }
-  | { type: 'SET_VIEW_MONTH'; viewMonth: BsDate };
-
-function pickerUIReducer(state: PickerUIState, action: PickerUIAction): PickerUIState {
-  switch (action.type) {
-    case 'OPEN':
-      return { ...state, open: true };
-    case 'CLOSE':
-      return { ...state, open: false, monthOpen: false, yearOpen: false };
-    case 'TOGGLE_OPEN':
-      return { ...state, open: !state.open, monthOpen: false, yearOpen: false };
-    case 'TOGGLE_MONTH':
-      return { ...state, monthOpen: !state.monthOpen, yearOpen: false };
-    case 'TOGGLE_YEAR':
-      return { ...state, yearOpen: !state.yearOpen, monthOpen: false };
-    case 'SELECT_MONTH':
-      return { ...state, viewMonth: { ...state.viewMonth, month: action.month, day: 1 }, monthOpen: false };
-    case 'SELECT_YEAR':
-      return { ...state, viewMonth: { ...state.viewMonth, year: action.year, day: 1 }, yearOpen: false };
-    case 'SET_VIEW_MONTH':
-      return { ...state, viewMonth: action.viewMonth };
-    default:
-      return state;
-  }
-}
 
 export type NepaliDateRangePickerProps = {
   /** Label for the range picker group. */
@@ -257,6 +218,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   useEffect(() => {
     const refDate = rangeStart ?? rangeEnd ?? adapter.today();
     dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...refDate, day: 1 } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rangeStart]);
 
   useEffect(() => {
@@ -592,17 +554,24 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
 
     updatePopoverPosition();
 
+    let rafId = 0;
     function onReposition() {
-      updatePopoverPosition();
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        updatePopoverPosition();
+      });
     }
 
     window.addEventListener('resize', onReposition);
     window.addEventListener('scroll', onReposition, true);
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', onReposition);
       window.removeEventListener('scroll', onReposition, true);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPickerOpen, monthOpen, yearOpen, viewMonth.year, viewMonth.month]);
 
   function handleToggleMonth() {

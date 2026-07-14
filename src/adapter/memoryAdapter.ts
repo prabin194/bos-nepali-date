@@ -129,11 +129,60 @@ export class MemoryBsAdapter implements BsAdapter {
 
     let remaining = offset;
     const step = offset > 0 ? 1 : -1;
+
+    // Skip whole years at a time
+    while (remaining !== 0) {
+      const yearLen = this.yearDays(current.year);
+      if (Math.abs(remaining) >= yearLen) {
+        const yearStep = step > 0 ? 1 : -1;
+        const nextYear = current.year + yearStep;
+        if (!this.hasYear(nextYear)) break;
+        current = { year: nextYear, month: current.month, day: current.day };
+        remaining -= step * yearLen;
+      } else {
+        break;
+      }
+    }
+
+    // Skip whole months at a time
+    while (remaining !== 0) {
+      const monthLen = this.getMonthLen(current.year, current.month);
+      if (Math.abs(remaining) >= monthLen) {
+        if (step > 0) {
+          if (current.month === 12) {
+            if (!this.hasYear(current.year + 1)) break;
+            current = { year: current.year + 1, month: 1, day: current.day };
+          } else {
+            current = { year: current.year, month: current.month + 1, day: current.day };
+          }
+        } else {
+          if (current.month === 1) {
+            if (!this.hasYear(current.year - 1)) break;
+            current = { year: current.year - 1, month: 12, day: current.day };
+          } else {
+            current = { year: current.year, month: current.month - 1, day: current.day };
+          }
+        }
+        remaining -= step * monthLen;
+      } else {
+        break;
+      }
+    }
+
+    // Step day by day for the remainder
     while (remaining !== 0) {
       current = this.addOneDay(current, step);
       remaining -= step;
     }
     return current;
+  }
+
+  private yearDays(year: number): number {
+    let total = 0;
+    for (let m = 1; m <= 12; m++) {
+      total += this.getMonthLen(year, m);
+    }
+    return total;
   }
 
   private getMonthLen(year: number, month: number): number {

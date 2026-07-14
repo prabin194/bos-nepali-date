@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { cn } from '../utils/classnames';
 import { BsAdapter, BsDate } from '../types';
 
@@ -85,7 +85,51 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const firstOfMonth: BsDate = { ...month, day: 1 };
   const totalDays = daysInMonth(firstOfMonth, adapter);
   const leadingEmpty = (weekday(firstOfMonth, adapter) - firstDayOfWeek + 7) % 7;
-  const cells: Array<{ date?: BsDate; inCurrentMonth: boolean; outOfRange?: boolean }> = [];
+
+  const cells = useMemo<Array<{ date?: BsDate; inCurrentMonth: boolean; outOfRange?: boolean }>>(() => {
+    const result: Array<{ date?: BsDate; inCurrentMonth: boolean; outOfRange?: boolean }> = [];
+
+    // previous month spill
+    let prev: BsDate | undefined;
+    try {
+      prev = adapter.addDays(firstOfMonth, -1);
+    } catch {
+      prev = undefined;
+    }
+    for (let i = 0; i < leadingEmpty; i++) {
+      result.unshift({ date: prev, inCurrentMonth: false, outOfRange: !prev });
+      if (prev) {
+        try {
+          prev = adapter.addDays(prev, -1);
+        } catch {
+          prev = undefined;
+        }
+      }
+    }
+
+    // current month
+    for (let d = 1; d <= totalDays; d++) {
+      result.push({ date: { ...month, day: d }, inCurrentMonth: true });
+    }
+
+    // fill to 42 cells (6 weeks)
+    while (result.length < 42) {
+      const last = result[result.length - 1].date;
+      if (!last) {
+        result.push({ inCurrentMonth: false, outOfRange: true });
+        continue;
+      }
+      try {
+        const next = adapter.addDays(last, 1);
+        result.push({ date: next, inCurrentMonth: false });
+      } catch {
+        result.push({ inCurrentMonth: false, outOfRange: true });
+      }
+    }
+
+    return result;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [month.year, month.month, totalDays, leadingEmpty, firstDayOfWeek, adapter]);
 
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
 
@@ -130,44 +174,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     }
     if (newIndex >= 0 && newIndex !== focusedIndex) {
       setFocusedIndex(newIndex);
-    }
-  }
-
-  // previous month spill
-  let prev: BsDate | undefined;
-  try {
-    prev = adapter.addDays(firstOfMonth, -1);
-  } catch {
-    prev = undefined;
-  }
-  for (let i = 0; i < leadingEmpty; i++) {
-    cells.unshift({ date: prev, inCurrentMonth: false, outOfRange: !prev });
-    if (prev) {
-      try {
-        prev = adapter.addDays(prev, -1);
-      } catch {
-        prev = undefined;
-      }
-    }
-  }
-
-  // current month
-  for (let d = 1; d <= totalDays; d++) {
-    cells.push({ date: { ...month, day: d }, inCurrentMonth: true });
-  }
-
-  // fill to 42 cells (6 weeks)
-  while (cells.length < 42) {
-    const last = cells[cells.length - 1].date;
-    if (!last) {
-      cells.push({ inCurrentMonth: false, outOfRange: true });
-      continue;
-    }
-    try {
-      const next = adapter.addDays(last, 1);
-      cells.push({ date: next, inCurrentMonth: false });
-    } catch {
-      cells.push({ inCurrentMonth: false, outOfRange: true });
     }
   }
 
@@ -238,6 +244,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 onMouseLeave={() => onHover?.(null)}
                 onFocus={() => { if (cellIdx !== focusedIndex && date && !isDisabled) setFocusedIndex(cellIdx); }}
                 disabled={isDisabled}
+                aria-disabled={isDisabled || undefined}
               >
                 {cellContent ?? <span className="np-cal-day">{date ? formatDay(date.day) : ''}</span>}
               </button>

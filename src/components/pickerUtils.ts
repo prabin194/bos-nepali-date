@@ -122,7 +122,7 @@ export type FormatInfo = {
 const formatInfoCache = new Map<string, FormatInfo>();
 
 export function getFormatInfo(fmt: string): FormatInfo {
-  let cached = formatInfoCache.get(fmt);
+  const cached = formatInfoCache.get(fmt);
   if (cached) return cached;
   const { tokens, separator } = getParsedFormat(fmt);
   const minWidths = tokens.map(tokenMinWidth);
