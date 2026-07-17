@@ -8,6 +8,7 @@ import { bsMonthData } from '../src/adapter/bsTable';
 import { MemoryBsAdapter } from '../src/adapter/memoryAdapter';
 import { defaultAdapter } from '../src/adapter/memoryAdapter';
 import { BsDate } from '../src/types';
+import type { PickerLocale } from '../src/components/pickerTypes';
 
 const adapter = defaultAdapter;
 
@@ -116,6 +117,38 @@ describe('locale rendering', () => {
     // days rendered in Nepali digits
     expect(screen.getAllByText('१')[0]).toBeInTheDocument();
   });
+
+  it('accepts an injected locale without picker implementation changes', () => {
+    const locale: PickerLocale = {
+      code: 'test',
+      monthNames: ['', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth', 'Eleventh', 'Twelfth'],
+      weekdays: ['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
+      formatNumber: (value) => `#${value}`,
+      labels: {
+        clear: 'Erase',
+        clearAria: 'Erase selected date',
+        today: 'Now',
+        todayAria: 'Select current date',
+        cancel: 'Stop',
+        apply: 'Use',
+        customised: 'Manual',
+      },
+    };
+
+    render(
+      <NepaliDatePicker
+        value={{ year: 2000, month: 1, day: 1 }}
+        onChange={() => {}}
+        adapter={adapter}
+        menu={{ locale }}
+      />
+    );
+    openPicker();
+
+    expect(screen.getByRole('button', { name: 'First' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '#2000' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Select current date' })).toHaveTextContent('Now');
+  });
 });
 
 describe('input mask', () => {
@@ -145,6 +178,17 @@ describe('input mask', () => {
     const masked = typeIntoInput('20000105');
     expect(masked).toBe('2000-01-05');
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('commits a valid typed date in uncontrolled mode', () => {
+    const spy = vi.fn();
+    render(<NepaliDatePicker onChange={spy} adapter={adapter} />);
+
+    typeIntoInput('20000105');
+    openPicker();
+
+    expect(spy).toHaveBeenCalledWith({ year: 2000, month: 1, day: 5 });
+    expect(getDayButton(5)).toHaveClass('np-cal-cell--selected');
   });
 });
 

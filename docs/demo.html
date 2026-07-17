@@ -8,11 +8,12 @@
 <meta property="og:description" content="Live playground for NepaliDatePicker and NepaliDateRangePicker with all customization props.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/demo.html">
+<meta property="og:image" content="https://prabin194.github.io/bos-nepali-date/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Interactive Demo — bos-nepali-date</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#ffffff;--surface:#f8f9fa;--surface2:#f1f3f5;--border:#e2e4e8;--text:#0f1117;--text2:#525866;--text3:#868c98;--accent:#2563eb;--accent2:#1d4ed8;--radius:10px;--radius-sm:6px;font-family:'DM Sans',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.7;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
@@ -96,7 +97,8 @@ footer{text-align:center;padding:28px 24px;border-top:1px solid var(--border);fo
 footer a{color:var(--accent);text-decoration:none}
 
 @media(max-width:640px){
-  nav a{font-size:12px;padding:5px 8px}
+  .header-inner{padding:0 16px}
+  nav{display:none}
   .hero{padding:40px 20px 32px}
   .hero h1{font-size:1.5rem}
   .page{padding:0 16px 60px}
@@ -107,49 +109,74 @@ footer a{color:var(--accent);text-decoration:none}
 /* Picker styles loaded from external CSS file (bos-nepali-date.css). */
 </style>
 <link rel="stylesheet" href="bos-nepali-date.css">
+<link rel="stylesheet" href="site.css?v=20260717-12">
 </head>
 <body>
-<header>
+<header class="site-header">
 <div class="header-inner">
-<a href="./" class="logo">
-<svg viewBox="0 0 24 24" fill="none" stroke="%23d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-bos-nepali-date
+<a href="./" class="logo" aria-label="bos-nepali-date home">
+<span class="site-mark" aria-hidden="true">BS</span>
+<span class="logo-copy">bos-nepali-date<small>React package</small></span>
 </a>
-<nav>
+<nav aria-label="Primary navigation">
 <a href="./">Home</a>
-<a href="documentation.html">Docs</a>
+<a href="documentation.html">Documentation</a>
 <a href="demo.html" class="active">Demo</a>
-<a href="roadmap.html">Roadmap</a>
-<a href="changelogs.html">Changelogs</a>
-<a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
+<a href="changelogs.html">Releases</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank" rel="noreferrer">GitHub</a>
 </nav>
 <div class="nav-btns">
-<button class="nav-btn" id="theme-btn" aria-label="Toggle theme">🌙</button>
+<button class="nav-btn" id="theme-btn" type="button" aria-label="Use dark theme">☾</button>
+<button class="nav-btn nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
 </div>
 </div>
 </header>
 
-<section class="hero">
-<h1>Interactive <span>Demo</span></h1>
-<p>Play with all props in real time — variant, placement, size, status, disabledDate, cellRender, and more. Both single picker and range picker.</p>
+<section class="hero" aria-labelledby="demo-title">
+<div class="hero-copy">
+<p class="hero-kicker">Live package demo · v1.0.0</p>
+<h1 id="demo-title">Try the package <em>before you install it.</em></h1>
+</div>
+<div class="hero-side">
+<p>Open each component, change its props, and inspect the exact React usage. The demo covers single dates, ranges, placements, validation states, presets, and localisation.</p>
+<div class="install-block">
+  <div class="install-head"><span>Install</span><button class="copy-install" type="button" data-copy="npm install bos-nepali-date">Copy</button></div>
+  <div class="install-code"><span class="prompt">$</span>npm install bos-nepali-date</div>
+  <div class="install-head"><span>Import</span><span>React</span></div>
+  <div class="install-code"><span class="code-keyword">import</span> { NepaliDatePicker } <span class="code-keyword">from</span> 'bos-nepali-date';<br><span class="code-keyword">import</span> 'bos-nepali-date/style';</div>
+</div>
 <div class="hero-actions">
-<a href="documentation.html" class="btn btn-secondary">📖 Documentation</a>
-<a href="https://github.com/prabin194/bos-nepali-date" target="_blank" class="btn btn-secondary">GitHub</a>
+<a href="documentation.html" class="btn btn-primary">Read the docs →</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank" rel="noreferrer" class="btn btn-secondary">Source on GitHub ↗</a>
+</div>
 </div>
 </section>
+
+<div class="proof-strip" aria-label="Package highlights">
+  <div class="proof-item"><strong>100</strong><span>BS years included</span></div>
+  <div class="proof-item"><strong>2</strong><span>Native locales</span></div>
+  <div class="proof-item"><strong>4</strong><span>Input variants</span></div>
+  <div class="proof-item"><strong>0</strong><span>Runtime dependencies</span></div>
+</div>
 
 <main class="page">
 <div class="page-inner">
 
+<div class="page-intro">
+  <p class="eyebrow">Live examples</p>
+  <h2>Choose a component.<br>Configure its props.</h2>
+</div>
+
 <!-- ─── SINGLE PICKER ─── -->
-<section class="demo-section">
-<h2>📅 Single picker</h2>
-<p class="desc">Configure variant, placement, size, status, disabledDate callback, cellRender, and all interactivity props.</p>
+<section class="demo-section" data-index="01 / 03">
+<h2>Single date</h2>
+<p class="desc">Tune the input, placement, validation state, disable rules, and cell renderer. The usage block updates with every choice.</p>
 
 <div class="controls" id="single-controls">
+  <div class="primary-controls">
   <div class="ctrl-group">
     <span class="ctrl-label">Variant</span>
-    <select id="s-variant">
+    <select id="s-variant" aria-label="Single date variant">
       <option value="outlined">Outlined</option>
       <option value="filled">Filled</option>
       <option value="borderless">Borderless</option>
@@ -158,32 +185,35 @@ bos-nepali-date
   </div>
   <div class="ctrl-group">
     <span class="ctrl-label">Size</span>
-    <select id="s-size">
+    <select id="s-size" aria-label="Single date size">
       <option value="small">Small</option>
       <option value="middle" selected>Middle</option>
       <option value="large">Large</option>
     </select>
   </div>
-  <div class="ctrl-divider"></div>
-  <label><input type="checkbox" id="s-error"> status="error"</label>
-  <label><input type="checkbox" id="s-warning"> status="warning"</label>
   <label><input type="checkbox" id="s-allowclear"> allowClear</label>
-  <label><input type="checkbox" id="s-disabled"> disabled</label>
-  <label><input type="checkbox" id="s-readonly"> readOnly</label>
-  <div class="ctrl-divider"></div>
   <div class="ctrl-group">
     <span class="ctrl-label">Placement</span>
-    <select id="s-placement">
+    <select id="s-placement" aria-label="Single date popover placement">
       <option value="bottomLeft" selected>bottomLeft</option>
       <option value="bottomRight">bottomRight</option>
       <option value="topLeft">topLeft</option>
       <option value="topRight">topRight</option>
     </select>
   </div>
-  <div class="ctrl-divider"></div>
-  <label><input type="checkbox" id="s-disable5th"> disable 5th</label>
-  <label><input type="checkbox" id="s-celldots"> dot markers</label>
-  <label><input type="checkbox" id="s-extrafooter"> extra footer</label>
+  </div>
+  <details class="advanced-controls">
+    <summary>Advanced props <span>7 options</span></summary>
+    <div class="advanced-grid">
+      <label><input type="checkbox" id="s-error"> status="error"</label>
+      <label><input type="checkbox" id="s-warning"> status="warning"</label>
+      <label><input type="checkbox" id="s-disabled"> disabled</label>
+      <label><input type="checkbox" id="s-readonly"> readOnly</label>
+      <label><input type="checkbox" id="s-disable5th"> disable 5th</label>
+      <label><input type="checkbox" id="s-celldots"> dot markers</label>
+      <label><input type="checkbox" id="s-extrafooter"> extra footer</label>
+    </div>
+  </details>
 </div>
 
 <div class="playground single" id="single-picker-root">
@@ -195,14 +225,15 @@ bos-nepali-date
 </section>
 
 <!-- ─── RANGE PICKER ─── -->
-<section class="demo-section">
-<h2>🔁 Range picker</h2>
-<p class="desc">Same props applied to NepaliDateRangePicker — try them all.</p>
+<section class="demo-section" data-index="02 / 03">
+<h2>Date range</h2>
+<p class="desc">A controlled dual-month range picker for reporting windows, reservations, and filters—with the same surface as the single-date component.</p>
 
 <div class="controls" id="range-controls">
+  <div class="primary-controls">
   <div class="ctrl-group">
     <span class="ctrl-label">Variant</span>
-    <select id="r-variant">
+    <select id="r-variant" aria-label="Date range variant">
       <option value="outlined">Outlined</option>
       <option value="filled">Filled</option>
       <option value="borderless">Borderless</option>
@@ -211,29 +242,32 @@ bos-nepali-date
   </div>
   <div class="ctrl-group">
     <span class="ctrl-label">Size</span>
-    <select id="r-size">
+    <select id="r-size" aria-label="Date range size">
       <option value="small">Small</option>
       <option value="middle" selected>Middle</option>
       <option value="large">Large</option>
     </select>
   </div>
-  <div class="ctrl-divider"></div>
-  <label><input type="checkbox" id="r-error"> status="error"</label>
-  <label><input type="checkbox" id="r-warning"> status="warning"</label>
   <label><input type="checkbox" id="r-allowclear"> allowClear</label>
-  <label><input type="checkbox" id="r-disabled"> disabled</label>
-  <div class="ctrl-divider"></div>
   <div class="ctrl-group">
     <span class="ctrl-label">Placement</span>
-    <select id="r-placement">
+    <select id="r-placement" aria-label="Date range popover placement">
       <option value="bottomLeft" selected>bottomLeft</option>
       <option value="bottomRight">bottomRight</option>
       <option value="topLeft">topLeft</option>
       <option value="topRight">topRight</option>
     </select>
   </div>
-  <div class="ctrl-divider"></div>
-  <label><input type="checkbox" id="r-extrafooter"> extra footer</label>
+  </div>
+  <details class="advanced-controls">
+    <summary>Advanced props <span>4 options</span></summary>
+    <div class="advanced-grid">
+      <label><input type="checkbox" id="r-error"> status="error"</label>
+      <label><input type="checkbox" id="r-warning"> status="warning"</label>
+      <label><input type="checkbox" id="r-disabled"> disabled</label>
+      <label><input type="checkbox" id="r-extrafooter"> extra footer</label>
+    </div>
+  </details>
 </div>
 
 <div class="playground" id="range-picker-root">
@@ -243,20 +277,61 @@ bos-nepali-date
 <div class="result" id="range-result"><span class="dim">No date range selected</span></div>
 </section>
 
+<!-- ─── SIDEBAR PRESET LAYOUT ─── -->
+<section class="demo-section" data-index="03 / 03">
+<h2>Preset workflow <span class="new-badge">New</span></h2>
+<p class="desc">The analytics layout pairs quick ranges with explicit clear, cancel, and apply actions—ready for reporting and dashboard filters.</p>
+
+<div class="controls" id="sidebar-controls">
+  <div class="primary-controls">
+  <label><input type="checkbox" id="sb-headeractions" checked> showHeaderActions</label>
+  <label><input type="checkbox" id="sb-allowclear"> allowClear</label>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Variant</span>
+    <select id="sb-variant" aria-label="Preset workflow variant">
+      <option value="outlined" selected>Outlined</option>
+      <option value="filled">Filled</option>
+      <option value="borderless">Borderless</option>
+    </select>
+  </div>
+  <div class="ctrl-group">
+    <span class="ctrl-label">Placement</span>
+    <select id="sb-placement" aria-label="Preset workflow popover placement">
+      <option value="bottomLeft" selected>bottomLeft</option>
+      <option value="bottomRight">bottomRight</option>
+      <option value="topLeft">topLeft</option>
+      <option value="topRight">topRight</option>
+    </select>
+  </div>
+  </div>
+</div>
+
+<div class="playground" id="sidebar-picker-root">
+  <div class="demo-range loading"><div class="spinner"></div><span>Loading sidebar preset demo...</span></div>
+</div>
+<div class="error" id="sidebar-error"><p>⚠️ Failed to render sidebar preset picker. See console for details.</p></div>
+<div class="code-output" id="sidebar-code"><span class="comment">// Sidebar preset layout code will appear here</span></div>
+<div class="result" id="sidebar-result"><span class="dim">No date range selected</span></div>
+</section>
+
 </div>
 </main>
 
-<footer>
-<p>bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; <a href="https://github.com/prabin194/bos-nepali-date">GitHub</a> &bull; <a href="https://www.npmjs.com/package/bos-nepali-date">npm</a></p>
+<footer class="site-footer">
+<div class="site-footer-inner"><p>bos-nepali-date · MIT licensed · Built by Prabin Paudel</p><nav class="site-footer-nav" aria-label="Footer navigation"><a href="documentation.html">Documentation</a><a href="demo.html">Demo</a><a href="changelogs.html">Releases</a><a href="https://www.npmjs.com/package/bos-nepali-date">npm</a><a href="https://github.com/prabin194/bos-nepali-date">GitHub</a></nav></div>
 </footer>
+<div class="action-toast" id="action-toast" role="status" aria-live="polite"></div>
 
-<script src="theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script src="site.js?v=20260717-10"></script>
 
 <script>
 // ── Load chain ────────────────────────────────────────────────────
 (function(){
   var root0 = document.getElementById('single-picker-root');
   var root1 = document.getElementById('range-picker-root');
+  var root2 = document.getElementById('sidebar-picker-root');
 
   function loadScript(src, cb) {
     var s = document.createElement('script');
@@ -273,6 +348,7 @@ bos-nepali-date
           console.error('Demo bootstrap error:', e);
           if (root0) root0.innerHTML = '<div class="error" style="display:block"><p>⚠️ ' + e.message + '</p></div>';
           if (root1) root1.innerHTML = '<div class="error" style="display:block"><p>⚠️ ' + e.message + '</p></div>';
+          if (root2) root2.innerHTML = '<div class="error" style="display:block"><p>⚠️ ' + e.message + '</p></div>';
         }
       });
     });
@@ -284,6 +360,7 @@ bos-nepali-date
     if (!R || !RD || !Lib) {
       document.getElementById('single-error').style.display = 'block';
       document.getElementById('range-error').style.display = 'block';
+      document.getElementById('sidebar-error').style.display = 'block';
       return;
     }
 
@@ -291,12 +368,21 @@ bos-nepali-date
     var Picker = Lib.NepaliDatePicker;
     var RangePicker = Lib.NepaliDateRangePicker;
     var adapter = Lib.defaultAdapter;
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // ── Theme toggle ──
-    document.getElementById('theme-btn').addEventListener('click', function() {
-      document.documentElement.classList.toggle('dark');
-      this.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
-    });
+    function nudge(selector) {
+      if (reducedMotion || !window.gsap) return;
+      window.gsap.fromTo(selector, { opacity: 0.45, x: 6 }, { opacity: 1, x: 0, duration: 0.28, ease: 'power3.out', overwrite: true });
+    }
+
+    function announce(message) {
+      var toast = document.getElementById('action-toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('is-visible');
+      window.clearTimeout(announce.timer);
+      announce.timer = window.setTimeout(function() { toast.classList.remove('is-visible'); }, 1800);
+    }
 
     // ── Helper: read control values ──
     function getCtrl(prefix) {
@@ -358,7 +444,7 @@ bos-nepali-date
       if (c.extraFooter) {
         props.renderExtraFooter = function() {
           return h('div', { style: { padding: '6px 0', fontSize: '11px', color: 'var(--text3)', textAlign: 'center', borderTop: '1px solid var(--border)', marginTop: '4px' } },
-            '⚡ Quick actions appear here'
+            'Quick actions appear here'
           );
         };
       }
@@ -369,6 +455,7 @@ bos-nepali-date
       var c = getCtrl('r');
       var props = {
         adapter: adapter,
+        className: 'demo-range',
         onChange: function(dates) {
           var el = document.getElementById('range-result');
           if (!el) return;
@@ -387,7 +474,7 @@ bos-nepali-date
       if (c.extraFooter) {
         props.renderExtraFooter = function() {
           return h('div', { style: { padding: '6px 0', fontSize: '11px', color: 'var(--text3)', textAlign: 'center', borderTop: '1px solid var(--border)', marginTop: '4px' } },
-            '📅 Range presets: This Week | This Month'
+            'Range presets: This Week | This Month'
           );
         };
       }
@@ -425,6 +512,7 @@ bos-nepali-date
       var props = buildSingleProps();
       renderCodePreview(props);
       singleReactRoot.render(h(Picker, props));
+      nudge('#single-code');
     }
 
     // ── Range code preview ──
@@ -444,18 +532,94 @@ bos-nepali-date
       el.innerHTML = lines.join('<br>');
     }
 
-    // ── Render range picker ──
-    var rangeRoot = document.getElementById('range-picker-root');
-    var rangeReactRoot = null;
+  // ── Render range picker ──
+  var rangeRoot = document.getElementById('range-picker-root');
+  var rangeReactRoot = null;
 
-    function renderRange() {
-      if (!rangeReactRoot) {
-        rangeReactRoot = RD.createRoot(rangeRoot);
-      }
-      var props = buildRangeProps();
-      renderRangeCodePreview(props);
-      rangeReactRoot.render(h(RangePicker, props));
+  function renderRange() {
+    if (!rangeReactRoot) {
+      rangeReactRoot = RD.createRoot(rangeRoot);
     }
+    var props = buildRangeProps();
+    renderRangeCodePreview(props);
+    rangeReactRoot.render(h(RangePicker, props));
+    nudge('#range-code');
+  }
+
+  // ── Sidebar preset layout ──
+  function buildSidebarProps() {
+    var showHeader = document.getElementById('sb-headeractions').checked;
+    var variant = document.getElementById('sb-variant').value;
+    var placement = document.getElementById('sb-placement').value;
+    var allowClear = document.getElementById('sb-allowclear').checked;
+
+    var today = adapter.today();
+    function addDays(d, n) { var r = adapter.addDays(d, n); return { year: r.year, month: r.month, day: r.day }; }
+
+    var props = {
+      adapter: adapter,
+      className: 'demo-range',
+      presetLayout: 'sidebar',
+      variant: variant,
+      placement: placement,
+      allowClear: allowClear,
+      presets: [
+        { label: 'Today', value: [today, today] },
+        { label: 'Last 3 Days', value: [addDays(today, -3), today] },
+        { label: 'Last 7 Days', value: [addDays(today, -7), today] },
+        { label: 'Last 30 Days', value: [addDays(today, -30), today] },
+        { label: 'Last 3 Months', value: [addDays(today, -90), today] },
+        { label: 'Last 6 Months', value: [addDays(today, -180), today] },
+        { label: 'Last 1 Year', value: [addDays(today, -365), today] },
+      ],
+      onChange: function(dates) {
+        var el = document.getElementById('sidebar-result');
+        if (!el) return;
+        var s = dates[0], e = dates[1];
+        if (s && e) el.innerHTML = '<strong>' + s.year + '-' + String(s.month).padStart(2,'0') + '-' + String(s.day).padStart(2,'0') + '</strong> <span class="dim">→</span> <strong>' + e.year + '-' + String(e.month).padStart(2,'0') + '-' + String(e.day).padStart(2,'0') + '</strong> <span class="dim">BS</span>';
+        else if (s) el.innerHTML = '<strong>' + s.year + '-' + String(s.month).padStart(2,'0') + '-' + String(s.day).padStart(2,'0') + '</strong> <span class="dim">→ …</span>';
+        else el.innerHTML = '<span class="dim">No date range selected</span>';
+      },
+    };
+
+    if (showHeader) {
+      props.showHeaderActions = true;
+      props.onApply = function() { announce('Range applied'); };
+      props.onCancel = function() { announce('Selection cancelled'); };
+    }
+
+    return props;
+  }
+
+  function renderSidebarCodePreview(props) {
+    var el = document.getElementById('sidebar-code');
+    if (!el) return;
+    var lines = ['<span class="comment">// Analytics filter preset layout</span>'];
+    lines.push('&lt;NepaliDateRangePicker');
+    lines.push('  presetLayout=<span class="string">"sidebar"</span>');
+    lines.push('  variant=<span class="string">"' + props.variant + '"</span>');
+    if (props.showHeaderActions) lines.push('  showHeaderActions');
+    if (props.allowClear) lines.push('  allowClear');
+    if (props.onApply) lines.push('  onApply=&#123;() =&gt; handleApply()&#125;');
+    if (props.onCancel) lines.push('  onCancel=&#123;() =&gt; handleCancel()&#125;');
+    lines.push('  presets=&#123;[/* ...7 presets... ]&#125;');
+    lines.push('  onChange=&#123;(range) =&gt; ...&#125;');
+    lines.push('/&gt;');
+    el.innerHTML = lines.join('<br>');
+  }
+
+  var sidebarRoot = document.getElementById('sidebar-picker-root');
+  var sidebarReactRoot = null;
+
+  function renderSidebar() {
+    if (!sidebarReactRoot) {
+      sidebarReactRoot = RD.createRoot(sidebarRoot);
+    }
+    var props = buildSidebarProps();
+    renderSidebarCodePreview(props);
+    sidebarReactRoot.render(h(RangePicker, props));
+    nudge('#sidebar-code');
+  }
 
     // ── Event listeners ──
     var singleIds = ['s-variant','s-size','s-placement','s-error','s-warning','s-allowclear','s-disabled','s-readonly','s-disable5th','s-celldots','s-extrafooter'];
@@ -470,9 +634,44 @@ bos-nepali-date
       document.getElementById(id).addEventListener('input', renderRange);
     });
 
+    var sidebarIds = ['sb-headeractions','sb-allowclear','sb-variant','sb-placement'];
+    sidebarIds.forEach(function(id) {
+      document.getElementById(id).addEventListener('change', renderSidebar);
+      document.getElementById(id).addEventListener('input', renderSidebar);
+    });
+
     // ── Initial render ──
     renderSingle();
     renderRange();
+    renderSidebar();
+  }
+})();
+
+// ── Demo motion layer ─────────────────────────────────────────────
+(function() {
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion || !window.gsap) return;
+
+  var gsap = window.gsap;
+  if (window.ScrollTrigger) gsap.registerPlugin(window.ScrollTrigger);
+
+  gsap.timeline({ defaults: { ease: 'power4.out' } })
+    .from('.hero-kicker', { opacity: 0, x: -18, duration: 0.3 })
+    .from('.hero h1', { opacity: 0, y: 28, duration: 0.48 }, '-=0.18')
+    .from('.hero-side', { opacity: 0, x: 24, duration: 0.4 }, '-=0.34')
+    .from('.proof-item', { opacity: 0, y: 14, duration: 0.3, stagger: 0.05 }, '-=0.18');
+
+  if (window.ScrollTrigger) {
+    gsap.utils.toArray('.demo-section').forEach(function(section) {
+      gsap.from(section.querySelectorAll('h2, .desc, .controls, .playground, .code-output, .result'), {
+        scrollTrigger: { trigger: section, start: 'top 78%', once: true },
+        opacity: 0,
+        y: 28,
+        duration: 0.65,
+        stagger: 0.07,
+        ease: 'power3.out'
+      });
+    });
   }
 })();
 </script>

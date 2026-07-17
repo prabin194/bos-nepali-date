@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { cn } from '../utils/classnames';
-import { BsAdapter, BsDate } from '../types';
+import { BsCalendarAdapter, BsDate } from '../types';
 
 export type CellRenderInfo = {
   date: BsDate;
@@ -14,16 +14,14 @@ export type CellRenderInfo = {
 };
 
 const MONTH_NAMES = ['', 'Baishak', 'Jestha', 'Ashar', 'Shrawan', 'Bhadra', 'Ashoj', 'Kartik', 'Mangshir', 'Poush', 'Magh', 'Falgun', 'Chaitra'];
-const MONTH_NAMES_NE = ['', 'बैशाख', 'जेठ', 'आषाढ़', 'साउन', 'भदौ', 'असोज', 'कार्तिक', 'मंसिर', 'पुष', 'माघ', 'फाल्गुण', 'चैत्र'];
 
-function cellAriaLabel(date: BsDate, isNepali?: boolean): string {
-  const monthName = isNepali ? MONTH_NAMES_NE[date.month] : MONTH_NAMES[date.month];
-  return `${date.day} ${monthName}, ${date.year} BS`;
+function cellAriaLabel(date: BsDate, monthNames: readonly string[], formatNumber: (value: number) => string): string {
+  return `${formatNumber(date.day)} ${monthNames[date.month]}, ${formatNumber(date.year)} BS`;
 }
 
 export type CalendarGridProps = {
   month: BsDate; // any day in the month; day is ignored
-  adapter: BsAdapter;
+  adapter: BsCalendarAdapter;
   firstDayOfWeek?: 0 | 1; // 0 Sunday, 1 Monday
   onSelect?: (date: BsDate) => void;
   onHover?: (date: BsDate | null) => void; // hover for range preview
@@ -35,18 +33,19 @@ export type CalendarGridProps = {
   className?: string; // wrapper class
   cellClassName?: string; // cell class
   /** Month list for aria-labels on calendar cells. Pass full array (index 0 empty). @default ['', 'Baishak', ...] */
-  monthNames?: string[];
-  /** Whether the interface is in Nepali (affects aria-labels). @default false */
-  isNepali?: boolean;
-  dowLabels?: string[];
+  monthNames?: readonly string[];
+  dowLabels?: readonly string[];
   formatDay?: (day: number) => string;
+  formatYear?: (year: number) => string;
+  /** Disable adjacent-month spillover cells while keeping them visible. @default false */
+  disableOutsideMonth?: boolean;
 };
 
 function sameDay(a?: BsDate | null, b?: BsDate | null) {
   return !!a && !!b && a.year === b.year && a.month === b.month && a.day === b.day;
 }
 
-function daysInMonth(base: BsDate, adapter: BsAdapter): number {
+function daysInMonth(base: BsDate, adapter: BsCalendarAdapter): number {
   let count = 1;
   const start = { ...base, day: 1 };
   let next = adapter.addDays(start, 1);
@@ -57,7 +56,7 @@ function daysInMonth(base: BsDate, adapter: BsAdapter): number {
   return count;
 }
 
-function weekday(bs: BsDate, adapter: BsAdapter): number {
+function weekday(bs: BsDate, adapter: BsCalendarAdapter): number {
   const iso = adapter.toAD(bs);
   const d = new Date(`${iso}T00:00:00Z`);
   return d.getUTCDay(); // 0 Sunday
@@ -77,9 +76,10 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   className,
   cellClassName,
   monthNames,
-  isNepali = false,
   dowLabels = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
   formatDay = (d) => String(d),
+  formatYear = (year) => String(year),
+  disableOutsideMonth = false,
 }) => {
   const today = adapter.today();
   const firstOfMonth: BsDate = { ...month, day: 1 };
@@ -138,10 +138,15 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     for (let attempt = 0; attempt < cells.length; attempt++) {
       idx = (idx + direction + cells.length) % cells.length;
       const c = cells[idx];
-      if (c.date && !c.outOfRange && !disabled?.(c.date)) return idx;
+      if (
+        c.date &&
+        !c.outOfRange &&
+        !(disableOutsideMonth && !c.inCurrentMonth) &&
+        !disabled?.(c.date)
+      ) return idx;
     }
     return -1;
-  }, [cells, disabled]);
+  }, [cells, disabled, disableOutsideMonth]);
 
   function handleGridKeyDown(e: React.KeyboardEvent) {
     let newIndex = focusedIndex;
@@ -177,8 +182,11 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     }
   }
 
-  function isCellDisabled(c: { date?: BsDate; outOfRange?: boolean }): boolean {
-    return c.outOfRange || (c.date ? disabled?.(c.date) : true) || false;
+  function isCellDisabled(c: { date?: BsDate; inCurrentMonth?: boolean; outOfRange?: boolean }): boolean {
+    return c.outOfRange ||
+      (disableOutsideMonth && !c.inCurrentMonth) ||
+      (c.date ? disabled?.(c.date) : true) ||
+      false;
   }
 
   return (
@@ -187,7 +195,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       role="grid"
       tabIndex={0}
       onKeyDown={handleGridKeyDown}
-      aria-label={isNepali ? `${monthNames?.[month.month] ?? ''} ${month.year}` : `${monthNames?.[month.month] ?? ''} ${month.year}`}
+      aria-label={`${monthNames?.[month.month] ?? ''} ${formatYear(month.year)}`}
     >
       <div role="row" className="np-cal-grid__row">
         {dowLabels
@@ -200,10 +208,12 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       {Array.from({ length: Math.ceil(cells.length / 7) }, (_, rowIdx) => (
         <div key={rowIdx} role="row" className="np-cal-grid__row">
           {cells.slice(rowIdx * 7, rowIdx * 7 + 7).map(({ date, inCurrentMonth, outOfRange }, colIdx) => {
-            const isSelected = sameDay(date, selected);
-            const isRangeEnd = sameDay(date, rangeEnd);
-            const isDisabled = outOfRange || (date ? disabled?.(date) : true) || false;
-            const isInRange = date ? inRange?.(date) ?? false : false;
+            const isOutsideMonth = !inCurrentMonth;
+            const suppressOutsideMonthState = disableOutsideMonth && isOutsideMonth;
+            const isSelected = !suppressOutsideMonthState && sameDay(date, selected);
+            const isRangeEnd = !suppressOutsideMonthState && sameDay(date, rangeEnd);
+            const isDisabled = outOfRange || suppressOutsideMonthState || (date ? disabled?.(date) : true) || false;
+            const isInRange = date && !suppressOutsideMonthState ? inRange?.(date) ?? false : false;
             const isToday = sameDay(date, today);
 
             const cellContent = date && cellRender ? cellRender(date, {
@@ -226,7 +236,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 type="button"
                 role="gridcell"
                 aria-colindex={colIdx + 1}
-                aria-label={date ? cellAriaLabel(date, isNepali) : undefined}
+                aria-label={date ? cellAriaLabel(date, monthNames ?? MONTH_NAMES, formatDay) : undefined}
                 aria-selected={isSelected || undefined}
                 tabIndex={isFocused ? 0 : -1}
                 className={cn(

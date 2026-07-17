@@ -94,6 +94,28 @@ describe('MemoryBsAdapter', () => {
     expect(() => adapterLimited.addDays({ year: 2080, month: 1, day: 1 }, -1)).toThrow(/not supported/);
   });
 
+  it('rejects record tables with non-contiguous years', () => {
+    expect(() => new MemoryBsAdapter({
+      anchorBs: { year: 2080, month: 1, day: 1 },
+      anchorAdIso: '2023-04-14',
+      yearTable: {
+        2080: bsMonthData.slice(960, 972),
+        2082: bsMonthData.slice(984, 996),
+      },
+    })).toThrow(/contiguous/);
+  });
+
+  it('supports anchors on the last day of a long month', () => {
+    const customAnchorAdapter = new MemoryBsAdapter({
+      anchorBs: { year: 2000, month: 2, day: 32 },
+      anchorAdIso: '1943-06-14',
+      yearTable: bsMonthData.slice(0, 24),
+    });
+
+    expect(customAnchorAdapter.addDays({ year: 2000, month: 2, day: 32 }, 32))
+      .toEqual({ year: 2000, month: 4, day: 1 });
+  });
+
   it('throws for invalid BS month', () => {
     expect(() => adapter.toAD({ year: 2080, month: 0, day: 1 })).toThrow(/Invalid BS month/);
     expect(() => adapter.toAD({ year: 2080, month: 13, day: 1 })).toThrow(/Invalid BS month/);

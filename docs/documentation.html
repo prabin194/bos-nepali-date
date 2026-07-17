@@ -8,6 +8,7 @@
 <meta property="og:description" content="Learn how to install, configure, and customize the Nepali date picker for React.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/documentation.html">
+<meta property="og:image" content="https://prabin194.github.io/bos-nepali-date/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Documentation — bos-nepali-date</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -151,33 +152,42 @@ footer a{color:var(--accent);text-decoration:none}
   nav a:nth-child(5),nav a:nth-child(6){display:none}
 }
 </style>
+<link rel="stylesheet" href="site.css?v=20260717-12">
 </head>
 <body>
-<header>
+<header class="site-header">
 <div class="header-inner">
-<a href="./" class="logo">
-<svg viewBox="0 0 24 24" fill="none" stroke="%23d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-bos-nepali-date
+<a href="./" class="logo" aria-label="bos-nepali-date home">
+<span class="site-mark" aria-hidden="true">BS</span>
+<span class="logo-copy">bos-nepali-date<small>React package</small></span>
 </a>
-<nav>
+<nav aria-label="Primary navigation">
 <a href="./">Home</a>
-<a href="documentation.html" class="active">Docs</a>
+<a href="documentation.html" class="active">Documentation</a>
 <a href="demo.html">Demo</a>
-<a href="roadmap.html">Roadmap</a>
-<a href="changelogs.html">Changelogs</a>
-<a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
+<a href="changelogs.html">Releases</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank" rel="noreferrer">GitHub</a>
 </nav>
 <div class="nav-btns">
-<button class="nav-btn" id="theme-btn" aria-label="Toggle theme">🌙</button>
+<button class="nav-btn" id="theme-btn" type="button" aria-label="Use dark theme">☾</button>
+<button class="nav-btn nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
 </div>
 </div>
 </header>
 <main class="docs-layout">
 <nav class="toc" aria-label="Table of contents">
-<div class="toc-label">On this page</div>
+<div class="toc-label">Guide contents</div>
+<div class="toc-search">
+<label for="docs-search">Find a section</label>
+<input id="docs-search" type="search" placeholder="Search sections" autocomplete="off" spellcheck="false">
+<kbd aria-hidden="true">/</kbd>
+</div>
+<p class="toc-search-status" id="docs-search-status" role="status" aria-live="polite"></p>
 <ul class="toc-list">
+<li class="toc-group-label">Start</li>
 <li><a class="toc-link" href="#getting-started">Getting started</a></li>
 <li><a class="toc-link" href="#basic-usage">Basic usage</a></li>
+<li class="toc-group-label">API</li>
 <li><a class="toc-link" href="#common-props">Common props</a></li>
 <li><a class="toc-link sub" href="#basic">Basic</a></li>
 <li><a class="toc-link sub" href="#date-control">Date control</a></li>
@@ -186,28 +196,60 @@ bos-nepali-date
 <li><a class="toc-link sub" href="#customization">Customization</a></li>
 <li><a class="toc-link sub" href="#popover-control">Popover control</a></li>
 <li><a class="toc-link sub" href="#events">Events</a></li>
+<li class="toc-group-label">Components</li>
 <li><a class="toc-link" href="#nepali-date-picker">NepaliDatePicker</a></li>
 <li><a class="toc-link" href="#range-picker">NepaliDateRangePicker</a></li>
 <li><a class="toc-link sub" href="#range-behavior">Range selection behavior</a></li>
+<li><a class="toc-link sub" href="#sidebar-presets">Sidebar presets</a></li>
+<li class="toc-group-label">Customize</li>
 <li><a class="toc-link" href="#disable-options">Disable options</a></li>
 <li><a class="toc-link" href="#menu-options">Menu options</a></li>
 <li><a class="toc-link" href="#classnames-and-styles">classNames &amp; styles</a></li>
 <li><a class="toc-link" href="#styling">Styling</a></li>
+<li class="toc-group-label">Advanced</li>
 <li><a class="toc-link" href="#adapter">Adapter</a></li>
 <li><a class="toc-link" href="#typescript">TypeScript</a></li>
 <li><a class="toc-link" href="#accessibility">Accessibility</a></li>
 </ul>
 </nav>
 <div class="content">
+<div class="docs-mobile-index">
+<label for="docs-jump">Jump to a section</label>
+<select id="docs-jump">
+<option value="">Choose a section…</option>
+<option value="getting-started">Getting started</option>
+<option value="basic-usage">Basic usage</option>
+<option value="common-props">Common props</option>
+<option value="nepali-date-picker">NepaliDatePicker</option>
+<option value="range-picker">NepaliDateRangePicker</option>
+<option value="disable-options">Disable options</option>
+<option value="menu-options">Menu options</option>
+<option value="classnames-and-styles">classNames &amp; styles</option>
+<option value="styling">Styling</option>
+<option value="adapter">Adapter</option>
+<option value="typescript">TypeScript</option>
+<option value="accessibility">Accessibility</option>
+</select>
+</div>
+<p class="docs-kicker">Guide &amp; API reference</p>
 <h1>Documentation</h1>
-<p>Complete API reference and usage guide for <strong>bos-nepali-date</strong> — a React component for selecting Bikram Sambat (Nepali) dates with a pluggable conversion engine. API design follows <a href="https://ant.design/components/date-picker" target="_blank">Ant Design DatePicker</a> conventions.</p>
-
-<div class="callout"><strong>CSS must be imported separately</strong> — the npm package does not auto-inject styles. Add one of the following to your app:<br><br><code class="comment">// Option 1 (recommended)</code><br><code><span class="keyword">import</span> <span class="string">'bos-nepali-date/style'</span>;</code><br><br><code class="comment">// Option 2</code><br><code><span class="keyword">import</span> <span class="string">'bos-nepali-date/index.css'</span>;</code><br><br>For the UMD build (docs site), include the CSS file directly:</div>
+<p class="docs-lede">Install the package, render your first Bikram Sambat date picker, then explore components, props, localization, styling, and adapters.</p>
+<div class="docs-quick-links" aria-label="Documentation shortcuts">
+<a href="#getting-started">Install and use</a>
+<a href="#common-props">Browse the API</a>
+<a href="demo.html">Open the demo</a>
+</div>
 
 <!-- ====== Getting Started ====== -->
 <h2 id="getting-started">Getting started</h2>
 
 <pre><span class="keyword">$</span> npm install bos-nepali-date</pre>
+
+<div class="callout docs-import-note">
+<div><strong>Import the stylesheet once</strong><span>The package keeps styles explicit so you control when they load.</span></div>
+<code><span class="keyword">import</span> <span class="string">'bos-nepali-date/style'</span>;</code>
+<details><summary>Alternative import path</summary><code><span class="keyword">import</span> <span class="string">'bos-nepali-date/index.css'</span>;</code></details>
+</div>
 
 <pre><span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">"react"</span>
 <span class="keyword">import</span> { <span class="function">NepaliDatePicker</span>, <span class="function">defaultAdapter</span> } <span class="keyword">from</span> <span class="string">"bos-nepali-date"</span>
@@ -670,6 +712,48 @@ bos-nepali-date
   <td>Quick-select preset ranges displayed as buttons above the footer. Each preset: <code>{ label: string, value: [BsDate, BsDate] }</code>.</td>
 </tr>
 <tr>
+  <td>presetLayout</td>
+  <td><code>'bottom' | 'sidebar'</code></td>
+  <td><code>'bottom'</code></td>
+  <td>Where presets are rendered: <code>'bottom'</code> shows them as buttons above the footer (default). <code>'sidebar'</code> renders them in a left panel with active highlighting, ideal for analytics filters.</td>
+</tr>
+<tr>
+  <td>showHeaderActions</td>
+  <td><code>boolean</code></td>
+  <td><code>false</code></td>
+  <td>Show a header action bar above the calendar with Clear filters link, Cancel, and Apply buttons. Designed for analytics/filter use cases.</td>
+</tr>
+<tr>
+  <td>onApply</td>
+  <td><code>() => void</code></td>
+  <td>—</td>
+  <td>Called when the Apply button is clicked in the header action bar. The popover closes after firing.</td>
+</tr>
+<tr>
+  <td>onCancel</td>
+  <td><code>() => void</code></td>
+  <td>—</td>
+  <td>Called when the Cancel button is clicked in the header action bar. The popover closes after firing.</td>
+</tr>
+<tr>
+  <td>clearFiltersLabel</td>
+  <td><code>string</code></td>
+  <td><code>'Clear filters'</code></td>
+  <td>Custom label for the clear-filters link in the header action bar.</td>
+</tr>
+<tr>
+  <td>customisedLabel</td>
+  <td><code>string</code></td>
+  <td><code>'Customised'</code> / <code>'अनुकूलित'</code></td>
+  <td>Label for the sidebar heading in sidebar mode. Falls back to 'Customised' (English) or 'अनुकूलित' (Nepali) based on <code>menu.lang</code>.</td>
+</tr>
+<tr>
+  <td>renderHeaderActions</td>
+  <td><code>() => React.ReactNode</code></td>
+  <td>—</td>
+  <td>Custom header action bar content, rendered to the left of Clear / Cancel / Apply. Replaces the default clear-filters link.</td>
+</tr>
+<tr>
   <td>name / nameEnd</td>
   <td><code>string</code></td>
   <td>—</td>
@@ -702,6 +786,51 @@ bos-nepali-date
   <li><strong>Input typing:</strong> Both input fields accept typed BS dates in <code>YYYY-MM-DD</code> format (supports Nepali digits).</li>
   <li><strong>Clear button:</strong> Clears both start and end values (when <code>allowClear</code> is enabled).</li>
 </ul>
+
+<h3 id="sidebar-presets">Sidebar presets</h3>
+<p>For analytics and filter use cases, use <code>presetLayout="sidebar"</code> to render presets in a left panel with header actions:</p>
+
+<pre><span class="comment">// Analytics filter-style date range picker</span>
+<span class="keyword">const</span> today = adapter.today();
+<span class="keyword">function</span> <span class="function">addDays</span>(date, n) {
+  <span class="keyword">return</span> adapter.addDays(date, n);
+}
+
+<span class="tag">&lt;NepaliDateRangePicker</span>
+  presetLayout=<span class="string">"sidebar"</span>
+  showHeaderActions
+  onApply={() => <span class="function">handleApply</span>()}
+  onCancel={() => <span class="function">handleCancel</span>()}
+  clearFiltersLabel=<span class="string">"Clear filters"</span>
+  customisedLabel=<span class="string">"Customised"</span>
+  presets={[
+    { label: <span class="string">"Today"</span>, value: [today, today] },
+    { label: <span class="string">"Last 7 Days"</span>, value: [<span class="function">addDays</span>(today, -7), today] },
+    { label: <span class="string">"Last 30 Days"</span>, value: [<span class="function">addDays</span>(today, -30), today] },
+    { label: <span class="string">"Last 3 Months"</span>, value: [<span class="function">addDays</span>(today, -90), today] },
+  ]}
+  onChange={setRange}
+<span class="tag">/&gt;</span> <button class="copy-code-btn" onclick="copyCode(this)">Copy</button></pre>
+
+<div class="callout"><strong>Sidebar mode behavior:</strong> Presets stay open after selection (unlike bottom mode which closes). The active preset is highlighted in the sidebar. The header action bar provides Apply/Cancel for explicit confirmation.</div>
+
+<div class="live-example" id="ex-sidebar">
+  <div class="example-preview loading" id="ex-sidebar-preview"><div class="spinner"></div><span>Loading live example...</span></div>
+  <div class="example-toolbar">
+    <span class="example-label">⏎ Live</span>
+    <label><input type="checkbox" id="ex-sidebar-headeractions" checked> showHeaderActions</label>
+    <div class="tb-divider"></div>
+    <label><input type="checkbox" id="ex-sidebar-allowclear"> allowClear</label>
+    <div class="tb-divider"></div>
+    <select id="ex-sidebar-variant">
+      <option value="outlined" selected>Outlined</option>
+      <option value="filled">Filled</option>
+      <option value="borderless">Borderless</option>
+    </select>
+    <a href="demo.html" class="demo-link">Open full demo →</a>
+  </div>
+  <div class="example-error" id="ex-sidebar-error"></div>
+</div>
 
 <!-- ====== Disable Options ====== -->
 <h2 id="disable-options">Disable options</h2>
@@ -984,11 +1113,17 @@ NepaliDateRangePickerProps</div>
 </table>
 
 </div>
+<aside class="docs-outline" aria-label="In this section">
+<div class="docs-outline-label">In this section</div>
+<p class="docs-outline-section" id="docs-outline-section"></p>
+<ul class="docs-outline-list" id="docs-outline-list"></ul>
+</aside>
 </main>
-<footer>
-<p>bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; <a href="https://github.com/prabin194/bos-nepali-date">GitHub</a> &bull; <a href="https://www.npmjs.com/package/bos-nepali-date">npm</a></p>
+<footer class="site-footer">
+<div class="site-footer-inner"><p>bos-nepali-date · MIT licensed · Built by Prabin Paudel</p><nav class="site-footer-nav" aria-label="Footer navigation"><a href="documentation.html">Documentation</a><a href="demo.html">Demo</a><a href="changelogs.html">Releases</a><a href="https://www.npmjs.com/package/bos-nepali-date">npm</a><a href="https://github.com/prabin194/bos-nepali-date">GitHub</a></nav></div>
 </footer>
-<script src="theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="site.js?v=20260717-10"></script>
 <script>
 // Table of contents — highlight active section on scroll
 (function(){
@@ -1028,6 +1163,154 @@ NepaliDateRangePickerProps</div>
   updateActive();
   window.addEventListener('scroll', updateActive, { passive: true });
   window.addEventListener('resize', updateActive, { passive: true });
+})();
+
+// Documentation finder and compact-layout section jump.
+(function(){
+  var search = document.getElementById('docs-search');
+  var status = document.getElementById('docs-search-status');
+  var list = document.querySelector('.toc-list');
+  var jump = document.getElementById('docs-jump');
+
+  function updateGroups() {
+    if (!list) return;
+    var groups = list.querySelectorAll('.toc-group-label');
+    [].forEach.call(groups, function(group) {
+      var item = group.nextElementSibling;
+      var hasVisibleLink = false;
+      while (item && !item.classList.contains('toc-group-label')) {
+        if (!item.hidden) hasVisibleLink = true;
+        item = item.nextElementSibling;
+      }
+      group.hidden = !hasVisibleLink;
+    });
+  }
+
+  function filterSections() {
+    if (!search || !list) return;
+    var query = search.value.trim().toLowerCase();
+    var links = list.querySelectorAll('.toc-link');
+    var visible = 0;
+    [].forEach.call(links, function(link) {
+      var matches = !query || link.textContent.toLowerCase().indexOf(query) !== -1;
+      link.parentElement.hidden = !matches;
+      if (matches) visible += 1;
+    });
+    updateGroups();
+    if (status) status.textContent = query && !visible ? 'No matching sections' : '';
+  }
+
+  if (search) {
+    search.addEventListener('input', filterSections);
+    search.addEventListener('keydown', function(event) {
+      if (event.key !== 'Escape') return;
+      search.value = '';
+      filterSections();
+      search.blur();
+    });
+  }
+
+  if (jump) {
+    jump.addEventListener('change', function() {
+      var section = document.getElementById(jump.value);
+      if (!section) return;
+      section.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      window.history.replaceState(null, '', '#' + jump.value);
+    });
+  }
+})();
+
+// Contextual outline and previous/next navigation for the long-form guide.
+(function(){
+  var content = document.querySelector('.docs-layout > .content');
+  var sectionLabel = document.getElementById('docs-outline-section');
+  var outlineList = document.getElementById('docs-outline-list');
+  if (!content || !sectionLabel || !outlineList) return;
+
+  var sections = [].slice.call(content.querySelectorAll(':scope > h2[id]'));
+  if (!sections.length) return;
+
+  function sectionDetails(section, index) {
+    var children = [];
+    var node = section.nextElementSibling;
+    while (node && node.tagName !== 'H2') {
+      if (/^H[34]$/.test(node.tagName)) {
+        if (!node.id) node.id = section.id + '-' + String(children.length + 1);
+        children.push(node);
+      }
+      node = node.nextElementSibling;
+    }
+    return { element: section, index: index, children: children };
+  }
+
+  var details = sections.map(sectionDetails);
+  var currentIndex = -1;
+
+  details.forEach(function(detail, index) {
+    var nav = document.createElement('nav');
+    nav.className = 'docs-section-nav';
+    nav.setAttribute('aria-label', 'Documentation section navigation');
+
+    if (index > 0) {
+      var previous = document.createElement('a');
+      previous.href = '#' + details[index - 1].element.id;
+      previous.innerHTML = '<span>Previous</span><strong></strong>';
+      previous.querySelector('strong').textContent = details[index - 1].element.textContent;
+      nav.appendChild(previous);
+    }
+    if (index < details.length - 1) {
+      var next = document.createElement('a');
+      next.href = '#' + details[index + 1].element.id;
+      next.innerHTML = '<span>Next</span><strong></strong>';
+      next.querySelector('strong').textContent = details[index + 1].element.textContent;
+      if (index === 0) next.className = 'next-only';
+      nav.appendChild(next);
+    }
+
+    var nextSection = sections[index + 1];
+    if (nextSection) content.insertBefore(nav, nextSection);
+    else content.appendChild(nav);
+  });
+
+  function renderOutline(index) {
+    if (index === currentIndex) return;
+    currentIndex = index;
+    var detail = details[index];
+    sectionLabel.textContent = detail.element.textContent;
+    outlineList.replaceChildren();
+
+    var targets = detail.children.length ? detail.children : [detail.element];
+    targets.forEach(function(heading) {
+      var item = document.createElement('li');
+      var link = document.createElement('a');
+      link.href = '#' + heading.id;
+      link.textContent = heading.textContent;
+      item.appendChild(link);
+      outlineList.appendChild(item);
+    });
+  }
+
+  function updateOutline() {
+    var index = 0;
+    for (var i = details.length - 1; i >= 0; i--) {
+      if (details[i].element.getBoundingClientRect().top <= 110) {
+        index = i;
+        break;
+      }
+    }
+    renderOutline(index);
+
+    var links = outlineList.querySelectorAll('a');
+    var active = null;
+    [].forEach.call(links, function(link) {
+      var heading = document.getElementById(link.hash.slice(1));
+      if (heading && heading.getBoundingClientRect().top <= 130) active = link;
+    });
+    [].forEach.call(links, function(link) { link.classList.toggle('active', link === active); });
+  }
+
+  updateOutline();
+  window.addEventListener('scroll', updateOutline, { passive: true });
 })();
 
 // ── Copy code button ──
@@ -1194,6 +1477,62 @@ function copyCode(btn) {
         if (el) {
           el.addEventListener('change', renderFeatured);
           el.addEventListener('input', renderFeatured);
+        }
+      });
+    })();
+
+    // ── Example: Sidebar preset layout ──
+    ;(function(){
+      var container = document.getElementById('ex-sidebar');
+      if (!container) return;
+
+      var preview = container.querySelector('.example-preview');
+      var errorEl = container.querySelector('.example-error');
+      var sidebarRoot = null;
+
+      function renderSidebar() {
+        preview.classList.remove('loading');
+        if (errorEl) errorEl.style.display = 'none';
+        if (!sidebarRoot) sidebarRoot = RD.createRoot(preview);
+
+        var showHeader = (document.getElementById('ex-sidebar-headeractions') || {}).checked || false;
+        var allowClear = (document.getElementById('ex-sidebar-allowclear') || {}).checked || false;
+        var variant = (document.getElementById('ex-sidebar-variant') || {}).value || 'outlined';
+
+        var today = adapter.today();
+        function addDays(d, n) { var r = adapter.addDays(d, n); return { year: r.year, month: r.month, day: r.day }; }
+
+        var props = {
+          adapter: adapter,
+          presetLayout: 'sidebar',
+          variant: variant,
+          allowClear: allowClear,
+          presets: [
+            { label: 'Today', value: [today, today] },
+            { label: 'Last 3 Days', value: [addDays(today, -3), today] },
+            { label: 'Last 7 Days', value: [addDays(today, -7), today] },
+            { label: 'Last 30 Days', value: [addDays(today, -30), today] },
+            { label: 'Last 3 Months', value: [addDays(today, -90), today] },
+          ],
+          onChange: function() {},
+        };
+
+        if (showHeader) {
+          props.showHeaderActions = true;
+          props.onApply = function() {};
+          props.onCancel = function() {};
+        }
+
+        sidebarRoot.render(h(RangePicker, props));
+      }
+
+      renderSidebar();
+      var ids = ['ex-sidebar-headeractions','ex-sidebar-allowclear','ex-sidebar-variant'];
+      ids.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('change', renderSidebar);
+          el.addEventListener('input', renderSidebar);
         }
       });
     })();

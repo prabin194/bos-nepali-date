@@ -1,61 +1,36 @@
-import React, { useCallback, useMemo, useState, useReducer, useLayoutEffect } from 'react';
+import React, { useCallback, useMemo, useState, useReducer } from 'react';
 import { createPortal } from 'react-dom';
 import { BsAdapter, BsDate, DateFormat } from '../types';
 import { CalendarGrid, CellRenderInfo } from './CalendarGrid';
 import { defaultAdapter } from '../adapter/memoryAdapter';
-import { bsMonthNames, bsMonthNamesNe } from '../adapter/bsTable';
 import { useEffect, useRef } from 'react';
 import { cn } from '../utils/classnames';
 import { PickerInput } from './PickerInput';
 import { PickerHeader } from './PickerHeader';
 import { PickerFooter } from './PickerFooter';
-import { formatBs, normalizeDigitsToAscii, parseBs, toNepaliDigits, getFormatInfo, generateInputPattern } from './pickerUtils';
+import { formatBs, normalizeDigitsToAscii, parseBs, getFormatInfo, generateInputPattern } from './pickerUtils';
 import { pickerUIReducer } from './pickerReducer';
-
-export type DisableOptions = {
-  today?: boolean;
-  date?: BsDate;
-  dates?: BsDate[];
-  before?: BsDate;
-  after?: BsDate;
-};
-
-export type MenuOptions = {
-  showMonth?: boolean;
-  showYear?: boolean;
-  firstDayOfWeek?: 0 | 1;
-  lang?: 'en' | 'ne';
-  /** Constrain the year dropdown to a custom range. */
-  yearRange?: { min?: number; max?: number };
-};
-
-export type PickerSize = 'small' | 'middle' | 'large';
-export type PickerStatus = 'error' | 'warning';
-export type PickerVariant = 'outlined' | 'filled' | 'borderless' | 'underlined';
-export type PickerPlacement = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight';
+import { createDisabledDatePredicate, getYearOptions, maskDateInput, shiftMonth as shiftPickerMonth } from './pickerCore';
+import { usePickerPopover } from './usePickerPopover';
+import { resolvePickerLocale } from './pickerLocales';
+import { usePickerDisclosure } from './usePickerDisclosure';
+import type {
+  DisableOptions,
+  MenuOptions,
+  PickerClassNames,
+  PickerPlacement,
+  PickerSize,
+  PickerStatus,
+  PickerStyles,
+  PickerVariant,
+} from './pickerTypes';
+export type { DisableOptions, MenuOptions, PickerPlacement, PickerSize, PickerStatus, PickerVariant } from './pickerTypes';
 
 const EMPTY_DATES: BsDate[] = [];
 const EMPTY_DISABLE: DisableOptions = {};
 const EMPTY_MENU: MenuOptions = {};
 const EMPTY_STYLES = {} as PickerStyles;
 const EMPTY_CLASSNAMES = {} as PickerClassNames;
-
-type PickerClassNames = {
-  input?: string;
-  popup?: string;
-  header?: string;
-  grid?: string;
-  cell?: string;
-  footer?: string;
-};
-
-type PickerStyles = {
-  input?: React.CSSProperties;
-  popup?: React.CSSProperties;
-  header?: React.CSSProperties;
-  grid?: React.CSSProperties;
-  footer?: React.CSSProperties;
-};
 
 export type NepaliDatePickerProps = {
   label?: string;
@@ -164,6 +139,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     firstDayOfWeek = 0,
     lang = 'en',
     yearRange,
+    locale: localeOverride,
   } = menu;
 
   const isValueControlled = value !== undefined;
@@ -178,100 +154,47 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
   });
   const { open: internalOpen, monthOpen, yearOpen, viewMonth } = uiState;
 
-  const isControlled = controlledOpen !== undefined;
-  const isPickerOpen = isControlled ? controlledOpen : internalOpen;
-
-  const onOpenChangeRef = useRef(onOpenChange);
-  onOpenChangeRef.current = onOpenChange;
   const onPanelChangeRef = useRef(onPanelChange);
   onPanelChangeRef.current = onPanelChange;
-  const isControlledRef = useRef(isControlled);
-  isControlledRef.current = isControlled;
+  const { isOpen: isPickerOpen, open: openPicker, close: closePicker, toggle: togglePicker } = usePickerDisclosure({
+    controlledOpen,
+    internalOpen,
+    dispatch,
+    onOpenChange,
+  });
 
   const formatInfo = useMemo(() => getFormatInfo(dateFormat), [dateFormat]);
 
   const resolvedInputPattern = inputPattern ?? generateInputPattern(dateFormat);
 
   const [input, setInput] = useState(() => formatBs(resolvedValue, dateFormat));
-  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const popoverRef = useRef<HTMLDivElement | null>(null);
   const monthMenuRef = useRef<HTMLDivElement | null>(null);
   const yearMenuRef = useRef<HTMLDivElement | null>(null);
   const announceRef = useRef<HTMLDivElement | null>(null);
   const uniqueId = useRef(`np-date-input-${Math.random().toString(36).slice(2, 9)}`).current;
+  const { wrapperRef, popoverRef, popoverStyle, popoverContainer, openSource, returnFocus } = usePickerPopover({
+    isOpen: isPickerOpen,
+    placement,
+    preferredWidth: 320,
+    minimumWidth: 280,
+    flipThreshold: 320,
+    repositionToken: `${monthOpen}:${yearOpen}:${viewMonth.year}:${viewMonth.month}`,
+    getPopupContainer,
+    onRequestClose: closePicker,
+  });
 
-  useEffect(() => {
-    if (isPickerOpen) {
-      requestAnimationFrame(() => {
-        const firstFocusable = popoverRef.current?.querySelector<HTMLElement>('button:not([disabled]),input:not([disabled])');
-        firstFocusable?.focus();
-      });
-    }
-  }, [isPickerOpen]);
-
-  const safeDiffDays = useCallback((date1: BsDate, date2: BsDate): number | null => {
-    try {
-      return adapter.diffDays(date1, date2);
-    } catch {
-      return null;
-    }
-  }, [adapter]);
-
-  function shiftMonth(base: BsDate, direction: 1 | -1): BsDate | null {
-    try {
-      // (33 - day) days forward or (day) days back always crosses exactly one month boundary
-      const jump = direction === 1 ? 33 - base.day : base.day;
-      const next = adapter.addDays(base, direction * jump);
-      return { year: next.year, month: next.month, day: 1 };
-    } catch {
-      return null;
-    }
-  }
+  const shiftMonth = useCallback(
+    (base: BsDate, direction: 1 | -1) => shiftPickerMonth(adapter, base, direction),
+    [adapter]
+  );
 
   const isDateDisabled = useMemo(() => {
-    return (date: BsDate) => {
-      const clampMinDiff = minDate ? safeDiffDays(minDate, date) : null;
-      const clampMaxDiff = maxDate ? safeDiffDays(date, maxDate) : null;
-      const todayDiff = disableToday ? safeDiffDays(adapter.today(), date) : null;
-      const singleDiff = disableDate ? safeDiffDays(disableDate, date) : null;
-      const clampMin = clampMinDiff === null ? true : clampMinDiff >= 0;
-      const clampMax = clampMaxDiff === null ? true : clampMaxDiff >= 0;
-      const isToday = disableToday && todayDiff === 0;
-      const isSingle = singleDiff === 0;
-      const isList = disableDates.some((d) => safeDiffDays(d, date) === 0);
-      const beforeDiff = disableBefore ? safeDiffDays(date, disableBefore) : null;
-      const afterDiff = disableAfter ? safeDiffDays(disableAfter, date) : null;
-      const isBefore = beforeDiff === null ? false : beforeDiff > 0;
-      const isAfter = afterDiff === null ? false : afterDiff > 0;
-      const fromCallback = disabledDate?.(date) ?? false;
-      return !clampMin || !clampMax || isToday || isSingle || isList || isBefore || isAfter || fromCallback;
-    };
-  }, [adapter, safeDiffDays, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter, disabledDate]);
-
-  function openPicker() {
-    const cb = onOpenChangeRef.current;
-    if (cb) cb(true);
-    if (!isControlledRef.current) dispatch({ type: 'OPEN' });
-  }
-
-  function closePicker() {
-    const cb = onOpenChangeRef.current;
-    if (cb) cb(false);
-    if (!isControlledRef.current) dispatch({ type: 'CLOSE' });
-  }
+    return createDisabledDatePredicate({ adapter, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter, disabledDate });
+  }, [adapter, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter, disabledDate]);
 
   function closePickerAndReturnFocus() {
     closePicker();
-    requestAnimationFrame(() => {
-      wrapperRef.current?.querySelector<HTMLElement>('input')?.focus();
-    });
-  }
-
-  function togglePicker() {
-    const cb = onOpenChangeRef.current;
-    if (cb) cb(!isPickerOpen);
-    if (!isControlledRef.current) dispatch({ type: 'TOGGLE_OPEN' });
+    returnFocus();
   }
 
   useEffect(() => {
@@ -287,15 +210,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const normalized = normalizeDigitsToAscii(e.target.value);
-    const maxDigits = formatInfo.tokens.reduce((s, t) => s + (t === 'M' || t === 'D' ? 2 : t === 'YY' ? 2 : 4), 0);
-    const digits = normalized.replace(/[^0-9]/g, '').slice(0, maxDigits);
-    let next = digits;
-    for (let i = formatInfo.insertPositions.length - 1; i >= 0; i--) {
-      const pos = formatInfo.insertPositions[i];
-      if (next.length > pos) {
-        next = next.slice(0, pos) + formatInfo.separator + next.slice(pos);
-      }
-    }
+    const next = maskDateInput(normalized, formatInfo);
     setInput(next);
     if (next.length < formatInfo.minFullLength) return;
     const parsed = parseBs(next, dateFormat);
@@ -305,6 +220,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
       const bs = adapter.toBS(iso);
       if (bs.year === parsed.year && bs.month === parsed.month && bs.day === parsed.day && !isDateDisabled(parsed)) {
         onChange?.(parsed);
+        if (!isValueControlled) setInternalValue(parsed);
         dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...parsed, day: 1 } });
       }
     } catch {
@@ -347,132 +263,16 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
     handleSelect(t);
   }
 
-  const isNepali = lang === 'ne';
-  const monthList = isNepali ? bsMonthNamesNe : bsMonthNames;
+  const locale = resolvePickerLocale(lang, localeOverride);
+  const monthList = locale.monthNames;
   const monthName = monthList[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
   const placeholderText = placeholder ?? `${dateFormat} (BS)`;
   const canMovePrev = shiftMonth(viewMonth, -1) !== null;
   const canMoveNext = shiftMonth(viewMonth, 1) !== null;
   const rangeMinYear = yearRange?.min ?? adapter.range?.min?.year;
   const rangeMaxYear = yearRange?.max ?? adapter.range?.max?.year;
-  const yearOptions =
-    rangeMinYear !== undefined && rangeMaxYear !== undefined && rangeMaxYear >= rangeMinYear
-      ? Array.from({ length: rangeMaxYear - rangeMinYear + 1 }, (_, i) => rangeMinYear + i)
-      : rangeMinYear !== undefined && rangeMaxYear === undefined
-      ? Array.from({ length: Math.max(1, viewMonth.year - rangeMinYear + 1) }, (_, i) => rangeMinYear + i)
-      : rangeMinYear === undefined && rangeMaxYear !== undefined
-      ? Array.from({ length: Math.max(1, rangeMaxYear - viewMonth.year + 1) }, (_, i) => viewMonth.year + i)
-      : [viewMonth.year];
+  const yearOptions = getYearOptions(viewMonth.year, rangeMinYear, rangeMaxYear);
 
-  function updatePopoverPosition() {
-    if (!wrapperRef.current || typeof window === 'undefined') return;
-
-    const rect = wrapperRef.current.getBoundingClientRect();
-    const gap = 8;
-    const viewportPadding = 12;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const maxWidth = Math.max(0, Math.min(320, viewportWidth - viewportPadding * 2));
-    const width = Math.max(0, Math.min(maxWidth, Math.max(rect.width, 280)));
-
-    const opensUp = placement === 'topLeft' || placement === 'topRight';
-    const alignsRight = placement === 'bottomRight' || placement === 'topRight';
-
-    let left: number;
-    if (alignsRight) {
-      left = rect.right - width;
-    } else {
-      left = rect.left;
-    }
-
-    if (left + width > viewportWidth - viewportPadding) {
-      left = viewportWidth - width - viewportPadding;
-    }
-    left = Math.max(viewportPadding, left);
-
-    const spaceBelow = viewportHeight - rect.bottom;
-    const spaceAbove = rect.top;
-    const effectiveOpenUp = opensUp || (spaceBelow < 320 && spaceAbove > spaceBelow);
-
-    const top = effectiveOpenUp
-      ? Math.max(viewportPadding, rect.top - gap)
-      : Math.min(viewportHeight - viewportPadding, rect.bottom + gap);
-
-    setPopoverStyle({
-      position: 'fixed',
-      top,
-      left,
-      width,
-      maxWidth: `calc(100vw - ${viewportPadding * 2}px)`,
-      zIndex: 9999,
-      transform: effectiveOpenUp ? 'translateY(-100%)' : undefined,
-    });
-  }
-
-  useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      const target = e.target as Node;
-      if (wrapperRef.current?.contains(target)) return;
-      if (popoverRef.current?.contains(target)) return;
-      closePicker();
-    }
-    document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
-  }, []);
-
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (!isPickerOpen) return;
-      if (e.key === 'Escape') {
-        closePicker();
-        return;
-      }
-      if (e.key === 'Tab' && popoverRef.current) {
-        const focusables = Array.from(
-          popoverRef.current.querySelectorAll<HTMLElement>('button,input')
-        ).filter((el) => !el.hasAttribute('disabled'));
-        if (focusables.length === 0) return;
-        const currentIndex = focusables.indexOf(document.activeElement as HTMLElement);
-        let nextIndex = currentIndex;
-        if (e.shiftKey) {
-          nextIndex = currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1;
-        } else {
-          nextIndex = currentIndex === -1 || currentIndex === focusables.length - 1 ? 0 : currentIndex + 1;
-        }
-        if (nextIndex !== currentIndex) {
-          e.preventDefault();
-          focusables[nextIndex].focus();
-        }
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [isPickerOpen]);
-
-  useLayoutEffect(() => {
-    if (!isPickerOpen) return;
-
-    updatePopoverPosition();
-
-    let rafId = 0;
-    function onReposition() {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = 0;
-        updatePopoverPosition();
-      });
-    }
-
-    window.addEventListener('resize', onReposition);
-    window.addEventListener('scroll', onReposition, true);
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', onReposition);
-      window.removeEventListener('scroll', onReposition, true);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPickerOpen, monthOpen, yearOpen, viewMonth.year, viewMonth.month]);
 
   function handleToggleMonth() {
     const wasOpen = monthOpen;
@@ -498,18 +298,18 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
 
   function handleInputFocus() {
     onFocusProp?.();
-    if (!isPickerDisabled) openPicker();
+    if (!isPickerDisabled) {
+      openSource.current = 'input';
+      openPicker();
+    }
   }
 
   function handleInputToggle() {
-    if (!isPickerDisabled) togglePicker();
+    if (!isPickerDisabled) {
+      openSource.current = 'toggle';
+      togglePicker();
+    }
   }
-
-  const popoverContainer = getPopupContainer && wrapperRef.current
-    ? getPopupContainer(wrapperRef.current)
-    : typeof document !== 'undefined'
-    ? document.body
-    : null;
 
   const pickerClasses = cn(
     'np-picker',
@@ -559,7 +359,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
               ref={popoverRef}
             >
                 <div aria-live="polite" aria-atomic="true" ref={announceRef} className="np-sr-only">
-                  {monthName} {isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}
+                  {monthName} {locale.formatNumber(viewMonth.year)}
                 </div>
                 <PickerHeader
                   showMonth={showMonth}
@@ -569,7 +369,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                   viewYear={viewMonth.year}
                   viewMonth={viewMonth.month}
                   yearOptions={yearOptions}
-                  isNepali={isNepali}
+                  formatNumber={locale.formatNumber}
                   monthOpen={monthOpen}
                   yearOpen={yearOpen}
                   canMovePrev={canMovePrev}
@@ -600,10 +400,10 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                   className={semanticClassNames?.grid}
                   cellClassName={semanticClassNames?.cell}
                   cellRender={cellRender}
-                  monthNames={isNepali ? bsMonthNamesNe : bsMonthNames}
-                  isNepali={isNepali}
-                  dowLabels={isNepali ? ['आ','सो','मं','बु','बि','शु','श'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']}
-                  formatDay={(d) => (isNepali ? toNepaliDigits(d) : String(d))}
+                  monthNames={locale.monthNames}
+                  dowLabels={locale.weekdays}
+                  formatDay={locale.formatNumber}
+                  formatYear={locale.formatNumber}
                 />
               {renderExtraFooter && (
                 <div className="np-extra-footer np-footer__extra">
@@ -611,7 +411,7 @@ export const NepaliDatePicker: React.FC<NepaliDatePickerProps> = ({
                 </div>
               )}
               <PickerFooter
-                isNepali={isNepali}
+                locale={locale}
                 onClear={handleClear}
                 onToday={handleToday}
                 className={semanticClassNames?.footer}

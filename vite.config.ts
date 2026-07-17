@@ -17,10 +17,13 @@ export default defineConfig({
       name: 'BosNepaliDate',
       formats: ['umd'],
       fileName: () => 'bos-nepali-date.umd.js',
+      cssFileName: 'bos-nepali-date',
     },
     rollupOptions: {
       external: ['react', 'react-dom'],
       output: {
+        assetFileNames: (assetInfo) =>
+          assetInfo.name === 'style.css' ? 'bos-nepali-date.css' : '[name][extname]',
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',

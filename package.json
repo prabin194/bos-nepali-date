@@ -1,6 +1,6 @@
 {
   "name": "bos-nepali-date",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Reusable React Bikram Sambat (Nepali) date picker with pluggable conversion engine.",
   "license": "MIT",
@@ -32,6 +32,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "docs:build-bundle": "vite build --outDir docs --emptyOutDir false",
     "docs:build-index": "node scripts/build-search-index.js",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "typecheck": "tsc --noEmit",
@@ -84,6 +85,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^10.4.5",
+    "gsap": "^3.15.0",
     "jsdom": "^24.0.0",
     "playwright": "^1.60.0",
     "storybook": "^10.4.4",

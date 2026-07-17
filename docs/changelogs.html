@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://prabin194.github.io/bos-nepali-date/changelogs.html">
 <meta name="twitter:card" content="summary_large_image">
-<title>Changelogs — bos-nepali-date</title>
+<title>Releases — bos-nepali-date</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -74,30 +74,40 @@ footer a{color:var(--accent);text-decoration:none}
   main{padding:32px 16px 60px}
 }
 </style>
+<link rel="stylesheet" href="site.css?v=20260717-12">
 </head>
 <body>
-<header>
+<header class="site-header">
 <div class="header-inner">
-<a href="./" class="logo">
-<svg viewBox="0 0 24 24" fill="none" stroke="%23d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-bos-nepali-date
+<a href="./" class="logo" aria-label="bos-nepali-date home">
+<span class="site-mark" aria-hidden="true">BS</span>
+<span class="logo-copy">bos-nepali-date<small>React package</small></span>
 </a>
-<nav>
+<nav aria-label="Primary navigation">
 <a href="./">Home</a>
-<a href="documentation.html">Docs</a>
-<a href="roadmap.html">Roadmap</a>
-<a href="changelogs.html" class="active">Changelogs</a>
-<a href="https://github.com/prabin194/bos-nepali-date" target="_blank">GitHub</a>
+<a href="documentation.html">Documentation</a>
+<a href="demo.html">Demo</a>
+<a href="changelogs.html" class="active">Releases</a>
+<a href="https://github.com/prabin194/bos-nepali-date" target="_blank" rel="noreferrer">GitHub</a>
 </nav>
 <div class="nav-btns">
-<button class="nav-btn" id="theme-btn" aria-label="Toggle theme">🌙</button>
+<button class="nav-btn" id="theme-btn" type="button" aria-label="Use dark theme">☾</button>
+<button class="nav-btn nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
 </div>
 </div>
 </header>
 <main>
 <div class="page-header">
-<h1>Changelogs</h1>
-<p>All releases, improvements, and fixes for bos-nepali-date.</p>
+<div class="release-heading">
+<p class="release-kicker">Package history</p>
+<h1>Releases</h1>
+<p>Version history, breaking changes, improvements, and fixes for bos-nepali-date.</p>
+</div>
+<div class="release-summary" aria-label="Release summary">
+<span>Release archive</span>
+<strong>11 documented versions</strong>
+<a href="https://www.npmjs.com/package/bos-nepali-date" target="_blank" rel="noreferrer">View package on npm ↗</a>
+</div>
 </div>
 
 <ol class="changelog">
@@ -105,8 +115,46 @@ bos-nepali-date
 <li class="entry">
 <div class="dot"></div>
 <div class="version-header">
-<span class="version">v0.2.0</span>
+<span class="version">v1.0.0</span>
 <span class="tag latest">Latest</span>
+<time class="release-date" datetime="2026-07-17">17 Jul 2026</time>
+<a class="commit-link" href="https://github.com/prabin194/bos-nepali-date/releases/tag/v1.0.0" target="_blank" rel="noreferrer">release v1.0.0 ↗</a>
+</div>
+<div class="title">First stable release: production picker APIs and a complete package website</div>
+<ul class="changes">
+<li><span class="emoji">📊</span><span class="desc">Added analytics-ready range presets with sidebar and bottom layouts, active preset states, and optional Clear, Cancel, and Apply header actions.</span></li>
+<li><span class="emoji">🌐</span><span class="desc">Added injectable picker locales and exported locale, styling, preset, calendar adapter, and semantic class-name contracts for application-level customization.</span></li>
+<li><span class="emoji">🧱</span><span class="desc">Refactored picker state, popover disclosure, localization, and shared behavior into focused modules while preserving the public component surface.</span></li>
+<li><span class="emoji">📅</span><span class="desc">Hardened <code>MemoryBsAdapter</code> validation and ordinal date arithmetic across table boundaries, long months, and unsupported ranges.</span></li>
+<li><span class="emoji">✅</span><span class="desc">Fixed uncontrolled typed-date commits and prevented disabled adjacent-month cells from receiving range highlighting or selection.</span></li>
+<li><span class="emoji">🧪</span><span class="desc">Expanded regression coverage to 177 passing tests across the adapter, single picker, range picker, locales, and dual-month behavior.</span></li>
+<li><span class="emoji">📚</span><span class="desc">Rebuilt the package website with responsive documentation, global keyboard search, contextual navigation, interactive demos, release notes, light-first theming, and accessible mobile controls.</span></li>
+</ul>
+</li>
+
+<li class="entry">
+<div class="dot"></div>
+<div class="version-header">
+<span class="version">v0.3.0</span>
+<time class="release-date" datetime="2026-07-14">14 Jul 2026</time>
+<a class="commit-link" href="https://github.com/prabin194/bos-nepali-date/commit/d13ebf0a7f95c6506ab0e673145983d6202e7ef7" target="_blank" rel="noreferrer">commit d13ebf0 ↗</a>
+</div>
+<div class="title">Picker architecture, keyboard navigation, and flexible formatting</div>
+<ul class="changes">
+<li><span class="emoji">🧩</span><span class="desc">Refactored single and range pickers around shared state and utility modules, including the new <code>pickerReducer</code>, to reduce duplicated interaction logic.</span></li>
+<li><span class="emoji">⌨️</span><span class="desc">Added calendar-grid keyboard navigation and focus management with arrow keys, Enter/Space selection, focused-cell styling, and disabled-cell handling.</span></li>
+<li><span class="emoji">📅</span><span class="desc">Added configurable input formats through the exported <code>DateFormat</code> type, format-aware parsing, and generated native input patterns.</span></li>
+<li><span class="emoji">🔄</span><span class="desc">Improved controlled range synchronization and typed start/end date behavior, backed by new regression coverage.</span></li>
+<li><span class="emoji">⚡</span><span class="desc">Optimized <code>MemoryBsAdapter.addDays</code> by skipping whole years and months before processing the remaining days.</span></li>
+<li><span class="emoji">🎨</span><span class="desc">Reworked picker headers and design tokens for clearer responsive controls, focus states, and consistent dark-mode surfaces.</span></li>
+<li><span class="emoji">🖥️</span><span class="desc">Updated the live demo with selected single/range value readouts and rebuilt the browser UMD bundle for the release.</span></li>
+</ul>
+</li>
+
+<li class="entry">
+<div class="dot"></div>
+<div class="version-header">
+<span class="version">v0.2.0</span>
 <span class="tag breaking">Breaking</span>
 </div>
 <div class="title">CSS externalized, bundle optimized, data flattened</div>
@@ -228,9 +276,10 @@ bos-nepali-date
 </li>
 </ol>
 </main>
-<footer>
-<p>bos-nepali-date &mdash; MIT &copy; Prabin Paudel &bull; <a href="https://github.com/prabin194/bos-nepali-date">GitHub</a> &bull; <a href="https://www.npmjs.com/package/bos-nepali-date">npm</a></p>
+<footer class="site-footer">
+<div class="site-footer-inner"><p>bos-nepali-date · MIT licensed · Built by Prabin Paudel</p><nav class="site-footer-nav" aria-label="Footer navigation"><a href="documentation.html">Documentation</a><a href="demo.html">Demo</a><a href="changelogs.html">Releases</a><a href="https://www.npmjs.com/package/bos-nepali-date">npm</a><a href="https://github.com/prabin194/bos-nepali-date">GitHub</a></nav></div>
 </footer>
-<script src="theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="site.js?v=20260717-10"></script>
 </body>
 </html>

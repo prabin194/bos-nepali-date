@@ -1,25 +1,31 @@
-import React, { useCallback, useMemo, useState, useReducer, useLayoutEffect } from 'react';
+import React, { useCallback, useMemo, useState, useReducer } from 'react';
 import { createPortal } from 'react-dom';
 import { BsAdapter, BsDate, DateFormat } from '../types';
 import { CalendarGrid } from './CalendarGrid';
 import { defaultAdapter } from '../adapter/memoryAdapter';
-import { bsMonthNames, bsMonthNamesNe } from '../adapter/bsTable';
 import { useEffect, useRef } from 'react';
 import { cn } from '../utils/classnames';
 import { PickerFooter } from './PickerFooter';
-import { formatBs, normalizeDigitsToAscii, parseBs, toNepaliDigits, getFormatInfo, generateInputPattern } from './pickerUtils';
+import { formatBs, normalizeDigitsToAscii, parseBs, getFormatInfo, generateInputPattern } from './pickerUtils';
 import type { CellRenderInfo } from './CalendarGrid';
-import type { DisableOptions, MenuOptions, PickerSize, PickerStatus, PickerVariant, PickerPlacement } from './NepaliDatePicker';
+import type { DisableOptions, MenuOptions, PickerClassNames, PickerSize, PickerStatus, PickerStyles, PickerVariant, PickerPlacement } from './pickerTypes';
 import { pickerUIReducer } from './pickerReducer';
+import { createDisabledDatePredicate, getYearOptions, maskDateInput, safeDiffDays as compareDays, shiftMonth as shiftPickerMonth } from './pickerCore';
+import { usePickerPopover } from './usePickerPopover';
+import { resolvePickerLocale } from './pickerLocales';
+import { usePickerDisclosure } from './usePickerDisclosure';
 
 // Re-export types shared with single picker
-export type { DisableOptions, MenuOptions, PickerSize, PickerStatus, PickerVariant, PickerPlacement };
+export type { DisableOptions, MenuOptions, PickerSize, PickerStatus, PickerVariant, PickerPlacement } from './pickerTypes';
 
 /** A single preset entry for quick range selection. */
 export type Preset = {
   label: string;
   value: [BsDate, BsDate];
 };
+
+/** How presets are displayed in the popover. */
+export type PresetLayout = 'bottom' | 'sidebar';
 
 const EMPTY_DATES: BsDate[] = [];
 const EMPTY_DISABLE: DisableOptions = {};
@@ -85,10 +91,24 @@ export type NepaliDateRangePickerProps = {
   nameEnd?: string;
   /** Quick-select preset ranges displayed above the footer. */
   presets?: Preset[];
+  /** Where to render presets: 'bottom' (above footer) or 'sidebar' (left panel). @default 'bottom' */
+  presetLayout?: PresetLayout;
+  /** Header action bar shown above the calendar. Set `true` to display Clear filters / Cancel / Apply buttons. */
+  showHeaderActions?: boolean;
+  /** Called when the Apply button is clicked (header action bar). */
+  onApply?: () => void;
+  /** Called when the Cancel button is clicked (header action bar). */
+  onCancel?: () => void;
+  /** Label for the clear-filters link in the header action bar. @default 'Clear filters' */
+  clearFiltersLabel?: string;
+  /** Custom header action bar rendered to the left of Clear / Cancel / Apply. */
+  renderHeaderActions?: () => React.ReactNode;
+  /** Label for the "Customised" heading in sidebar mode. Falls back to 'Customised' (en) or 'अनुकूलित' (ne). */
+  customisedLabel?: string;
   /** Semantic class names for sub-elements. Keys: input, popup, header, grid, cell, footer. */
-  classNames?: { input?: string; popup?: string; header?: string; grid?: string; cell?: string; footer?: string };
+  classNames?: PickerClassNames;
   /** Semantic inline styles for sub-elements. */
-  styles?: { input?: React.CSSProperties; popup?: React.CSSProperties; header?: React.CSSProperties; grid?: React.CSSProperties; footer?: React.CSSProperties };
+  styles?: PickerStyles;
   /** Date display/input format. @default 'YYYY-MM-DD' */
   dateFormat?: DateFormat;
 };
@@ -130,6 +150,13 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   name,
   nameEnd,
   presets = EMPTY_PRESETS,
+  presetLayout = 'bottom',
+  showHeaderActions = false,
+  onApply: onApplyProp,
+  onCancel: onCancelProp,
+  clearFiltersLabel = 'Clear filters',
+  renderHeaderActions,
+  customisedLabel: customisedLabelProp,
   classNames: semanticClassNames,
   styles: semanticStyles,
   dateFormat = 'YYYY-MM-DD',
@@ -148,6 +175,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     firstDayOfWeek = 0,
     lang = 'en',
     yearRange,
+    locale: localeOverride,
   } = menu;
 
   const isControlledValue = value !== undefined;
@@ -171,40 +199,40 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   });
   const { open: internalOpen, monthOpen, yearOpen, viewMonth } = uiState;
 
-  const isControlled = controlledOpen !== undefined;
-  const isPickerOpen = isControlled ? controlledOpen : internalOpen;
-
   const rangeStart = isControlledValue ? controlledStart : internalRangeStart;
   const rangeEnd = isControlledValue ? controlledEnd : internalRangeEnd;
 
-  const onOpenChangeRef = useRef(onOpenChange);
-  onOpenChangeRef.current = onOpenChange;
   const onPanelChangeRef = useRef(onPanelChange);
   onPanelChangeRef.current = onPanelChange;
-  const isControlledRef = useRef(isControlled);
-  isControlledRef.current = isControlled;
 
   const [hoverDate, setHoverDate] = useState<BsDate | null>(null);
+  const { isOpen: isPickerOpen, open: openPicker, close: closePicker, toggle: togglePicker } = usePickerDisclosure({
+    controlledOpen,
+    internalOpen,
+    dispatch,
+    onOpenChange,
+    onClose: () => setHoverDate(null),
+  });
   const formatInfo = useMemo(() => getFormatInfo(dateFormat), [dateFormat]);
   const resolvedPattern: string | undefined = inputPattern === false ? undefined : (inputPattern ?? generateInputPattern(dateFormat));
 
   const [startInput, setStartInput] = useState(() => formatBs(rangeStart, dateFormat));
   const [endInput, setEndInput] = useState(() => formatBs(rangeEnd, dateFormat));
-  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const popoverRef = useRef<HTMLDivElement | null>(null);
   const monthMenuRef = useRef<HTMLDivElement | null>(null);
   const yearMenuRef = useRef<HTMLDivElement | null>(null);
   const announceRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (isPickerOpen) {
-      requestAnimationFrame(() => {
-        const firstFocusable = popoverRef.current?.querySelector<HTMLElement>('button:not([disabled]),input:not([disabled])');
-        firstFocusable?.focus();
-      });
-    }
-  }, [isPickerOpen]);
+  const isSidebar = presetLayout === 'sidebar' && presets.length > 0;
+  const popoverWidth = isSidebar ? 680 : 580;
+  const { wrapperRef, popoverRef, popoverStyle, popoverContainer, openSource, returnFocus } = usePickerPopover({
+    isOpen: isPickerOpen,
+    placement,
+    preferredWidth: popoverWidth,
+    minimumWidth: popoverWidth,
+    flipThreshold: 360,
+    repositionToken: `${monthOpen}:${yearOpen}:${viewMonth.year}:${viewMonth.month}:${popoverWidth}`,
+    getPopupContainer,
+    onRequestClose: closePicker,
+  });
 
   // Sync inputs when controlled value changes
   useEffect(() => {
@@ -228,68 +256,22 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
     }
   }, [rangeEnd, rangeStart, adapter]);
 
-  const safeDiffDays = useCallback((date1: BsDate, date2: BsDate): number | null => {
-    try {
-      return adapter.diffDays(date1, date2);
-    } catch {
-      return null;
-    }
-  }, [adapter]);
-
-  function shiftMonth(base: BsDate, direction: 1 | -1): BsDate | null {
-    try {
-      // (33 - day) days forward or (day) days back always crosses exactly one month boundary
-      const jump = direction === 1 ? 33 - base.day : base.day;
-      const next = adapter.addDays(base, direction * jump);
-      return { year: next.year, month: next.month, day: 1 };
-    } catch {
-      return null;
-    }
-  }
+  const safeDiffDays = useCallback(
+    (date1: BsDate, date2: BsDate) => compareDays(adapter, date1, date2),
+    [adapter]
+  );
+  const shiftMonth = useCallback(
+    (base: BsDate, direction: 1 | -1) => shiftPickerMonth(adapter, base, direction),
+    [adapter]
+  );
 
   const isDateDisabled = useMemo(() => {
-    return (date: BsDate) => {
-      const clampMinDiff = minDate ? safeDiffDays(minDate, date) : null;
-      const clampMaxDiff = maxDate ? safeDiffDays(date, maxDate) : null;
-      const todayDiff = disableToday ? safeDiffDays(adapter.today(), date) : null;
-      const singleDiff = disableDate ? safeDiffDays(disableDate, date) : null;
-      const clampMin = clampMinDiff === null ? true : clampMinDiff >= 0;
-      const clampMax = clampMaxDiff === null ? true : clampMaxDiff >= 0;
-      const isToday = disableToday && todayDiff === 0;
-      const isSingle = singleDiff === 0;
-      const isList = disableDates.some((d) => safeDiffDays(d, date) === 0);
-      const beforeDiff = disableBefore ? safeDiffDays(date, disableBefore) : null;
-      const afterDiff = disableAfter ? safeDiffDays(disableAfter, date) : null;
-      const isBefore = beforeDiff === null ? false : beforeDiff > 0;
-      const isAfter = afterDiff === null ? false : afterDiff > 0;
-      const fromCallback = disabledDate?.(date) ?? false;
-      return !clampMin || !clampMax || isToday || isSingle || isList || isBefore || isAfter || fromCallback;
-    };
-  }, [adapter, safeDiffDays, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter, disabledDate]);
-
-  function openPicker() {
-    const cb = onOpenChangeRef.current;
-    if (cb) cb(true);
-    if (!isControlledRef.current) dispatch({ type: 'OPEN' });
-  }
-
-  function closePicker() {
-    setHoverDate(null);
-    const cb = onOpenChangeRef.current;
-    if (cb) cb(false);
-    if (!isControlledRef.current) dispatch({ type: 'CLOSE' });
-  }
+    return createDisabledDatePredicate({ adapter, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter, disabledDate });
+  }, [adapter, minDate, maxDate, disableToday, disableDate, disableDates, disableBefore, disableAfter, disabledDate]);
 
   function closePickerAndReturnFocus() {
     closePicker();
-    requestAnimationFrame(() => {
-      wrapperRef.current?.querySelector<HTMLElement>('input')?.focus();
-    });
-  }
-
-  function togglePicker() {
-    if (onOpenChangeRef.current) onOpenChangeRef.current(!isPickerOpen);
-    if (!isControlledRef.current) dispatch({ type: 'TOGGLE_OPEN' });
+    returnFocus();
   }
 
   function emitRange(start: BsDate | null, end: BsDate | null) {
@@ -342,15 +324,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
 
   function handleStartInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const normalized = normalizeDigitsToAscii(e.target.value);
-    const maxDigits = formatInfo.tokens.reduce((s, t) => s + (t === 'M' || t === 'D' ? 2 : t === 'YY' ? 2 : 4), 0);
-    const digits = normalized.replace(/[^0-9]/g, '').slice(0, maxDigits);
-    let next = digits;
-    for (let i = formatInfo.insertPositions.length - 1; i >= 0; i--) {
-      const pos = formatInfo.insertPositions[i];
-      if (next.length > pos) {
-        next = next.slice(0, pos) + formatInfo.separator + next.slice(pos);
-      }
-    }
+    const next = maskDateInput(normalized, formatInfo);
     setStartInput(next);
     if (next.length < formatInfo.minFullLength) return;
     const parsed = parseBs(next, dateFormat);
@@ -374,15 +348,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
 
   function handleEndInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const normalized = normalizeDigitsToAscii(e.target.value);
-    const maxDigits = formatInfo.tokens.reduce((s, t) => s + (t === 'M' || t === 'D' ? 2 : t === 'YY' ? 2 : 4), 0);
-    const digits = normalized.replace(/[^0-9]/g, '').slice(0, maxDigits);
-    let next = digits;
-    for (let i = formatInfo.insertPositions.length - 1; i >= 0; i--) {
-      const pos = formatInfo.insertPositions[i];
-      if (next.length > pos) {
-        next = next.slice(0, pos) + formatInfo.separator + next.slice(pos);
-      }
-    }
+    const next = maskDateInput(normalized, formatInfo);
     setEndInput(next);
     if (next.length < formatInfo.minFullLength) return;
     const parsed = parseBs(next, dateFormat);
@@ -438,13 +404,27 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   function handlePreset(p: Preset) {
     emitRange(p.value[0], p.value[1]);
     dispatch({ type: 'SET_VIEW_MONTH', viewMonth: { ...p.value[0], day: 1 } });
+    if (presetLayout === 'bottom') closePickerAndReturnFocus();
+  }
+
+  function handleApply() {
+    onApplyProp?.();
     closePickerAndReturnFocus();
+  }
+
+  function handleCancel() {
+    onCancelProp?.();
+    closePickerAndReturnFocus();
+  }
+
+  function handleClearFilters() {
+    emitRange(null, null);
   }
 
   const nextViewMonth = shiftMonth(viewMonth, 1) ?? viewMonth;
 
-  const isNepali = lang === 'ne';
-  const monthList = isNepali ? bsMonthNamesNe : bsMonthNames;
+  const locale = resolvePickerLocale(lang, localeOverride);
+  const monthList = locale.monthNames;
   const monthName = monthList[viewMonth.month] ?? viewMonth.month.toString().padStart(2, '0');
   const nextMonthName = monthList[nextViewMonth.month] ?? nextViewMonth.month.toString().padStart(2, '0');
   const placeholderText = placeholder ?? `${dateFormat} (BS)`;
@@ -453,126 +433,10 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
   const canMoveNext = shiftMonth(nextViewMonth, 1) !== null;
   const rangeMinYear = yearRange?.min ?? adapter.range?.min?.year;
   const rangeMaxYear = yearRange?.max ?? adapter.range?.max?.year;
-  const yearOptions =
-    rangeMinYear !== undefined && rangeMaxYear !== undefined && rangeMaxYear >= rangeMinYear
-      ? Array.from({ length: rangeMaxYear - rangeMinYear + 1 }, (_, i) => rangeMinYear + i)
-      : rangeMinYear !== undefined && rangeMaxYear === undefined
-      ? Array.from({ length: Math.max(1, viewMonth.year - rangeMinYear + 1) }, (_, i) => rangeMinYear + i)
-      : rangeMinYear === undefined && rangeMaxYear !== undefined
-      ? Array.from({ length: Math.max(1, rangeMaxYear - viewMonth.year + 1) }, (_, i) => viewMonth.year + i)
-      : [viewMonth.year];
+  const yearOptions = getYearOptions(viewMonth.year, rangeMinYear, rangeMaxYear);
 
   const hasValue = !!(rangeStart || rangeEnd);
 
-  function updatePopoverPosition() {
-    if (!wrapperRef.current || typeof window === 'undefined') return;
-
-    const rect = wrapperRef.current.getBoundingClientRect();
-    const gap = 8;
-    const viewportPadding = 12;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const maxWidth = Math.max(0, Math.min(580, viewportWidth - viewportPadding * 2));
-    const width = Math.max(0, Math.min(maxWidth, Math.max(rect.width, 300)));
-
-    const opensUp = placement === 'topLeft' || placement === 'topRight';
-    const alignsRight = placement === 'bottomRight' || placement === 'topRight';
-
-    let left: number;
-    if (alignsRight) {
-      left = rect.right - width;
-    } else {
-      left = rect.left;
-    }
-
-    if (left + width > viewportWidth - viewportPadding) {
-      left = viewportWidth - width - viewportPadding;
-    }
-    left = Math.max(viewportPadding, left);
-
-    const spaceBelow = viewportHeight - rect.bottom;
-    const spaceAbove = rect.top;
-    const effectiveOpenUp = opensUp || (spaceBelow < 360 && spaceAbove > spaceBelow);
-
-    const top = effectiveOpenUp
-      ? Math.max(viewportPadding, rect.top - gap)
-      : Math.min(viewportHeight - viewportPadding, rect.bottom + gap);
-
-    setPopoverStyle({
-      position: 'fixed',
-      top,
-      left,
-      width,
-      maxWidth: `calc(100vw - ${viewportPadding * 2}px)`,
-      zIndex: 9999,
-      transform: effectiveOpenUp ? 'translateY(-100%)' : undefined,
-    });
-  }
-
-  useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      const target = e.target as Node;
-      if (wrapperRef.current?.contains(target)) return;
-      if (popoverRef.current?.contains(target)) return;
-      closePicker();
-    }
-    document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
-  }, []);
-
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (!isPickerOpen) return;
-      if (e.key === 'Escape') {
-        closePicker();
-        return;
-      }
-      if (e.key === 'Tab' && popoverRef.current) {
-        const focusables = Array.from(
-          popoverRef.current.querySelectorAll<HTMLElement>('button,input')
-        ).filter((el) => !el.hasAttribute('disabled'));
-        if (focusables.length === 0) return;
-        const currentIndex = focusables.indexOf(document.activeElement as HTMLElement);
-        let nextIndex = currentIndex;
-        if (e.shiftKey) {
-          nextIndex = currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1;
-        } else {
-          nextIndex = currentIndex === -1 || currentIndex === focusables.length - 1 ? 0 : currentIndex + 1;
-        }
-        if (nextIndex !== currentIndex) {
-          e.preventDefault();
-          focusables[nextIndex].focus();
-        }
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [isPickerOpen]);
-
-  useLayoutEffect(() => {
-    if (!isPickerOpen) return;
-
-    updatePopoverPosition();
-
-    let rafId = 0;
-    function onReposition() {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = 0;
-        updatePopoverPosition();
-      });
-    }
-
-    window.addEventListener('resize', onReposition);
-    window.addEventListener('scroll', onReposition, true);
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', onReposition);
-      window.removeEventListener('scroll', onReposition, true);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPickerOpen, monthOpen, yearOpen, viewMonth.year, viewMonth.month]);
 
   function handleToggleMonth() {
     const wasOpen = monthOpen;
@@ -595,12 +459,6 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
       });
     }
   }
-
-  const popoverContainer = getPopupContainer && wrapperRef.current
-    ? getPopupContainer(wrapperRef.current)
-    : typeof document !== 'undefined'
-    ? document.body
-    : null;
 
   const pickerClasses = cn(
     'np-picker',
@@ -627,7 +485,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
           placeholder={placeholderText}
           value={startInput}
           onChange={handleStartInputChange}
-          onFocus={() => { if (!isPickerDisabled) { onFocusProp?.(); openPicker(); } }}
+          onFocus={() => { if (!isPickerDisabled) { openSource.current = 'input'; onFocusProp?.(); openPicker(); } }}
           onBlur={onBlur}
           onKeyDown={onKeyDown}
           inputMode="numeric"
@@ -645,7 +503,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
           placeholder={endPlaceholderText}
           value={endInput}
           onChange={handleEndInputChange}
-          onFocus={() => { if (!isPickerDisabled) { onFocusProp?.(); openPicker(); } }}
+          onFocus={() => { if (!isPickerDisabled) { openSource.current = 'input'; onFocusProp?.(); openPicker(); } }}
           inputMode="numeric"
           pattern={resolvedPattern}
           maxLength={formatInfo.fullLength}
@@ -669,7 +527,7 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
           <button
             type="button"
             className="np-toggle"
-            onClick={(e) => { e.stopPropagation(); togglePicker(); }}
+            onClick={(e) => { e.stopPropagation(); openSource.current = 'toggle'; togglePicker(); }}
             aria-label="Toggle date range picker"
           >
             <svg
@@ -695,172 +553,227 @@ export const NepaliDateRangePicker: React.FC<NepaliDateRangePickerProps> = ({
 
       {isPickerOpen && !isPickerDisabled && popoverContainer
         ? createPortal(
-            <div className={cn('np-popover', 'np-popover--range', semanticClassNames?.popup)} style={{ ...popoverStyle, ...semanticStyles?.popup }} role="dialog" aria-modal="true" aria-label="Nepali date range picker" ref={popoverRef}>
+            <div className={cn('np-popover', 'np-popover--range', isSidebar && 'np-popover--sidebar', semanticClassNames?.popup)} style={{ ...popoverStyle, ...semanticStyles?.popup }} role="dialog" aria-modal="true" aria-label="Nepali date range picker" ref={popoverRef}>
               <div aria-live="polite" aria-atomic="true" ref={announceRef} className="np-sr-only">
-                {monthName} {isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}
+                {monthName} {locale.formatNumber(viewMonth.year)}
               </div>
-              <div className={cn('np-popover__header', 'np-dual-header', semanticClassNames?.header)} style={semanticStyles?.header}>
-                <button
-                  type="button"
-                  className="np-popover__nav-btn"
-                  onClick={() => moveMonth(-1)}
-                  aria-label="Previous months"
-                  disabled={!canMovePrev}
-                >
-                  ‹
-                </button>
-                <div className="np-dual-header__months">
-                  <div className="np-dual-header__item">
-                    {showMonth ? (
-                      <div className="np-popover__selector-wrap">
-                        <button
-                          type="button"
-                          className="np-popover__selector"
-                          aria-haspopup="listbox"
-                          aria-expanded={monthOpen}
-                          onClick={handleToggleMonth}
-                        >
-                          <span>{monthName}</span>
-                        </button>
-                        {monthOpen && (
-                          <div className="np-popover__menu" role="listbox" aria-label="Select month" ref={monthMenuRef}>
-                            {monthList.slice(1).map((m, idx) => (
-                              <button
-                                key={m}
-                                type="button"
-                                className={cn('np-popover__menu-item', idx + 1 === viewMonth.month && 'np-popover__menu-item--active')}
-                                data-active={idx + 1 === viewMonth.month}
-                                role="option"
-                                aria-selected={idx + 1 === viewMonth.month}
-                                onClick={() => {
-                                  dispatch({ type: 'SELECT_MONTH', month: idx + 1 });
-                                  onPanelChangeRef.current?.({ ...viewMonth, month: idx + 1, day: 1 });
-                                }}
-                              >
-                                {m}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <span>{monthName}</span>
-                    )}
-                    {showYear ? (
-                      <div className="np-popover__selector-wrap">
-                        <button
-                          type="button"
-                          className="np-popover__selector"
-                          aria-haspopup="listbox"
-                          aria-expanded={yearOpen}
-                          onClick={handleToggleYear}
-                        >
-                          <span>{isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}</span>
-                        </button>
-                        {yearOpen && (
-                          <div className="np-popover__menu np-popover__menu--years" role="listbox" aria-label="Select year" ref={yearMenuRef}>
-                            {yearOptions.map((y) => (
-                              <button
-                                key={y}
-                                type="button"
-                                className={cn('np-popover__menu-item', y === viewMonth.year && 'np-popover__menu-item--active')}
-                                data-active={y === viewMonth.year}
-                                role="option"
-                                aria-selected={y === viewMonth.year}
-                                onClick={() => {
-                                  dispatch({ type: 'SELECT_YEAR', year: y });
-                                  onPanelChangeRef.current?.({ ...viewMonth, year: y, day: 1 });
-                                }}
-                              >
-                                {isNepali ? toNepaliDigits(y) : y}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <span>{isNepali ? toNepaliDigits(viewMonth.year) : viewMonth.year}</span>
-                    )}
-                  </div>
-                  <span className="np-dual-header__sep">|</span>
-                  <div className="np-dual-header__item">
-                    <span className="np-popover__selector np-popover__selector--static">{nextMonthName}</span>
-                    <span className="np-popover__selector np-popover__selector--static">{isNepali ? toNepaliDigits(nextViewMonth.year) : nextViewMonth.year}</span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="np-popover__nav-btn"
-                  onClick={() => moveMonth(1)}
-                  aria-label="Next months"
-                  disabled={!canMoveNext}
-                >
-                  ›
-                </button>
-              </div>
-              <div className="np-dual-month">
-                <div className="np-dual-month__col">
-                  <CalendarGrid
-                    month={viewMonth}
-                    adapter={adapter}
-                    selected={rangeStart}
-                    rangeEnd={rangeEnd}
-                    onSelect={handleSelect}
-                    onHover={handleHover}
-                    firstDayOfWeek={firstDayOfWeek}
-                    disabled={isDateDisabled}
-                    inRange={inRange}
-                    className={semanticClassNames?.grid}
-                    cellClassName={semanticClassNames?.cell}
-                    cellRender={cellRender}
-                    monthNames={isNepali ? bsMonthNamesNe : bsMonthNames}
-                    isNepali={isNepali}
-                    dowLabels={isNepali ? ['आ','सो','मं','बु','बि','शु','श'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']}
-                    formatDay={(d) => (isNepali ? toNepaliDigits(d) : String(d))}
-                  />
-                </div>
-                <div className="np-dual-month__col">
-                  <CalendarGrid
-                    month={nextViewMonth}
-                    adapter={adapter}
-                    selected={rangeStart}
-                    rangeEnd={rangeEnd}
-                    onSelect={handleSelect}
-                    onHover={handleHover}
-                    firstDayOfWeek={firstDayOfWeek}
-                    disabled={isDateDisabled}
-                    inRange={inRange}
-                    className={semanticClassNames?.grid}
-                    cellClassName={semanticClassNames?.cell}
-                    cellRender={cellRender}
-                    monthNames={isNepali ? bsMonthNamesNe : bsMonthNames}
-                    isNepali={isNepali}
-                    dowLabels={isNepali ? ['आ','सो','मं','बु','बि','शु','श'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']}
-                    formatDay={(d) => (isNepali ? toNepaliDigits(d) : String(d))}
-                  />
-                </div>
-              </div>
-              {presets.length > 0 && (
-                <div className="np-presets">
-                  {presets.map((p, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className="np-preset-btn"
-                      onClick={() => handlePreset(p)}
-                    >
-                      {p.label}
+
+              {showHeaderActions && (
+                <div className="np-popover__header-actions">
+                  {renderHeaderActions ? renderHeaderActions() : (
+                    <button type="button" className="np-header-action__link" onClick={handleClearFilters}>
+                      {clearFiltersLabel}
                     </button>
-                  ))}
+                  )}
+                  <div className="np-header-action__buttons">
+                    <button type="button" className="np-footer__btn" onClick={handleCancel}>
+                      {locale.labels.cancel}
+                    </button>
+                    <button type="button" className="np-footer__btn np-footer__btn--primary" onClick={handleApply}>
+                      {locale.labels.apply}
+                    </button>
+                  </div>
                 </div>
               )}
+
+              <div className="np-popover__body">
+                {isSidebar && (
+                  <div className="np-sidebar" role="listbox" aria-label="Preset date ranges">
+                    <div className="np-sidebar__customised" role="heading" aria-level={3}>
+                      <span>{customisedLabelProp ?? locale.labels.customised}</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </div>
+                    {presets.map((p, i) => {
+                      const isActive = rangeStart !== null && rangeEnd !== null &&
+                        safeDiffDays(rangeStart, p.value[0]) === 0 && safeDiffDays(rangeEnd, p.value[1]) === 0;
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          role="option"
+                          aria-selected={isActive}
+                          className={cn('np-sidebar__item', isActive && 'np-sidebar__item--active')}
+                          onClick={() => handlePreset(p)}
+                        >
+                          {p.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="np-popover__main">
+                  <div className={cn('np-popover__header', 'np-dual-header', semanticClassNames?.header)} style={semanticStyles?.header}>
+                    <button
+                      type="button"
+                      className="np-popover__nav-btn"
+                      onClick={() => moveMonth(-1)}
+                      aria-label="Previous months"
+                      disabled={!canMovePrev}
+                    >
+                      ‹
+                    </button>
+                    <div className="np-dual-header__months">
+                      <div className="np-dual-header__item">
+                        {showMonth ? (
+                          <div className="np-popover__selector-wrap">
+                            <button
+                              type="button"
+                              className="np-popover__selector"
+                              aria-haspopup="listbox"
+                              aria-expanded={monthOpen}
+                              onClick={handleToggleMonth}
+                            >
+                              <span>{monthName}</span>
+                            </button>
+                            {monthOpen && (
+                              <div className="np-popover__menu" role="listbox" aria-label="Select month" ref={monthMenuRef}>
+                                {monthList.slice(1).map((m, idx) => (
+                                  <button
+                                    key={m}
+                                    type="button"
+                                    className={cn('np-popover__menu-item', idx + 1 === viewMonth.month && 'np-popover__menu-item--active')}
+                                    data-active={idx + 1 === viewMonth.month}
+                                    role="option"
+                                    aria-selected={idx + 1 === viewMonth.month}
+                                    onClick={() => {
+                                      dispatch({ type: 'SELECT_MONTH', month: idx + 1 });
+                                      onPanelChangeRef.current?.({ ...viewMonth, month: idx + 1, day: 1 });
+                                    }}
+                                  >
+                                    {m}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span>{monthName}</span>
+                        )}
+                        {showYear ? (
+                          <div className="np-popover__selector-wrap">
+                            <button
+                              type="button"
+                              className="np-popover__selector"
+                              aria-haspopup="listbox"
+                              aria-expanded={yearOpen}
+                              onClick={handleToggleYear}
+                            >
+                              <span>{locale.formatNumber(viewMonth.year)}</span>
+                            </button>
+                            {yearOpen && (
+                              <div className="np-popover__menu np-popover__menu--years" role="listbox" aria-label="Select year" ref={yearMenuRef}>
+                                {yearOptions.map((y) => (
+                                  <button
+                                    key={y}
+                                    type="button"
+                                    className={cn('np-popover__menu-item', y === viewMonth.year && 'np-popover__menu-item--active')}
+                                    data-active={y === viewMonth.year}
+                                    role="option"
+                                    aria-selected={y === viewMonth.year}
+                                    onClick={() => {
+                                      dispatch({ type: 'SELECT_YEAR', year: y });
+                                      onPanelChangeRef.current?.({ ...viewMonth, year: y, day: 1 });
+                                    }}
+                                  >
+                                    {locale.formatNumber(y)}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span>{locale.formatNumber(viewMonth.year)}</span>
+                        )}
+                      </div>
+                      <span className="np-dual-header__sep">|</span>
+                      <div className="np-dual-header__item">
+                        <span className="np-popover__selector np-popover__selector--static">{nextMonthName}</span>
+                        <span className="np-popover__selector np-popover__selector--static">{locale.formatNumber(nextViewMonth.year)}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="np-popover__nav-btn"
+                      onClick={() => moveMonth(1)}
+                      aria-label="Next months"
+                      disabled={!canMoveNext}
+                    >
+                      ›
+                    </button>
+                  </div>
+
+                  <div className="np-dual-month">
+                    <div className="np-dual-month__col">
+                      <CalendarGrid
+                        month={viewMonth}
+                        adapter={adapter}
+                        selected={rangeStart}
+                        rangeEnd={rangeEnd}
+                        onSelect={handleSelect}
+                        onHover={handleHover}
+                        firstDayOfWeek={firstDayOfWeek}
+                        disabled={isDateDisabled}
+                        inRange={inRange}
+                        className={semanticClassNames?.grid}
+                        cellClassName={semanticClassNames?.cell}
+                        cellRender={cellRender}
+                        monthNames={locale.monthNames}
+                        dowLabels={locale.weekdays}
+                        formatDay={locale.formatNumber}
+                        formatYear={locale.formatNumber}
+                        disableOutsideMonth
+                      />
+                    </div>
+                    <div className="np-dual-month__col">
+                      <CalendarGrid
+                        month={nextViewMonth}
+                        adapter={adapter}
+                        selected={rangeStart}
+                        rangeEnd={rangeEnd}
+                        onSelect={handleSelect}
+                        onHover={handleHover}
+                        firstDayOfWeek={firstDayOfWeek}
+                        disabled={isDateDisabled}
+                        inRange={inRange}
+                        className={semanticClassNames?.grid}
+                        cellClassName={semanticClassNames?.cell}
+                        cellRender={cellRender}
+                        monthNames={locale.monthNames}
+                        dowLabels={locale.weekdays}
+                        formatDay={locale.formatNumber}
+                        formatYear={locale.formatNumber}
+                        disableOutsideMonth
+                      />
+                    </div>
+                  </div>
+
+                  {!isSidebar && presets.length > 0 && (
+                    <div className="np-presets">
+                      {presets.map((p, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className="np-preset-btn"
+                          onClick={() => handlePreset(p)}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {renderExtraFooter && (
                 <div className="np-extra-footer np-footer__extra">
                   {renderExtraFooter()}
                 </div>
               )}
               <PickerFooter
-                isNepali={isNepali}
+                locale={locale}
                 onClear={handleClear}
                 onToday={handleToday}
                 className={semanticClassNames?.footer}

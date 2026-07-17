@@ -1,16 +1,15 @@
 import React, { useCallback, useRef } from 'react';
 import { cn } from '../utils/classnames';
-import { toNepaliDigits } from './pickerUtils';
 
 type PickerHeaderProps = {
   showMonth: boolean;
   showYear: boolean;
   monthName: string;
-  monthList: string[];
+  monthList: readonly string[];
   viewYear: number;
   viewMonth: number;
   yearOptions: number[];
-  isNepali: boolean;
+  formatNumber: (value: number) => string;
   monthOpen: boolean;
   yearOpen: boolean;
   canMovePrev: boolean;
@@ -61,7 +60,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
   viewYear,
   viewMonth,
   yearOptions,
-  isNepali,
+  formatNumber,
   monthOpen,
   yearOpen,
   canMovePrev,
@@ -246,7 +245,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
                 onClick={onToggleYear}
               >
                 <span>
-                  {isNepali ? toNepaliDigits(viewYear) : viewYear}
+                  {formatNumber(viewYear)}
                 </span>
               </button>
               {yearOpen && (
@@ -276,7 +275,7 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
                         yearActiveId.current = `np-year-${y}`;
                       }}
                     >
-                      {isNepali ? toNepaliDigits(y) : y}
+                      {formatNumber(y)}
                     </button>
                   ))}
                 </div>
@@ -285,14 +284,14 @@ export const PickerHeader: React.FC<PickerHeaderProps> = ({
           ) : (
             <div className="np-popover__selector np-popover__selector--static">
               <span>
-                {isNepali ? toNepaliDigits(viewYear) : viewYear}
+                {formatNumber(viewYear)}
               </span>
             </div>
           )}
         </div>
       ) : (
         <div className="np-popover__title">
-          {monthName} {isNepali ? toNepaliDigits(viewYear) : viewYear}
+          {monthName} {formatNumber(viewYear)}
         </div>
       )}
       <button

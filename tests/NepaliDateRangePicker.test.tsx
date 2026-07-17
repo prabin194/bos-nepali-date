@@ -917,6 +917,50 @@ describe('menu.yearRange in range picker', () => {
 });
 
 describe('dual-month view in range picker', () => {
+  it('disables and does not highlight adjacent-month spillover dates', () => {
+    const onChange = vi.fn();
+    render(
+      <NepaliDateRangePicker
+        value={[
+          { year: 2083, month: 3, day: 10 },
+          { year: 2083, month: 4, day: 19 },
+        ]}
+        onChange={onChange}
+        adapter={adapter}
+        open={true}
+        onOpenChange={() => {}}
+      />
+    );
+
+    const grids = Array.from(document.querySelectorAll('.np-cal-grid'));
+    const leftShrawan1 = grids[0].querySelector<HTMLButtonElement>(
+      'button[aria-label="1 Shrawan, 2083 BS"]'
+    );
+    const rightAshar28 = grids[1].querySelector<HTMLButtonElement>(
+      'button[aria-label="28 Ashar, 2083 BS"]'
+    );
+    const leftAshar28 = grids[0].querySelector<HTMLButtonElement>(
+      'button[aria-label="28 Ashar, 2083 BS"]'
+    );
+    const rightShrawan1 = grids[1].querySelector<HTMLButtonElement>(
+      'button[aria-label="1 Shrawan, 2083 BS"]'
+    );
+
+    expect(leftShrawan1).toBeDisabled();
+    expect(leftShrawan1).not.toHaveClass('np-cal-cell--range');
+    expect(rightAshar28).toBeDisabled();
+    expect(rightAshar28).not.toHaveClass('np-cal-cell--range');
+
+    expect(leftAshar28).not.toBeDisabled();
+    expect(leftAshar28).toHaveClass('np-cal-cell--range');
+    expect(rightShrawan1).not.toBeDisabled();
+    expect(rightShrawan1).toHaveClass('np-cal-cell--range');
+
+    fireEvent.click(leftShrawan1!);
+    fireEvent.click(rightAshar28!);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('renders two calendar grids side by side', async () => {
     render(
       <NepaliDateRangePicker

@@ -27,6 +27,7 @@ export type MemoryAdapterOptions = {
 export class MemoryBsAdapter implements BsAdapter {
   private anchorBs: BsDate;
   private anchorAdDay: number;
+  private anchorOrdinal: number;
   private data: readonly number[];
   private minYear: number;
   private maxYear: number;
@@ -39,6 +40,9 @@ export class MemoryBsAdapter implements BsAdapter {
 
     if (Array.isArray(options.yearTable)) {
       // Flat array: 12 entries per year starting at 2000
+      if (options.yearTable.length === 0 || options.yearTable.length % 12 !== 0) {
+        throw new Error('Flat BS year table must contain exactly 12 month lengths per year.');
+      }
       this.data = options.yearTable;
       this.minYear = 2000;
       this.maxYear = 2000 + Math.floor(this.data.length / 12) - 1;
@@ -46,15 +50,35 @@ export class MemoryBsAdapter implements BsAdapter {
       // Record format: convert to flat array internally
       const table = options.yearTable as Record<number, readonly number[]>;
       const years = Object.keys(table).map(Number).sort((a, b) => a - b);
+      if (years.length === 0) {
+        throw new Error('BS year table must contain at least one year.');
+      }
+      for (let i = 1; i < years.length; i++) {
+        if (years[i] !== years[i - 1] + 1) {
+          throw new Error('BS year table years must be contiguous.');
+        }
+      }
       this.minYear = years[0];
       this.maxYear = years[years.length - 1];
       const flat: number[] = [];
       for (const y of years) {
         const months = table[y];
+        if (months.length !== 12) {
+          throw new Error(`BS year ${y} must contain exactly 12 month lengths.`);
+        }
         for (let m = 0; m < 12; m++) flat.push(months[m]);
       }
       this.data = flat;
     }
+
+    if (this.data.some((days) => !Number.isInteger(days) || days < 1 || days > 32)) {
+      throw new Error('BS month lengths must be integers between 1 and 32.');
+    }
+    if (!this.hasYear(this.anchorBs.year)) {
+      throw new Error(`Anchor BS year ${this.anchorBs.year} is not present in the year table.`);
+    }
+    this.validate(this.anchorBs);
+    this.anchorOrdinal = this.bsToOrdinal(this.anchorBs);
   }
 
   today(): BsDate {
@@ -84,6 +108,9 @@ export class MemoryBsAdapter implements BsAdapter {
 
   addDays(date: BsDate, days: number): BsDate {
     this.validate(date);
+    if (!Number.isInteger(days)) {
+      throw new Error('Days to add must be an integer.');
+    }
     return this.offsetToBs(this.bsToOffset(date) + days);
   }
 
@@ -108,73 +135,43 @@ export class MemoryBsAdapter implements BsAdapter {
   }
 
   private bsToOffset(date: BsDate): number {
-    const { year, month, day } = date;
-    if (!this.hasYear(year)) {
-      throw new Error(`BS year ${year} not supported by adapter.`);
-    }
-    let days = 0;
-    if (year > this.anchorBs.year || (year === this.anchorBs.year && (month > this.anchorBs.month || (month === this.anchorBs.month && day >= this.anchorBs.day)))) {
-      // forward from anchor
-      days += this.daysBetweenBs(this.anchorBs, { year, month, day });
-    } else {
-      // backward
-      days -= this.daysBetweenBs(date, this.anchorBs);
-    }
-    return days;
+    return this.bsToOrdinal(date) - this.anchorOrdinal;
   }
 
   private offsetToBs(offset: number): BsDate {
-    let current: BsDate = { ...this.anchorBs };
-    if (offset === 0) return current;
-
-    let remaining = offset;
-    const step = offset > 0 ? 1 : -1;
-
-    // Skip whole years at a time
-    while (remaining !== 0) {
-      const yearLen = this.yearDays(current.year);
-      if (Math.abs(remaining) >= yearLen) {
-        const yearStep = step > 0 ? 1 : -1;
-        const nextYear = current.year + yearStep;
-        if (!this.hasYear(nextYear)) break;
-        current = { year: nextYear, month: current.month, day: current.day };
-        remaining -= step * yearLen;
-      } else {
-        break;
-      }
+    let remaining = this.anchorOrdinal + offset;
+    if (remaining < 0) {
+      throw new Error(`BS year ${this.minYear - 1} not supported by adapter.`);
     }
 
-    // Skip whole months at a time
-    while (remaining !== 0) {
-      const monthLen = this.getMonthLen(current.year, current.month);
-      if (Math.abs(remaining) >= monthLen) {
-        if (step > 0) {
-          if (current.month === 12) {
-            if (!this.hasYear(current.year + 1)) break;
-            current = { year: current.year + 1, month: 1, day: current.day };
-          } else {
-            current = { year: current.year, month: current.month + 1, day: current.day };
-          }
-        } else {
-          if (current.month === 1) {
-            if (!this.hasYear(current.year - 1)) break;
-            current = { year: current.year - 1, month: 12, day: current.day };
-          } else {
-            current = { year: current.year, month: current.month - 1, day: current.day };
-          }
+    for (let year = this.minYear; year <= this.maxYear; year++) {
+      const yearLength = this.yearDays(year);
+      if (remaining >= yearLength) {
+        remaining -= yearLength;
+        continue;
+      }
+      for (let month = 1; month <= 12; month++) {
+        const monthLength = this.getMonthLen(year, month);
+        if (remaining >= monthLength) {
+          remaining -= monthLength;
+          continue;
         }
-        remaining -= step * monthLen;
-      } else {
-        break;
+        return { year, month, day: remaining + 1 };
       }
     }
 
-    // Step day by day for the remainder
-    while (remaining !== 0) {
-      current = this.addOneDay(current, step);
-      remaining -= step;
+    throw new Error(`BS year ${this.maxYear + 1} not supported by adapter.`);
+  }
+
+  private bsToOrdinal(date: BsDate): number {
+    let ordinal = 0;
+    for (let year = this.minYear; year < date.year; year++) {
+      ordinal += this.yearDays(year);
     }
-    return current;
+    for (let month = 1; month < date.month; month++) {
+      ordinal += this.getMonthLen(date.year, month);
+    }
+    return ordinal + date.day - 1;
   }
 
   private yearDays(year: number): number {
@@ -198,39 +195,6 @@ export class MemoryBsAdapter implements BsAdapter {
     return idx >= 0 && idx < this.data.length - 11;
   }
 
-  private addOneDay(date: BsDate, direction: 1 | -1): BsDate {
-    if (direction === 1) {
-      const dim = this.getMonthLen(date.year, date.month);
-      if (date.day < dim) return { ...date, day: date.day + 1 };
-      // next month
-      if (date.month === 12) {
-        if (!this.hasYear(date.year + 1)) throw new Error(`BS year ${date.year + 1} not supported by adapter.`);
-        return { year: date.year + 1, month: 1, day: 1 };
-      }
-      return { year: date.year, month: date.month + 1, day: 1 };
-    } else {
-      // direction -1
-      if (date.day > 1) return { ...date, day: date.day - 1 };
-      if (date.month === 1) {
-        if (!this.hasYear(date.year - 1)) throw new Error(`BS year ${date.year - 1} not supported by adapter.`);
-        const prevLen = this.getMonthLen(date.year - 1, 12);
-        return { year: date.year - 1, month: 12, day: prevLen };
-      }
-      const prevLen = this.getMonthLen(date.year, date.month - 1);
-      return { year: date.year, month: date.month - 1, day: prevLen };
-    }
-  }
-
-  private daysBetweenBs(start: BsDate, end: BsDate): number {
-    // inclusive start, exclusive end; assumes end >= start
-    let days = 0;
-    let cursor: BsDate = { ...start };
-    while (!(cursor.year === end.year && cursor.month === end.month && cursor.day === end.day)) {
-      cursor = this.addOneDay(cursor, 1);
-      days += 1;
-    }
-    return days;
-  }
 }
 
 import { bsMonthData, bsRange } from './bsTable';

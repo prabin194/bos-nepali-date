@@ -24,17 +24,22 @@ export type DateFormat = string;
 
 export type AdDateIso = string; // YYYY-MM-DD
 
-export interface BsAdapter {
+/** Minimal calendar operations needed to render and navigate a BS calendar. */
+export interface BsCalendarAdapter {
   /** Convert a BS date to ISO AD string (YYYY-MM-DD). */
   toAD: (date: BsDate) => AdDateIso;
-  /** Convert an ISO AD string to BS date. */
-  toBS: (date: AdDateIso) => BsDate;
   /** Add days to a BS date and return a new BS date. */
   addDays: (date: BsDate, days: number) => BsDate;
-  /** Difference in days: date2 - date1. */
-  diffDays: (date1: BsDate, date2: BsDate) => number;
   /** BS date for today. */
   today: () => BsDate;
+}
+
+/** Full conversion contract used by date-picker orchestration. */
+export interface BsAdapter extends BsCalendarAdapter {
+  /** Convert an ISO AD string to BS date. */
+  toBS: (date: AdDateIso) => BsDate;
+  /** Difference in days: date2 - date1. */
+  diffDays: (date1: BsDate, date2: BsDate) => number;
   /** Optional supported range for validation. */
   range?: {
     min?: BsDate;
